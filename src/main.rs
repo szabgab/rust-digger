@@ -12,6 +12,14 @@ fn main() {
     // Create an html page _site/index.html with the title
     let filename = "_site/index.html";
     let mut file = File::create(filename).unwrap();
-    let html = "<html><head><title>Rust Digger</title><body><h1>Rust Digger</h1></body></html>";
+    let html = "
+        <html>
+            <head>
+               <title>Rust Digger</title>
+            </head>
+            <body>
+              <h1>Rust Digger</h1>
+            </body>
+        </html>";
     writeln!(&mut file, "{html}").unwrap();
 }
