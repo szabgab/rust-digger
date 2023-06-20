@@ -1,4 +1,4 @@
-# Rust Digger
+# [Rust Digger](https://rust-digger.code-maven.com/)
 
 * Analyze Rust Crates
 
