@@ -6,6 +6,11 @@
 * Process the data
 * Generate static HTML pages
 
+## Sites
+
+* https://crates.io/
+* https://docs.rs/
+* https://lib.rs/
 
 ## Fetching data
 
