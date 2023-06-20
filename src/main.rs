@@ -6,6 +6,10 @@ use std::io::Write;
 fn main() {
     println!("Rust Digger");
 
+    generate_pages();
+}
+
+fn generate_pages() {
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
 
@@ -22,5 +26,6 @@ fn main() {
               <a href=\"https://github.com/szabgab/rust-digger\">source</a>
             </body>
         </html>";
+
     writeln!(&mut file, "{html}").unwrap();
 }
