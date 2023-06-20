@@ -19,6 +19,7 @@ fn main() {
             </head>
             <body>
               <h1>Rust Digger</h1>
+              <a href=\"https://github.com/szabgab/rust-digger\">source</a>
             </body>
         </html>";
     writeln!(&mut file, "{html}").unwrap();
