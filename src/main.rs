@@ -41,7 +41,7 @@ fn generate_pages() {
     //println!("{VERSION}");
     let res = reg.render_template(&template, &json!({"version": format!("{VERSION}"), "utc": format!("{}", utc)}));
     match res {
-        Ok(html) => writeln!(&mut file, "{:?}", html).unwrap(),
+        Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
         Err(error) => println!("{}", error)
     }
 }
