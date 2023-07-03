@@ -26,7 +26,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v2
 
-      - name: Create pages
+      - name: Download data
         if: ${{ github.event_name != 'pull_request' }}
         run: |
             time wget --quiet https://static.crates.io/db-dump.tar.gz
@@ -34,6 +34,9 @@ jobs:
             DIR=$(ls -d1 2023-* | head -n 1 | cut -d'/' -f1)
             mv "$DIR" "data"
 
+      - name: Create pages
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
             rustc --version
             cargo --version
             cargo run
