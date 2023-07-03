@@ -30,3 +30,12 @@ cd rust-digger
 cargo run
 ```
 
+## Deployment on Ubuntu-based server
+
+Based on https://www.rust-lang.org/tools/install
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+cargo run
+```
+
+
