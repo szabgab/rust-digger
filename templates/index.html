@@ -5,12 +5,28 @@
     <body>
       <h1>Rust Digger</h1>
         Total:  {{total}}
-        <ul>
+        <table>
+          <tr>
+           <th>name</th>
+           <th>update at</th>
+           <th>repo</th>
+          </tr>
         {{#each rows as |row|}}
-          <li>{{row.name}}</li>
+          <tr>
+            {{#if row.homepage}}
+              <td><a href="{{row.homepage}}">{{row.name}}</a></td>
+            {{else}}
+              <td>{{row.name}}</td>
+            {{/if}}
+            <td>{{row.updated_at}}</td>
+            {{#if row.repository}}
+              <td><a href="{{row.repository}}">repo</a></td>
+            {{else}}
+              <td>NA</td>
+            {{/if}}
+          </tr>
         {{/each}}
-        </ul>
-
+        </td>
 
       <hr>
       Version {{version}} generated at {{utc}}

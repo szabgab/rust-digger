@@ -62,7 +62,7 @@ fn generate_pages(rows :Vec<Record>) {
         "version": format!("{VERSION}"),
         "utc": format!("{}", utc),
         "total": rows.len(),
-        "rows": rows,
+        "rows": &rows[0..100],
     }));
     match res {
         Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
