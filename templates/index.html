@@ -4,6 +4,15 @@
     </head>
     <body>
       <h1>Rust Digger</h1>
+        Total:  {{total}}
+        <ul>
+        {{#each rows as |row|}}
+          <li>{{row.name}}</li>
+        {{/each}}
+        </ul>
+
+
+      <hr>
       Version {{version}} generated at {{utc}}
       <a href="https://github.com/szabgab/rust-digger">source</a>
     </body>
