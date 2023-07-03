@@ -34,12 +34,23 @@ jobs:
             DIR=$(ls -d1 2023-* | head -n 1 | cut -d'/' -f1)
             mv "$DIR" "data"
 
-      - name: Create pages
+      - name: Compile application
         if: ${{ github.event_name != 'pull_request' }}
         run: |
             rustc --version
             cargo --version
+            cargo build
+
+      - name: Create pages
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
             cargo run
+
+      - name: Show results
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+            tree _site
+
 
       - name: Upload artifact
         if: github.ref == 'refs/heads/main'
