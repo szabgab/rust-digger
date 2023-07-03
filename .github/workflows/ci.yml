@@ -26,43 +26,43 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v2
 
-      - name: Download data
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-          ./download.sh
-
-      - name: Compile application
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-            rustc --version
-            cargo --version
-            cargo build
-
-      - name: Create pages
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-            cargo run
-
-      - name: Show results
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-            tree _site
-
-
-      - name: Upload artifact
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v1
+#      - name: Download data
+#        if: ${{ github.event_name != 'pull_request' }}
+#        run: |
+#          ./download.sh
+#
+#      - name: Compile application
+#        if: ${{ github.event_name != 'pull_request' }}
+#        run: |
+#            rustc --version
+#            cargo --version
+#            cargo build
+#
+#      - name: Create pages
+#        if: ${{ github.event_name != 'pull_request' }}
+#        run: |
+#            cargo run
+#
+#      - name: Show results
+#        if: ${{ github.event_name != 'pull_request' }}
+#        run: |
+#            tree _site
+#
+#
+#      - name: Upload artifact
+#        if: github.ref == 'refs/heads/main'
+#        uses: actions/upload-pages-artifact@v1
 
   # Deployment job
-  deploy:
-    if: github.ref == 'refs/heads/main'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: generate
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+#  deploy:
+#    if: github.ref == 'refs/heads/main'
+#    environment:
+#      name: github-pages
+#      url: ${{ steps.deployment.outputs.page_url }}
+#    runs-on: ubuntu-latest
+#    needs: generate
+#    steps:
+#      - name: Deploy to GitHub Pages
+#        id: deployment
+#        uses: actions/deploy-pages@v1
 
