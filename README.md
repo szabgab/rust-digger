@@ -27,7 +27,7 @@ As of 2023.06.17
 ```
 git clone https://github.com/szabgab/rust-digger.git
 cd rust-digger
-cargo run
+cargo run 200
 ```
 
 ## Deployment on Ubuntu-based server

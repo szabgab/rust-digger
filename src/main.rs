@@ -1,3 +1,4 @@
+use std::env;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
@@ -16,9 +17,18 @@ type Record = HashMap<String, String>;
 fn main() {
     println!("Starting the Rust Digger");
 
+    let args: Vec<String> = env::args().collect();
+    let limit;
+    if args.len() == 2 {
+        limit = args[1].parse().expect("Could not convert to i32");
+    } else {
+        limit = 0;
+    }
+    println!("Limit {limit}");
+
     let filepath = "data/data/crates.csv";
     //println!("{}", filepath);
-    let result = read_csv_file(filepath);
+    let result = read_csv_file(filepath, limit);
     println!("Finished reading CSV");
     match result {
         Ok(mut rows) => {
@@ -85,14 +95,20 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
 }
 
 
-fn read_csv_file(filepath: &str) -> Result<Vec<Record>, Box<dyn Error>> {
+fn read_csv_file(filepath: &str, limit: i32) -> Result<Vec<Record>, Box<dyn Error>> {
     let mut records:Vec<Record> = vec![];
+    let mut count = 0;
     match File::open(filepath.to_string()) {
         Ok(file) => {
             //let mut content = String::new();
             //file.read_to_string(&mut content).unwrap();
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {
+                count += 1;
+                if limit > 0 && count >= limit {
+                    println!("Limit of {limit} reached");
+                    break
+                }
                 let record: Record = result?;
                 records.push(record);
             }
