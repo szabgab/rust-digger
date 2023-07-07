@@ -44,13 +44,28 @@ fn main() {
 
     log::info!("Ending the Rust Digger");
 }
+fn render(reg: &Handlebars, template: &String, filename: &String, title: &String) -> Result<(), Box<dyn Error>> {
+    let mut file = File::create(filename).unwrap();
+
+    let utc: DateTime<Utc> = Utc::now();
+    let res = reg.render(template, &json!({
+        "version": format!("{VERSION}"),
+        "utc": format!("{}", utc),
+        "title": title,
+        "parent": "layout",
+    }));
+    match res {
+        Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
+        Err(error) => println!("{}", error)
+    }
+    Ok(())
+}
 
 fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     let mut reg = Handlebars::new();
     reg.register_template_file("about", "templates/about.html")?;
     reg.register_template_file("index", "templates/index.html")?;
     reg.register_template_file("layout", "templates/layout.html")?;
-    let utc: DateTime<Utc> = Utc::now();
 
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
@@ -63,6 +78,7 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     //    println!("{}", row);
     //}
 
+    let utc: DateTime<Utc> = Utc::now();
     //log::info!("{VERSION}");
     const PAGE_SIZE: usize = 100;
     let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
@@ -79,20 +95,7 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
         Err(error) => println!("{}", error)
     }
 
-    let filename = "_site/about.html";
-    let mut file = File::create(filename).unwrap();
-
-    let res = reg.render("about", &json!({
-        "version": format!("{VERSION}"),
-        "utc": format!("{}", utc),
-        "title": "About Rust Digger",
-        "parent": "layout",
-    }));
-    match res {
-        Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
-        Err(error) => println!("{}", error)
-    }
-
+    render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string())?;
 
     Ok(())
 }
