@@ -7,8 +7,26 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   </head>
   <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div id="navbar-home" class="navbar-menu">
+        <div class="navbar-start">
+          <a href="/" class="navbar-item">
+            Home
+          </a>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+          <a class="navbar-item" href="/about">
+            About
+          </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
     <section class="section">
       <div class="container">
+
       {{> page}}
       </div>
     </section>
