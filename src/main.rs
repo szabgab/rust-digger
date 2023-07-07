@@ -76,6 +76,7 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     let mut reg = Handlebars::new();
     reg.register_template_file("about", "templates/about.html")?;
     reg.register_template_file("index", "templates/index.html")?;
+    reg.register_template_file("stats", "templates/stats.html")?;
     reg.register_template_file("layout", "templates/layout.html")?;
 
     // Create a folder _site
@@ -99,6 +100,12 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     }))?;
 
     render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
+
+    render(&reg, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
+        "total": rows.len(),
+        "no_repo": no_repo.len(),
+        "no_repo_percentage": 100*no_repo.len()/rows.len(),
+        }))?;
 
     Ok(())
 }
