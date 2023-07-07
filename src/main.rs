@@ -36,7 +36,7 @@ fn main() {
     match result {
         Ok(mut rows) => {
             rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
-            match generate_pages(rows) {
+            match generate_pages(&rows) {
                 Ok(_) => {},
                 Err(err) => panic!("Error: {}", err)
             }
@@ -46,6 +46,7 @@ fn main() {
 
     log::info!("Ending the Rust Digger");
 }
+
 fn render(reg: &Handlebars, template: &String, filename: &String, title: &String, params: &Value) -> Result<(), Box<dyn Error>> {
     log::info!("render {filename}");
 
@@ -66,7 +67,11 @@ fn render(reg: &Handlebars, template: &String, filename: &String, title: &String
     Ok(())
 }
 
-fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
+fn has_repo(w: &Record) -> bool {
+    w["repository"] == ""
+}
+
+fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
     let mut reg = Handlebars::new();
     reg.register_template_file("about", "templates/about.html")?;
@@ -76,12 +81,21 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
 
-    const PAGE_SIZE: usize = 100;
-    let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
+    let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
+    //dbg!(&no_repo[0..1]);
 
+    const PAGE_SIZE: usize = 100;
+
+    let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
     render(&reg, &"index".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(), &json!({
         "total": rows.len(),
         "rows": &rows[0..page_size],
+    }))?;
+
+    let page_size = if no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { no_repo.len() };
+    render(&reg, &"index".to_string(), &"_site/no-repo.html".to_string(), &"Missing repository".to_string(), &json!({
+        "total": no_repo.len(),
+        "rows": &no_repo[0..page_size],
     }))?;
 
     render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
