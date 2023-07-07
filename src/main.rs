@@ -47,6 +47,8 @@ fn main() {
     log::info!("Ending the Rust Digger");
 }
 fn render(reg: &Handlebars, template: &String, filename: &String, title: &String, params: &Value) -> Result<(), Box<dyn Error>> {
+    log::info!("render {filename}");
+
     let utc: DateTime<Utc> = Utc::now();
     let mut data = params.clone();
     data["version"] = json!(format!("{VERSION}"));
@@ -65,6 +67,7 @@ fn render(reg: &Handlebars, template: &String, filename: &String, title: &String
 }
 
 fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_pages");
     let mut reg = Handlebars::new();
     reg.register_template_file("about", "templates/about.html")?;
     reg.register_template_file("index", "templates/index.html")?;
