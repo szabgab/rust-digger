@@ -1,12 +1,15 @@
 {{#*inline "page"}}
       <h1>Rust Digger</h1>
         Total:  {{total}}
-        <table>
+        <table class="table">
+          <thead>
           <tr>
            <th>name</th>
            <th>update at</th>
            <th>repo</th>
           </tr>
+          </thead>
+        <tbody>
         {{#each rows as |row|}}
           <tr>
             {{#if row.homepage}}
@@ -22,7 +25,8 @@
             {{/if}}
           </tr>
         {{/each}}
-        </td>
+        </tbody>
+        </table>
 
       <hr>
       Version {{version}} generated at {{utc}}
