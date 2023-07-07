@@ -85,6 +85,21 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
+    let mut repo_type = HashMap::from([
+        ("GitHub", 0),
+        ("GitLab", 0),
+        ("other", 0),
+    ]);
+    for row in rows {
+        if row["repository"] == "" {
+            continue;
+        }
+        if row["repository"].starts_with("https://github.com/") {
+            *repo_type.entry("Github").or_insert(0) += 1;
+            continue;
+        }
+    }
+
     const PAGE_SIZE: usize = 100;
 
     let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
