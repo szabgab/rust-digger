@@ -2,7 +2,7 @@ use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::io::Read;
+//use std::io::Read;
 use std::collections::HashMap;
 
 use chrono::prelude::*;
@@ -23,7 +23,10 @@ fn main() {
     match result {
         Ok(mut rows) => {
             rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
-            generate_pages(rows);
+            match generate_pages(rows) {
+                Ok(_) => {},
+                Err(err) => panic!("Error: {}", err)
+            }
         },
         Err(err) => panic!("Error: {}", err)
     }
@@ -31,21 +34,11 @@ fn main() {
     println!("Ending the Rust Digger");
 }
 
-fn generate_pages(rows :Vec<Record>) {
-    let reg = Handlebars::new();
+fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
+    let mut reg = Handlebars::new();
+    reg.register_template_file("template", "templates/index.html")?;
 
     let utc: DateTime<Utc> = Utc::now();
-
-    let template_file = "templates/index.html";
-    let mut template = String::new();
-    match File::open(template_file) {
-        Ok(mut file) => {
-            file.read_to_string(&mut template).unwrap();
-        },
-        Err(error) => {
-            println!("Error opening file {}: {}", template_file, error);
-        },
-    }
 
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
@@ -59,7 +52,7 @@ fn generate_pages(rows :Vec<Record>) {
     //}
 
     //println!("{VERSION}");
-    let res = reg.render_template(&template, &json!({
+    let res = reg.render("template", &json!({
         "version": format!("{VERSION}"),
         "utc": format!("{}", utc),
         "total": rows.len(),
@@ -69,6 +62,8 @@ fn generate_pages(rows :Vec<Record>) {
         Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
         Err(error) => println!("{}", error)
     }
+
+    Ok(())
 }
 
 
