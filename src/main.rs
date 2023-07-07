@@ -21,7 +21,8 @@ fn main() {
     let result = read_csv_file(filepath);
     println!("Finished reading CSV");
     match result {
-        Ok(rows) => {
+        Ok(mut rows) => {
+            rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
             generate_pages(rows);
         },
         Err(err) => panic!("Error: {}", err)
