@@ -57,6 +57,7 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
         "utc": format!("{}", utc),
         "total": rows.len(),
         "rows": &rows[0..100],
+        "title": "Rust Digger",
         "parent": "layout",
     }));
     match res {
