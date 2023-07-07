@@ -36,8 +36,8 @@ fn main() {
 
 fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     let mut reg = Handlebars::new();
-    reg.register_template_file("template", "templates/index.html")?;
-
+    reg.register_template_file("index", "templates/index.html")?;
+    reg.register_template_file("layout", "templates/layout.html")?;
     let utc: DateTime<Utc> = Utc::now();
 
     // Create a folder _site
@@ -52,11 +52,12 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     //}
 
     //println!("{VERSION}");
-    let res = reg.render("template", &json!({
+    let res = reg.render("index", &json!({
         "version": format!("{VERSION}"),
         "utc": format!("{}", utc),
         "total": rows.len(),
         "rows": &rows[0..100],
+        "parent": "layout",
     }));
     match res {
         Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
