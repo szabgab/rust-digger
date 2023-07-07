@@ -98,7 +98,7 @@ fn read_csv_file(filepath: &str, limit: i32) -> Result<Vec<Record>, Box<dyn Erro
             for result in rdr.deserialize() {
                 count += 1;
                 if limit > 0 && count >= limit {
-                    println!("Limit of {limit} reached");
+                    log::info!("Limit of {limit} reached");
                     break
                 }
                 let record: Record = result?;
