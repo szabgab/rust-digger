@@ -15,7 +15,8 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 type Record = HashMap<String, String>;
 
 fn main() {
-    println!("Starting the Rust Digger");
+    simple_logger::init_with_level(log::Level::Info).unwrap();
+    log::info!("Starting the Rust Digger");
 
     let args: Vec<String> = env::args().collect();
     let limit;
@@ -24,12 +25,12 @@ fn main() {
     } else {
         limit = 0;
     }
-    println!("Limit {limit}");
+    log::info!("Limit {limit}");
 
     let filepath = "data/data/crates.csv";
-    //println!("{}", filepath);
+    //log::info!("{}", filepath);
     let result = read_csv_file(filepath, limit);
-    println!("Finished reading CSV");
+    log::info!("Finished reading CSV");
     match result {
         Ok(mut rows) => {
             rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
@@ -41,7 +42,7 @@ fn main() {
         Err(err) => panic!("Error: {}", err)
     }
 
-    println!("Ending the Rust Digger");
+    log::info!("Ending the Rust Digger");
 }
 
 fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
@@ -62,7 +63,7 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     //    println!("{}", row);
     //}
 
-    //println!("{VERSION}");
+    //log::info!("{VERSION}");
     const PAGE_SIZE: usize = 100;
     let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
     let res = reg.render("index", &json!({
