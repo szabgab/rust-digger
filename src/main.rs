@@ -9,6 +9,7 @@ use std::collections::HashMap;
 use chrono::prelude::*;
 use handlebars::Handlebars;
 use serde_json::json;
+use serde_json::Value;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -17,6 +18,7 @@ type Record = HashMap<String, String>;
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
     log::info!("Starting the Rust Digger");
+    log::info!("{VERSION}");
 
     let args: Vec<String> = env::args().collect();
     let limit;
@@ -44,16 +46,17 @@ fn main() {
 
     log::info!("Ending the Rust Digger");
 }
-fn render(reg: &Handlebars, template: &String, filename: &String, title: &String) -> Result<(), Box<dyn Error>> {
-    let mut file = File::create(filename).unwrap();
-
+fn render(reg: &Handlebars, template: &String, filename: &String, title: &String, params: &Value) -> Result<(), Box<dyn Error>> {
     let utc: DateTime<Utc> = Utc::now();
-    let res = reg.render(template, &json!({
-        "version": format!("{VERSION}"),
-        "utc": format!("{}", utc),
-        "title": title,
-        "parent": "layout",
-    }));
+    let mut data = params.clone();
+    data["version"] = json!(format!("{VERSION}"));
+    data["utc"]     = json!(format!("{}", utc));
+    data["title"]   = json!(title);
+    data["parent"]  = json!("layout");
+
+    let res = reg.render(template, &data);
+
+    let mut file = File::create(filename).unwrap();
     match res {
         Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
         Err(error) => println!("{}", error)
@@ -70,32 +73,15 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
 
-    // Create an html page _site/index.html with the title
-    let filename = "_site/index.html";
-    let mut file = File::create(filename).unwrap();
-    //for row in rows {
-    //    println!("{:?}", row);
-    //    println!("{}", row);
-    //}
-
-    let utc: DateTime<Utc> = Utc::now();
-    //log::info!("{VERSION}");
     const PAGE_SIZE: usize = 100;
     let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
-    let res = reg.render("index", &json!({
-        "version": format!("{VERSION}"),
-        "utc": format!("{}", utc),
+
+    render(&reg, &"index".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(), &json!({
         "total": rows.len(),
         "rows": &rows[0..page_size],
-        "title": "Rust Digger",
-        "parent": "layout",
-    }));
-    match res {
-        Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
-        Err(error) => println!("{}", error)
-    }
+    }))?;
 
-    render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string())?;
+    render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
 
     Ok(())
 }
