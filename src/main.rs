@@ -63,11 +63,13 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     //}
 
     //println!("{VERSION}");
+    const PAGE_SIZE: usize = 100;
+    let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
     let res = reg.render("index", &json!({
         "version": format!("{VERSION}"),
         "utc": format!("{}", utc),
         "total": rows.len(),
-        "rows": &rows[0..100],
+        "rows": &rows[0..page_size],
         "title": "Rust Digger",
         "parent": "layout",
     }));
