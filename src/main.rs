@@ -36,6 +36,7 @@ fn main() {
 
 fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
     let mut reg = Handlebars::new();
+    reg.register_template_file("about", "templates/about.html")?;
     reg.register_template_file("index", "templates/index.html")?;
     reg.register_template_file("layout", "templates/layout.html")?;
     let utc: DateTime<Utc> = Utc::now();
@@ -64,6 +65,21 @@ fn generate_pages(rows :Vec<Record>) -> Result<(), Box<dyn Error>> {
         Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
         Err(error) => println!("{}", error)
     }
+
+    let filename = "_site/about.html";
+    let mut file = File::create(filename).unwrap();
+
+    let res = reg.render("about", &json!({
+        "version": format!("{VERSION}"),
+        "utc": format!("{}", utc),
+        "title": "About Rust Digger",
+        "parent": "layout",
+    }));
+    match res {
+        Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
+        Err(error) => println!("{}", error)
+    }
+
 
     Ok(())
 }
