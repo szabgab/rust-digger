@@ -30,9 +30,7 @@ fn main() {
     log::info!("Limit {limit}");
 
     let filepath = "data/data/crates.csv";
-    //log::info!("{}", filepath);
     let result = read_csv_file(filepath, limit);
-    log::info!("Finished reading CSV");
     match result {
         Ok(mut rows) => {
             rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
@@ -157,6 +155,7 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
 
 
 fn read_csv_file(filepath: &str, limit: i32) -> Result<Vec<Record>, Box<dyn Error>> {
+    log::info!("Start reading {}", filepath);
     let mut records:Vec<Record> = vec![];
     let mut count = 0;
     match File::open(filepath.to_string()) {
@@ -177,5 +176,6 @@ fn read_csv_file(filepath: &str, limit: i32) -> Result<Vec<Record>, Box<dyn Erro
         Err(error) => panic!("Error opening file {}: {}", filepath, error),
     }
 
+    log::info!("Finished reading {filepath}");
     Ok(records)
 }
