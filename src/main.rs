@@ -125,8 +125,9 @@ fn generate_user_pages(reg: &Handlebars, users: &HashMap<String, Record>) -> Res
     Ok(())
 }
 
-fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
-    log::info!("generate_pages");
+fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
+    log::info!("load_templates");
+
     let mut reg = Handlebars::new();
     reg.register_template_file("about", "templates/about.html")?;
     reg.register_template_file("index", "templates/index.html")?;
@@ -134,6 +135,17 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
     reg.register_template_file("crate", "templates/crate.html")?;
     reg.register_template_file("user",  "templates/user.html")?;
     reg.register_template_file("layout", "templates/layout.html")?;
+
+    Ok(reg)
+}
+
+fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_pages");
+
+    let reg = match load_templates() {
+        Ok(reg) => reg,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
 
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
