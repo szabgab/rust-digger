@@ -13,18 +13,22 @@
     {{else}}
        <td>NA</td>
     {{/if}}
-    <tr><td>repository</td><td>{{ crate.repository }}</td></tr>
+    {{#if crate.repository}}
+        <tr><td>repository</td><td><a href="{{ crate.repository }}">{{ crate.repository }}</a></td></tr>
+    {{else}}
+       <td>NA</td>
+    {{/if}}
     <tr><td>max_upload_size</td><td>{{ crate.max_upload_size }}</td></tr>
     <tr><td>id</td><td>{{ crate.id }}</td></tr>
   </tbody>
 </table>
 
-<h2>documentation</h2>
+<h2 class="subtitle">documentation</h2>
 <div>
 {{crate.documentation}}
 </div>
 
-<h2>readme</h2>
+<h2 class="subtitle">readme</h2>
 <div>
 {{crate.readme}}
 </div>
