@@ -86,19 +86,26 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     //dbg!(&no_repo[0..1]);
 
     let mut repo_type = HashMap::from([
+        ("no_repo", 0),
         ("GitHub", 0),
         ("GitLab", 0),
         ("other", 0),
     ]);
     for row in rows {
         if row["repository"] == "" {
+            *repo_type.entry("no_repo").or_insert(0) += 1;
             continue;
         }
         if row["repository"].starts_with("https://github.com/") {
-            *repo_type.entry("Github").or_insert(0) += 1;
+            *repo_type.entry("GitHub").or_insert(0) += 1;
             continue;
         }
-    }
+        if row["repository"].starts_with("https://gitlab.com/") {
+            *repo_type.entry("GitLab").or_insert(0) += 1;
+            continue;
+        }
+        *repo_type.entry("other").or_insert(0) += 1;
+     }
 
     const PAGE_SIZE: usize = 100;
 
@@ -116,10 +123,17 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
 
     render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
 
+    *repo_type.entry("GitHub_percentage").or_insert(0) = 100 * repo_type["GitHub"] / rows.len();
+    *repo_type.entry("GitLab_percentage").or_insert(0) = 100 * repo_type["GitLab"] / rows.len();
+    *repo_type.entry("other_percentage").or_insert(0) = 100 * repo_type["other"] / rows.len();
+    *repo_type.entry("no_repo_percentage").or_insert(0) = 100 * repo_type["no_repo"] / rows.len();
+
+    log::info!("{:?}", repo_type);
     render(&reg, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
         "total": rows.len(),
         "no_repo": no_repo.len(),
         "no_repo_percentage": 100*no_repo.len()/rows.len(),
+        "repo_type": repo_type,
         }))?;
 
     Ok(())
