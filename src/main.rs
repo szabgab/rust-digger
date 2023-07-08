@@ -109,10 +109,12 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     reg.register_template_file("about", "templates/about.html")?;
     reg.register_template_file("index", "templates/index.html")?;
     reg.register_template_file("stats", "templates/stats.html")?;
+    reg.register_template_file("crate", "templates/crate.html")?;
     reg.register_template_file("layout", "templates/layout.html")?;
 
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
+    let _res = fs::create_dir_all("_site/crates");
 
     let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
@@ -149,6 +151,12 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
         "no_repo_percentage": 100*no_repo.len()/rows.len(),
         "repo_type": repo_type,
         }))?;
+
+    for row in rows {
+        render(&reg, &"crate".to_string(), &format!("_site/crates/{}.html", row["name"]), &row["name"], &json!({
+            "crate": row,
+            }))?;
+    }
 
     Ok(())
 }

@@ -12,11 +12,7 @@
         <tbody>
         {{#each rows as |row|}}
           <tr>
-            {{#if row.homepage}}
-              <td><a href="{{row.homepage}}">{{row.name}}</a></td>
-            {{else}}
-              <td>{{row.name}}</td>
-            {{/if}}
+            <td><a href="/crates/{{row.name}}">{{row.name}}</a></td>
             <td>{{row.updated_at}}</td>
             {{#if row.repository}}
               <td><a href="{{row.repository}}">repo</a></td>
