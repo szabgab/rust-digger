@@ -1,0 +1,13 @@
+{{#*inline "page"}}
+      <h1 class="title">{{title}}</h1>
+
+<img src={{user.gh_avatar}}>
+
+<table class="table">
+  <tbody>
+    <tr><td>name</td><td><a href="https://crates.io/users/{{user.gh_login}}">{{ user.name }}</a></td></tr>
+  </tbody>
+</table>
+
+{{/inline}}
+{{> (lookup this "parent")}}

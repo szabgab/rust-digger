@@ -29,11 +29,25 @@ fn main() {
     }
     log::info!("Limit {limit}");
 
+    let mut users: HashMap<String, Record> = HashMap::new();
+    let result = read_csv_file("data/data/users.csv", limit);
+    match result {
+        Ok(rows) => {
+            for row in rows {
+                //dbg!(&row);
+                //dbg!(&row["id"]);
+                users.insert(row["id"].clone(), row);
+            }
+        }
+        Err(err) => panic!("Error: {}", err)
+    }
+    //dbg!(users);
+
     let result = read_csv_file("data/data/crates.csv", limit);
     match result {
         Ok(mut rows) => {
             rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
-            match generate_pages(&rows) {
+            match generate_pages(&rows, &users) {
                 Ok(_) => {},
                 Err(err) => panic!("Error: {}", err)
             }
@@ -101,19 +115,30 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
      (repo_type, other)
 }
 
+fn generate_user_pages(reg: &Handlebars, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
+    for (_uid, user) in users.iter() {
+        render(&reg, &"user".to_string(), &format!("_site/users/{}.html", user["gh_login"].to_ascii_lowercase()), &user["name"], &json!({
+            "user": user,
+            }))?;
+    }
 
-fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
+    Ok(())
+}
+
+fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
     let mut reg = Handlebars::new();
     reg.register_template_file("about", "templates/about.html")?;
     reg.register_template_file("index", "templates/index.html")?;
     reg.register_template_file("stats", "templates/stats.html")?;
     reg.register_template_file("crate", "templates/crate.html")?;
+    reg.register_template_file("user",  "templates/user.html")?;
     reg.register_template_file("layout", "templates/layout.html")?;
 
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
     let _res = fs::create_dir_all("_site/crates");
+    let _res = fs::create_dir_all("_site/users");
 
     let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
@@ -156,6 +181,8 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
             "crate": row,
             }))?;
     }
+
+    generate_user_pages(&reg, &users)?;
 
     Ok(())
 }
