@@ -71,7 +71,8 @@ fn has_repo(w: &Record) -> bool {
     w["repository"] == ""
 }
 
-fn get_repo_types(rows: &Vec<Record>) -> HashMap<&str, usize> {
+fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
+    let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
         ("GitHub", 0),
@@ -92,6 +93,7 @@ fn get_repo_types(rows: &Vec<Record>) -> HashMap<&str, usize> {
             continue;
         }
         *repo_type.entry("other").or_insert(0) += 1;
+        other.push(row);
     }
 
     *repo_type.entry("GitHub_percentage").or_insert(0) = 100 * repo_type["GitHub"] / rows.len();
@@ -99,7 +101,7 @@ fn get_repo_types(rows: &Vec<Record>) -> HashMap<&str, usize> {
     *repo_type.entry("other_percentage").or_insert(0) = 100 * repo_type["other"] / rows.len();
     *repo_type.entry("no_repo_percentage").or_insert(0) = 100 * repo_type["no_repo"] / rows.len();
 
-     repo_type
+     (repo_type, other)
 }
 
 
@@ -117,7 +119,7 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
-    let repo_type:HashMap<&str, usize> = get_repo_types(&rows);
+    let (repo_type, other_repos): (HashMap<&str, usize>, Vec<&Record>) = get_repo_types(&rows);
 
     const PAGE_SIZE: usize = 100;
 
@@ -132,6 +134,13 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
         "total": no_repo.len(),
         "rows": &no_repo[0..page_size],
     }))?;
+
+    let page_size = if other_repos.len() > PAGE_SIZE { PAGE_SIZE } else { other_repos.len() };
+    render(&reg, &"index".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(), &json!({
+        "total": other_repos.len(),
+        "rows": &other_repos[0..page_size],
+    }))?;
+
 
     render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
 
