@@ -85,7 +85,7 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
-    let mut repo_type = HashMap::from([
+    let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
         ("GitHub", 0),
         ("GitLab", 0),
