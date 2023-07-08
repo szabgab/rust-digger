@@ -125,6 +125,16 @@ fn generate_user_pages(reg: &Handlebars, users: &HashMap<String, Record>) -> Res
     Ok(())
 }
 
+fn generate_crate_pages(reg: &Handlebars, rows: &Vec<Record>) -> Result<(), Box<dyn Error>> {
+    for row in rows {
+        render(&reg, &"crate".to_string(), &format!("_site/crates/{}.html", row["name"]), &row["name"], &json!({
+            "crate": row,
+            }))?;
+    }
+    Ok(())
+}
+
+
 fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
     log::info!("load_templates");
 
@@ -188,11 +198,7 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
         "repo_type": repo_type,
         }))?;
 
-    for row in rows {
-        render(&reg, &"crate".to_string(), &format!("_site/crates/{}.html", row["name"]), &row["name"], &json!({
-            "crate": row,
-            }))?;
-    }
+    generate_crate_pages(&reg, &rows)?;
 
     generate_user_pages(&reg, &users)?;
 
