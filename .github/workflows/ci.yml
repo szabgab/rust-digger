@@ -23,26 +23,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
+#      - name: Setup Pages
+#        uses: actions/configure-pages@v2
 
-#      - name: Download data
-#        if: ${{ github.event_name != 'pull_request' }}
-#        run: |
-#          ./download.sh
-#
-#      - name: Compile application
-#        if: ${{ github.event_name != 'pull_request' }}
-#        run: |
-#            rustc --version
-#            cargo --version
-#            cargo build
-#
-#      - name: Create pages
-#        if: ${{ github.event_name != 'pull_request' }}
-#        run: |
-#            cargo run
-#
+      - name: Download data
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          ./download.sh
+
+      - name: Compile application
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+            rustc --version
+            cargo --version
+            cargo build
+
+      - name: Create pages
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+            cargo run
+
 #      - name: Show results
 #        if: ${{ github.event_name != 'pull_request' }}
 #        run: |
