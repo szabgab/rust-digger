@@ -71,20 +71,7 @@ fn has_repo(w: &Record) -> bool {
     w["repository"] == ""
 }
 
-fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
-    log::info!("generate_pages");
-    let mut reg = Handlebars::new();
-    reg.register_template_file("about", "templates/about.html")?;
-    reg.register_template_file("index", "templates/index.html")?;
-    reg.register_template_file("stats", "templates/stats.html")?;
-    reg.register_template_file("layout", "templates/layout.html")?;
-
-    // Create a folder _site
-    let _res = fs::create_dir_all("_site");
-
-    let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
-    //dbg!(&no_repo[0..1]);
-
+fn get_repo_types(rows: &Vec<Record>) -> HashMap<&str, usize> {
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
         ("GitHub", 0),
@@ -105,7 +92,32 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
             continue;
         }
         *repo_type.entry("other").or_insert(0) += 1;
-     }
+    }
+
+    *repo_type.entry("GitHub_percentage").or_insert(0) = 100 * repo_type["GitHub"] / rows.len();
+    *repo_type.entry("GitLab_percentage").or_insert(0) = 100 * repo_type["GitLab"] / rows.len();
+    *repo_type.entry("other_percentage").or_insert(0) = 100 * repo_type["other"] / rows.len();
+    *repo_type.entry("no_repo_percentage").or_insert(0) = 100 * repo_type["no_repo"] / rows.len();
+
+     repo_type
+}
+
+
+fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_pages");
+    let mut reg = Handlebars::new();
+    reg.register_template_file("about", "templates/about.html")?;
+    reg.register_template_file("index", "templates/index.html")?;
+    reg.register_template_file("stats", "templates/stats.html")?;
+    reg.register_template_file("layout", "templates/layout.html")?;
+
+    // Create a folder _site
+    let _res = fs::create_dir_all("_site");
+
+    let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
+    //dbg!(&no_repo[0..1]);
+
+    let repo_type:HashMap<&str, usize> = get_repo_types(&rows);
 
     const PAGE_SIZE: usize = 100;
 
@@ -122,11 +134,6 @@ fn generate_pages(rows :&Vec<Record>) -> Result<(), Box<dyn Error>> {
     }))?;
 
     render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
-
-    *repo_type.entry("GitHub_percentage").or_insert(0) = 100 * repo_type["GitHub"] / rows.len();
-    *repo_type.entry("GitLab_percentage").or_insert(0) = 100 * repo_type["GitLab"] / rows.len();
-    *repo_type.entry("other_percentage").or_insert(0) = 100 * repo_type["other"] / rows.len();
-    *repo_type.entry("no_repo_percentage").or_insert(0) = 100 * repo_type["no_repo"] / rows.len();
 
     log::info!("{:?}", repo_type);
     render(&reg, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
