@@ -115,9 +115,9 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
      (repo_type, other)
 }
 
-fn generate_user_pages(reg: &Handlebars, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
+fn generate_user_pages(handlebar: &Handlebars, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
     for (_uid, user) in users.iter() {
-        render(&reg, &"user".to_string(), &format!("_site/users/{}.html", user["gh_login"].to_ascii_lowercase()), &user["name"], &json!({
+        render(&handlebar, &"user".to_string(), &format!("_site/users/{}.html", user["gh_login"].to_ascii_lowercase()), &user["name"], &json!({
             "user": user,
             }))?;
     }
@@ -125,9 +125,9 @@ fn generate_user_pages(reg: &Handlebars, users: &HashMap<String, Record>) -> Res
     Ok(())
 }
 
-fn generate_crate_pages(reg: &Handlebars, rows: &Vec<Record>) -> Result<(), Box<dyn Error>> {
+fn generate_crate_pages(handlebar: &Handlebars, rows: &Vec<Record>) -> Result<(), Box<dyn Error>> {
     for row in rows {
-        render(&reg, &"crate".to_string(), &format!("_site/crates/{}.html", row["name"]), &row["name"], &json!({
+        render(&handlebar, &"crate".to_string(), &format!("_site/crates/{}.html", row["name"]), &row["name"], &json!({
             "crate": row,
             }))?;
     }
@@ -138,22 +138,22 @@ fn generate_crate_pages(reg: &Handlebars, rows: &Vec<Record>) -> Result<(), Box<
 fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
     log::info!("load_templates");
 
-    let mut reg = Handlebars::new();
-    reg.register_template_file("about", "templates/about.html")?;
-    reg.register_template_file("index", "templates/index.html")?;
-    reg.register_template_file("stats", "templates/stats.html")?;
-    reg.register_template_file("crate", "templates/crate.html")?;
-    reg.register_template_file("user",  "templates/user.html")?;
-    reg.register_template_file("layout", "templates/layout.html")?;
+    let mut handlebar = Handlebars::new();
+    handlebar.register_template_file("about", "templates/about.html")?;
+    handlebar.register_template_file("index", "templates/index.html")?;
+    handlebar.register_template_file("stats", "templates/stats.html")?;
+    handlebar.register_template_file("crate", "templates/crate.html")?;
+    handlebar.register_template_file("user",  "templates/user.html")?;
+    handlebar.register_template_file("layout", "templates/layout.html")?;
 
-    Ok(reg)
+    Ok(handlebar)
 }
 
 fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
-    let reg = match load_templates() {
-        Ok(reg) => reg,
+    let handlebar = match load_templates() {
+        Ok(handlebar) => handlebar,
         Err(error) => panic!("Error loading templates {}", error),
     };
 
@@ -170,37 +170,37 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
     const PAGE_SIZE: usize = 100;
 
     let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
-    render(&reg, &"index".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(), &json!({
+    render(&handlebar, &"index".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(), &json!({
         "total": rows.len(),
         "rows": &rows[0..page_size],
     }))?;
 
     let page_size = if no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { no_repo.len() };
-    render(&reg, &"index".to_string(), &"_site/no-repo.html".to_string(), &"Missing repository".to_string(), &json!({
+    render(&handlebar, &"index".to_string(), &"_site/no-repo.html".to_string(), &"Missing repository".to_string(), &json!({
         "total": no_repo.len(),
         "rows": &no_repo[0..page_size],
     }))?;
 
     let page_size = if other_repos.len() > PAGE_SIZE { PAGE_SIZE } else { other_repos.len() };
-    render(&reg, &"index".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(), &json!({
+    render(&handlebar, &"index".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(), &json!({
         "total": other_repos.len(),
         "rows": &other_repos[0..page_size],
     }))?;
 
 
-    render(&reg, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
+    render(&handlebar, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
 
     log::info!("{:?}", repo_type);
-    render(&reg, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
+    render(&handlebar, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
         "total": rows.len(),
         "no_repo": no_repo.len(),
         "no_repo_percentage": 100*no_repo.len()/rows.len(),
         "repo_type": repo_type,
         }))?;
 
-    generate_crate_pages(&reg, &rows)?;
+    generate_crate_pages(&handlebar, &rows)?;
 
-    generate_user_pages(&reg, &users)?;
+    generate_user_pages(&handlebar, &users)?;
 
     Ok(())
 }
