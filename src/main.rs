@@ -29,8 +29,7 @@ fn main() {
     }
     log::info!("Limit {limit}");
 
-    let filepath = "data/data/crates.csv";
-    let result = read_csv_file(filepath, limit);
+    let result = read_csv_file("data/data/crates.csv", limit);
     match result {
         Ok(mut rows) => {
             rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
