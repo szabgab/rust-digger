@@ -59,7 +59,7 @@ fn main() {
 }
 
 fn render(reg: &Handlebars, template: &String, filename: &String, title: &String, params: &Value) -> Result<(), Box<dyn Error>> {
-    log::info!("render {filename}");
+    // log::info!("render {filename}");
 
     let utc: DateTime<Utc> = Utc::now();
     let mut data = params.clone();
