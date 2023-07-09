@@ -26,11 +26,6 @@ jobs:
 #      - name: Setup Pages
 #        uses: actions/configure-pages@v2
 
-      - name: Download data
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-          ./download.sh
-
       - name: Compile application
         if: ${{ github.event_name != 'pull_request' }}
         run: |
@@ -38,6 +33,11 @@ jobs:
             cargo --version
             cargo build
             cargo test
+
+      - name: Download data
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          ./download.sh
 
       - name: Create pages
         if: ${{ github.event_name != 'pull_request' }}
