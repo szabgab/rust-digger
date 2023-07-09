@@ -140,7 +140,7 @@ fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
 
     let mut handlebar = Handlebars::new();
     handlebar.register_template_file("about", "templates/about.html")?;
-    handlebar.register_template_file("index", "templates/index.html")?;
+    handlebar.register_template_file("list",  "templates/list.html")?;
     handlebar.register_template_file("stats", "templates/stats.html")?;
     handlebar.register_template_file("crate", "templates/crate.html")?;
     handlebar.register_template_file("user",  "templates/user.html")?;
@@ -170,19 +170,19 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
     const PAGE_SIZE: usize = 100;
 
     let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
-    render(&handlebar, &"index".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(), &json!({
+    render(&handlebar, &"list".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(), &json!({
         "total": rows.len(),
         "rows": &rows[0..page_size],
     }))?;
 
     let page_size = if no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { no_repo.len() };
-    render(&handlebar, &"index".to_string(), &"_site/no-repo.html".to_string(), &"Missing repository".to_string(), &json!({
+    render(&handlebar, &"list".to_string(), &"_site/no-repo.html".to_string(), &"Missing repository".to_string(), &json!({
         "total": no_repo.len(),
         "rows": &no_repo[0..page_size],
     }))?;
 
     let page_size = if other_repos.len() > PAGE_SIZE { PAGE_SIZE } else { other_repos.len() };
-    render(&handlebar, &"index".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(), &json!({
+    render(&handlebar, &"list".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(), &json!({
         "total": other_repos.len(),
         "rows": &other_repos[0..page_size],
     }))?;
