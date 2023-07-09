@@ -231,3 +231,17 @@ fn read_csv_file(filepath: &str, limit: i32) -> Result<Vec<Record>, Box<dyn Erro
     log::info!("Finished reading {filepath}");
     Ok(records)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_has_repo() {
+        let x: Record = HashMap::from([("repository".to_string(), "https://github.com/szabgab/rust-digger".to_string())]);
+        assert!(!has_repo(&x));
+
+        let x: Record = HashMap::from([("repository".to_string(), "".to_string())]);
+        assert!(has_repo(&x));
+    }
+}

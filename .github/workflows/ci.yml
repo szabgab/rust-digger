@@ -37,6 +37,7 @@ jobs:
             rustc --version
             cargo --version
             cargo build
+            cargo test
 
       - name: Create pages
         if: ${{ github.event_name != 'pull_request' }}
