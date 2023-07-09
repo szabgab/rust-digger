@@ -79,7 +79,7 @@ fn render(reg: &Handlebars, template: &String, filename: &String, title: &String
 }
 
 fn has_repo(w: &Record) -> bool {
-    w["repository"] == ""
+    w["repository"] != ""
 }
 
 fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
@@ -162,7 +162,7 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
     let _res = fs::create_dir_all("_site/crates");
     let _res = fs::create_dir_all("_site/users");
 
-    let no_repo = rows.into_iter().filter(|w| has_repo(w)).collect::<Vec<&Record>>();
+    let no_repo = rows.into_iter().filter(|w| !has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
     let (repo_type, other_repos): (HashMap<&str, usize>, Vec<&Record>) = get_repo_types(&rows);
@@ -239,9 +239,9 @@ mod tests {
     #[test]
     fn test_has_repo() {
         let x: Record = HashMap::from([("repository".to_string(), "https://github.com/szabgab/rust-digger".to_string())]);
-        assert!(!has_repo(&x));
+        assert!(has_repo(&x));
 
         let x: Record = HashMap::from([("repository".to_string(), "".to_string())]);
-        assert!(has_repo(&x));
+        assert!(!has_repo(&x));
     }
 }
