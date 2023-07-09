@@ -81,6 +81,9 @@ fn render(reg: &Handlebars, template: &String, filename: &String, title: &String
 fn has_repo(w: &Record) -> bool {
     w["repository"] != ""
 }
+fn has_homepage_no_repo(w: &Record) -> bool {
+    w["homepage"] != "" && w["repository"] == ""
+}
 
 fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
@@ -162,6 +165,7 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
     let _res = fs::create_dir_all("_site/crates");
     let _res = fs::create_dir_all("_site/users");
 
+    let home_page_but_no_repo = rows.into_iter().filter(|w| has_homepage_no_repo(w)).collect::<Vec<&Record>>();
     let no_repo = rows.into_iter().filter(|w| !has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
@@ -181,6 +185,14 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
         "rows": &no_repo[0..page_size],
     }))?;
 
+
+    let page_size = if home_page_but_no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { home_page_but_no_repo.len() };
+    render(&handlebar, &"list".to_string(), &"_site/has-homepage-but-no-repo.html".to_string(), &"Missing repository".to_string(), &json!({
+        "total": home_page_but_no_repo.len(),
+        "rows": &home_page_but_no_repo[0..page_size],
+    }))?;
+
+
     let page_size = if other_repos.len() > PAGE_SIZE { PAGE_SIZE } else { other_repos.len() };
     render(&handlebar, &"list".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(), &json!({
         "total": other_repos.len(),
@@ -196,6 +208,8 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
         "no_repo": no_repo.len(),
         "no_repo_percentage": 100*no_repo.len()/rows.len(),
         "repo_type": repo_type,
+        "home_page_but_no_repo": home_page_but_no_repo.len(),
+        "home_page_but_no_repo_percentage":  100*home_page_but_no_repo.len()/rows.len(),
         }))?;
 
     generate_crate_pages(&handlebar, &rows)?;
