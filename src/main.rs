@@ -105,6 +105,7 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
         ("no_repo", 0),
         ("GitHub", 0),
         ("GitLab", 0),
+        ("codeberg", 0),
         ("other", 0),
     ]);
     for row in rows {
@@ -120,12 +121,17 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
             *repo_type.entry("GitLab").or_insert(0) += 1;
             continue;
         }
+        if row["repository"].starts_with("https://codeberg.org/") {
+            *repo_type.entry("codeberg").or_insert(0) += 1;
+            continue;
+        }
         *repo_type.entry("other").or_insert(0) += 1;
         other.push(row);
     }
 
     *repo_type.entry("GitHub_percentage").or_insert(0) = 100 * repo_type["GitHub"] / rows.len();
     *repo_type.entry("GitLab_percentage").or_insert(0) = 100 * repo_type["GitLab"] / rows.len();
+    *repo_type.entry("codeberg_percentage").or_insert(0) = 100 * repo_type["codeberg"] / rows.len();
     *repo_type.entry("other_percentage").or_insert(0) = 100 * repo_type["other"] / rows.len();
     *repo_type.entry("no_repo_percentage").or_insert(0) = 100 * repo_type["no_repo"] / rows.len();
 
