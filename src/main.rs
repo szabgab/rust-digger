@@ -29,6 +29,20 @@ fn main() {
     }
     log::info!("Limit {limit}");
 
+    //crate_id,created_at,created_by,owner_id,owner_kind
+    let mut owner_by_crate_id: HashMap<String, String> = HashMap::new();
+    let mut crates_by_owner: HashMap<String, Vec<String>> = HashMap::new();
+    let result = read_csv_file("data/data/crate_owners.csv", limit);
+    match result {
+        Ok(rows) => {
+            for row in rows {
+                owner_by_crate_id.insert(row["crate_id"].clone(), row["owner_id"].clone());
+                crates_by_owner.entry(row["owner_id"].clone()).or_insert(vec![]);
+            }
+        },
+        Err(err) => panic!("Error: {}", err),
+    };
+
     let mut users: HashMap<String, Record> = HashMap::new();
     let result = read_csv_file("data/data/users.csv", limit);
     match result {
@@ -47,7 +61,7 @@ fn main() {
     match result {
         Ok(mut rows) => {
             rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
-            match generate_pages(&rows, &users) {
+            match generate_pages(&rows, &users, &owner_by_crate_id, &crates_by_owner) {
                 Ok(_) => {},
                 Err(err) => panic!("Error: {}", err)
             }
@@ -128,10 +142,44 @@ fn generate_user_pages(handlebar: &Handlebars, users: &HashMap<String, Record>) 
     Ok(())
 }
 
-fn generate_crate_pages(handlebar: &Handlebars, rows: &Vec<Record>) -> Result<(), Box<dyn Error>> {
+fn generate_crate_pages(
+    handlebar: &Handlebars,
+    rows: &Vec<Record>,
+    users: &HashMap<String, Record>,
+    owner_by_crate_id: &HashMap<String, String>,
+    ) -> Result<(), Box<dyn Error>> {
     for row in rows {
+        //dbg!(row);
+        let crate_id = &row["id"];
+        //dbg!(crate_id);
+        let mut user: &Record = &HashMap::new();
+        match owner_by_crate_id.get(crate_id) {
+            Some(owner_id) => {
+                //println!("owner_id: {owner_id}");
+                match users.get(owner_id) {
+                    Some(val) => {
+                        user = val;
+                        //println!("user: {:?}", user);
+                    },
+                    None => {
+                        log::warn!("crate {crate_id} owner_id {owner_id} does not have a user");
+                    },
+                }
+            },
+            None => {
+                log::warn!("crate {crate_id} does not have an owner");
+            },
+        };
+        //let owner_id = &owner_by_crate_id[crate_id];
+        //if owner_id != None {
+        //    //dbg!(&owner_id);
+        //    //dbg!(owner_id);
+        //    //let user = &users[owner_id];
+        //}
+        //dbg!(user);
         render(&handlebar, &"crate".to_string(), &format!("_site/crates/{}.html", row["name"]), &row["name"], &json!({
             "crate": row,
+            "user": user,
             }))?;
     }
     Ok(())
@@ -152,7 +200,12 @@ fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
     Ok(handlebar)
 }
 
-fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
+fn generate_pages(
+    rows :&Vec<Record>,
+    users: &HashMap<String, Record>,
+    owner_by_crate_id: &HashMap<String, String>,
+    crates_by_owner: &HashMap<String, Vec<String>>
+    ) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
     let handlebar = match load_templates() {
@@ -212,7 +265,7 @@ fn generate_pages(rows :&Vec<Record>, users: &HashMap<String, Record>) -> Result
         "home_page_but_no_repo_percentage":  100*home_page_but_no_repo.len()/rows.len(),
         }))?;
 
-    generate_crate_pages(&handlebar, &rows)?;
+    generate_crate_pages(&handlebar, &rows, &users, &owner_by_crate_id)?;
 
     generate_user_pages(&handlebar, &users)?;
 
