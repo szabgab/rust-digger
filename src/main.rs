@@ -105,6 +105,7 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
         ("github", "https://github.com/"),
         ("gitlab", "https://gitlab.com/"),
         ("codeberg", "https://codeberg.org/"),
+        ("torproject", "https://gitlab.torproject.org"),
     ]);
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
@@ -132,6 +133,7 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
     *repo_type.entry("github_percentage").or_insert(0) = 100 * repo_type["github"] / rows.len();
     *repo_type.entry("gitlab_percentage").or_insert(0) = 100 * repo_type["gitlab"] / rows.len();
     *repo_type.entry("codeberg_percentage").or_insert(0) = 100 * repo_type["codeberg"] / rows.len();
+    *repo_type.entry("torproject_percentage").or_insert(0) = 100 * repo_type["torproject"] / rows.len();
     *repo_type.entry("other_percentage").or_insert(0) = 100 * repo_type["other"] / rows.len();
     *repo_type.entry("no_repo_percentage").or_insert(0) = 100 * repo_type["no_repo"] / rows.len();
 
