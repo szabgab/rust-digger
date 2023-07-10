@@ -102,9 +102,10 @@ fn has_homepage_no_repo(w: &Record) -> bool {
     w["homepage"] != "" && w["repository"] == ""
 }
 
+
 fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
-    let repos  = HashMap::from([
+    let repos = vec![
         ("github",       "https://github.com/"),
         ("gitlab",       "https://gitlab.com/"),
         ("codeberg",     "https://codeberg.org/"),
@@ -117,13 +118,13 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, 
         ("openprivacy",  "https://git.openprivacy.ca/"),
         ("cronce",       "https://gitlab.cronce.io/"),
         ("gnome",        "https://gitlab.gnome.org/"),
-    ]);
+    ];
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
         ("other", 0),
     ]);
     let mut repo_percentage:RepoPercentage = HashMap::new();
-    for repo in repos.keys() {
+    for (repo, _) in &repos {
         repo_type.insert(repo, 0);
     }
 
@@ -132,7 +133,7 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, 
             *repo_type.entry("no_repo").or_insert(0) += 1;
             continue;
         }
-        for (name, url) in repos.iter() {
+        for (name, url) in &repos {
             if row["repository"].starts_with(url) {
                 *repo_type.entry(&name).or_insert(0) += 1;
                 continue 'outer;
@@ -142,7 +143,7 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, 
         other.push(row);
     }
 
-    for repo in repos.keys() {
+    for (repo, _) in &repos {
         repo_percentage.insert(repo, percentage(repo_type[repo], rows.len()));
     }
     repo_percentage.insert("other", percentage(repo_type["other"], rows.len()));
