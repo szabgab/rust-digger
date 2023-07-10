@@ -14,6 +14,7 @@ use serde_json::Value;
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 type Record = HashMap<String, String>;
+type RepoPercentage<'a> = HashMap<&'a str, String>;
 
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -99,7 +100,7 @@ fn has_homepage_no_repo(w: &Record) -> bool {
     w["homepage"] != "" && w["repository"] == ""
 }
 
-fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, HashMap<&str, usize>, Vec<&Record>) {
+fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
     let repos  = HashMap::from([
         ("github", "https://github.com/"),
@@ -112,7 +113,7 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, HashMap<&str, us
         ("no_repo", 0),
         ("other", 0),
     ]);
-    let mut repo_percentage:HashMap<&str, usize> = HashMap::new();
+    let mut repo_percentage:RepoPercentage = HashMap::new();
     for repo in repos.keys() {
         repo_type.insert(repo, 0);
     }
@@ -133,13 +134,19 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, HashMap<&str, us
     }
 
     for repo in repos.keys() {
-        repo_percentage.insert(repo, 100 * repo_type[repo] / rows.len());
+        repo_percentage.insert(repo, percentage(repo_type[repo], rows.len()));
     }
-    repo_percentage.insert("other", 100 * repo_type["other"] / rows.len());
-    repo_percentage.insert("no_repo", 100 * repo_type["no_repo"] / rows.len());
+    repo_percentage.insert("other", percentage(repo_type["other"], rows.len()));
+    repo_percentage.insert("no_repo", percentage(repo_type["no_repo"], rows.len()));
 
     (repo_type, repo_percentage, other)
 }
+
+fn percentage(num: usize, total: usize) -> String {
+    let t = (10000 * num / total) as f32;
+    (t / 100.0).to_string()
+}
+
 
 fn generate_user_pages(handlebar: &Handlebars, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
     for (_uid, user) in users.iter() {
@@ -231,7 +238,7 @@ fn generate_pages(
     let no_repo = rows.into_iter().filter(|w| !has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
-    let (repo_type, repo_percentage, other_repos): (HashMap<&str, usize>, HashMap<&str, usize>, Vec<&Record>) = get_repo_types(&rows);
+    let (repo_type, repo_percentage, other_repos): (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) = get_repo_types(&rows);
 
     const PAGE_SIZE: usize = 100;
 
@@ -269,11 +276,11 @@ fn generate_pages(
     render(&handlebar, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
         "total": rows.len(),
         "no_repo": no_repo.len(),
-        "no_repo_percentage": 100*no_repo.len()/rows.len(),
+        "no_repo_percentage": percentage(no_repo.len(), rows.len()),
         "repo_type": repo_type,
         "repo_percentage": repo_percentage,
         "home_page_but_no_repo": home_page_but_no_repo.len(),
-        "home_page_but_no_repo_percentage":  100*home_page_but_no_repo.len()/rows.len(),
+        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), rows.len()),
         }))?;
 
     generate_crate_pages(&handlebar, &rows, &users, &owner_by_crate_id)?;
