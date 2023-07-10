@@ -16,6 +16,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 type Record = HashMap<String, String>;
 type RepoPercentage<'a> = HashMap<&'a str, String>;
 type Owners = HashMap<String, String>;
+type CratesByOwner = HashMap<String, Vec<String>>;
 
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -33,7 +34,7 @@ fn main() {
 
     //crate_id,created_at,created_by,owner_id,owner_kind
     let mut owner_by_crate_id: Owners = HashMap::new();
-    let mut crates_by_owner: HashMap<String, Vec<String>> = HashMap::new();
+    let mut crates_by_owner: CratesByOwner = HashMap::new();
     let result = read_csv_file("data/data/crate_owners.csv", limit);
     match result {
         Ok(rows) => {
@@ -221,7 +222,7 @@ fn generate_pages(
     rows :&Vec<Record>,
     users: &HashMap<String, Record>,
     owner_by_crate_id: &Owners,
-    crates_by_owner: &HashMap<String, Vec<String>>
+    crates_by_owner: &CratesByOwner
     ) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
