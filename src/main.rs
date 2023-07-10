@@ -99,7 +99,7 @@ fn has_homepage_no_repo(w: &Record) -> bool {
     w["homepage"] != "" && w["repository"] == ""
 }
 
-fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
+fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, HashMap<&str, usize>, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
     let repos  = HashMap::from([
         ("github", "https://github.com/"),
@@ -111,6 +111,7 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
         ("no_repo", 0),
         ("other", 0),
     ]);
+    let mut repo_percentage:HashMap<&str, usize> = HashMap::new();
     for repo in repos.keys() {
         repo_type.insert(repo, 0);
     }
@@ -130,14 +131,11 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
         other.push(row);
     }
 
-    *repo_type.entry("github_percentage").or_insert(0) = 100 * repo_type["github"] / rows.len();
-    *repo_type.entry("gitlab_percentage").or_insert(0) = 100 * repo_type["gitlab"] / rows.len();
-    *repo_type.entry("codeberg_percentage").or_insert(0) = 100 * repo_type["codeberg"] / rows.len();
-    *repo_type.entry("torproject_percentage").or_insert(0) = 100 * repo_type["torproject"] / rows.len();
-    *repo_type.entry("other_percentage").or_insert(0) = 100 * repo_type["other"] / rows.len();
-    *repo_type.entry("no_repo_percentage").or_insert(0) = 100 * repo_type["no_repo"] / rows.len();
+    for repo in repos.keys() {
+        *repo_percentage.entry(repo).or_insert(0) = 100 * repo_type[repo] / rows.len();
+    }
 
-     (repo_type, other)
+    (repo_type, repo_percentage, other)
 }
 
 fn generate_user_pages(handlebar: &Handlebars, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
@@ -230,7 +228,7 @@ fn generate_pages(
     let no_repo = rows.into_iter().filter(|w| !has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
-    let (repo_type, other_repos): (HashMap<&str, usize>, Vec<&Record>) = get_repo_types(&rows);
+    let (repo_type, repo_percentage, other_repos): (HashMap<&str, usize>, HashMap<&str, usize>, Vec<&Record>) = get_repo_types(&rows);
 
     const PAGE_SIZE: usize = 100;
 
@@ -264,11 +262,13 @@ fn generate_pages(
     render(&handlebar, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
 
     log::info!("{:?}", repo_type);
+    log::info!("{:?}", repo_percentage);
     render(&handlebar, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
         "total": rows.len(),
         "no_repo": no_repo.len(),
         "no_repo_percentage": 100*no_repo.len()/rows.len(),
         "repo_type": repo_type,
+        "repo_percentage": repo_percentage,
         "home_page_but_no_repo": home_page_but_no_repo.len(),
         "home_page_but_no_repo_percentage":  100*home_page_but_no_repo.len()/rows.len(),
         }))?;
