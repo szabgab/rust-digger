@@ -105,7 +105,8 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, HashMap<&str, us
         ("github", "https://github.com/"),
         ("gitlab", "https://gitlab.com/"),
         ("codeberg", "https://codeberg.org/"),
-        ("torproject", "https://gitlab.torproject.org"),
+        ("torproject", "https://gitlab.torproject.org/"),
+        ("freedesktop", "https://gitlab.freedesktop.org/"),
     ]);
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
