@@ -101,29 +101,29 @@ fn has_homepage_no_repo(w: &Record) -> bool {
 
 fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
+    let repos  = HashMap::from([
+        ("github", "https://github.com/"),
+        ("gitlab", "https://gitlab.com/"),
+        ("codeberg", "https://codeberg.org/"),
+    ]);
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
-        ("github", 0),
-        ("gitlab", 0),
-        ("codeberg", 0),
         ("other", 0),
     ]);
-    for row in rows {
+    for repo in repos.keys() {
+        repo_type.insert(repo, 0);
+    }
+
+    'outer: for row in rows {
         if row["repository"] == "" {
             *repo_type.entry("no_repo").or_insert(0) += 1;
             continue;
         }
-        if row["repository"].starts_with("https://github.com/") {
-            *repo_type.entry("github").or_insert(0) += 1;
-            continue;
-        }
-        if row["repository"].starts_with("https://gitlab.com/") {
-            *repo_type.entry("gitlab").or_insert(0) += 1;
-            continue;
-        }
-        if row["repository"].starts_with("https://codeberg.org/") {
-            *repo_type.entry("codeberg").or_insert(0) += 1;
-            continue;
+        for (name, url) in repos.iter() {
+            if row["repository"].starts_with(url) {
+                *repo_type.entry(&name).or_insert(0) += 1;
+                continue 'outer;
+            }
         }
         *repo_type.entry("other").or_insert(0) += 1;
         other.push(row);
