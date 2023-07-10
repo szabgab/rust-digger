@@ -133,10 +133,10 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, HashMap<&str, us
     }
 
     for repo in repos.keys() {
-        *repo_percentage.entry(repo).or_insert(0) = 100 * repo_type[repo] / rows.len();
+        repo_percentage.insert(repo, 100 * repo_type[repo] / rows.len());
     }
-    *repo_percentage.entry("other").or_insert(0) = 100 * repo_type["other"] / rows.len();
-    *repo_percentage.entry("no_repo").or_insert(0) = 100 * repo_type["no_repo"] / rows.len();
+    repo_percentage.insert("other", 100 * repo_type["other"] / rows.len());
+    repo_percentage.insert("no_repo", 100 * repo_type["no_repo"] / rows.len());
 
     (repo_type, repo_percentage, other)
 }
