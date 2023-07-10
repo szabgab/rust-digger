@@ -13,6 +13,11 @@ use serde_json::Value;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+struct Repo<'a> {
+    name: &'a str,
+    url: &'a str,
+}
+
 type Record = HashMap<String, String>;
 type RepoPercentage<'a> = HashMap<&'a str, String>;
 type Owners = HashMap<String, String>;
@@ -106,26 +111,26 @@ fn has_homepage_no_repo(w: &Record) -> bool {
 fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
     let repos = vec![
-        ("github",       "https://github.com/"),
-        ("gitlab",       "https://gitlab.com/"),
-        ("codeberg",     "https://codeberg.org/"),
-        ("gitee",        "https://gitee.com/"),
-        ("torproject",   "https://gitlab.torproject.org/"),
-        ("freedesktop",  "https://gitlab.freedesktop.org/"),
-        ("wikimedia",    "https://gitlab.wikimedia.org/"),
-        ("e3t",          "https://git.e3t.cc/"),
-        ("srht",         "https://git.sr.ht/"),
-        ("openprivacy",  "https://git.openprivacy.ca/"),
-        ("cronce",       "https://gitlab.cronce.io/"),
-        ("gnome",        "https://gitlab.gnome.org/"),
+        Repo {name: "github",       url: "https://github.com/"},
+        Repo {name: "gitlab",       url: "https://gitlab.com/"},
+        Repo {name: "codeberg",     url: "https://codeberg.org/"},
+        Repo {name: "gitee",        url: "https://gitee.com/"},
+        Repo {name: "torproject",   url: "https://gitlab.torproject.org/"},
+        Repo {name: "freedesktop",  url: "https://gitlab.freedesktop.org/"},
+        Repo {name: "wikimedia",    url: "https://gitlab.wikimedia.org/"},
+        Repo {name: "e3t",          url: "https://git.e3t.cc/"},
+        Repo {name: "srht",         url: "https://git.sr.ht/"},
+        Repo {name: "openprivacy",  url: "https://git.openprivacy.ca/"},
+        Repo {name: "cronce",       url: "https://gitlab.cronce.io/"},
+        Repo {name: "gnome",        url: "https://gitlab.gnome.org/"},
     ];
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
         ("other", 0),
     ]);
     let mut repo_percentage:RepoPercentage = HashMap::new();
-    for (repo, _) in &repos {
-        repo_type.insert(repo, 0);
+    for repo in &repos {
+        repo_type.insert(repo.name, 0);
     }
 
     'outer: for row in rows {
@@ -133,9 +138,9 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, 
             *repo_type.entry("no_repo").or_insert(0) += 1;
             continue;
         }
-        for (name, url) in &repos {
-            if row["repository"].starts_with(url) {
-                *repo_type.entry(&name).or_insert(0) += 1;
+        for repo in &repos {
+            if row["repository"].starts_with(repo.url) {
+                *repo_type.entry(&repo.name).or_insert(0) += 1;
                 continue 'outer;
             }
         }
@@ -143,8 +148,8 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, 
         other.push(row);
     }
 
-    for (repo, _) in &repos {
-        repo_percentage.insert(repo, percentage(repo_type[repo], rows.len()));
+    for repo in repos {
+        repo_percentage.insert(repo.name, percentage(repo_type[repo.name], rows.len()));
     }
     repo_percentage.insert("other", percentage(repo_type["other"], rows.len()));
     repo_percentage.insert("no_repo", percentage(repo_type["no_repo"], rows.len()));
