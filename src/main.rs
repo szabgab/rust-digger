@@ -15,6 +15,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 type Record = HashMap<String, String>;
 type RepoPercentage<'a> = HashMap<&'a str, String>;
+type Owners = HashMap<String, String>;
 
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -31,7 +32,7 @@ fn main() {
     log::info!("Limit {limit}");
 
     //crate_id,created_at,created_by,owner_id,owner_kind
-    let mut owner_by_crate_id: HashMap<String, String> = HashMap::new();
+    let mut owner_by_crate_id: Owners = HashMap::new();
     let mut crates_by_owner: HashMap<String, Vec<String>> = HashMap::new();
     let result = read_csv_file("data/data/crate_owners.csv", limit);
     match result {
@@ -162,7 +163,7 @@ fn generate_crate_pages(
     handlebar: &Handlebars,
     rows: &Vec<Record>,
     users: &HashMap<String, Record>,
-    owner_by_crate_id: &HashMap<String, String>,
+    owner_by_crate_id: &Owners,
     ) -> Result<(), Box<dyn Error>> {
     for row in rows {
         //dbg!(row);
@@ -219,7 +220,7 @@ fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
 fn generate_pages(
     rows :&Vec<Record>,
     users: &HashMap<String, Record>,
-    owner_by_crate_id: &HashMap<String, String>,
+    owner_by_crate_id: &Owners,
     crates_by_owner: &HashMap<String, Vec<String>>
     ) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
