@@ -108,8 +108,13 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, 
         ("github", "https://github.com/"),
         ("gitlab", "https://gitlab.com/"),
         ("codeberg", "https://codeberg.org/"),
+        ("gitee",    "https://gitee.com/"),
         ("torproject", "https://gitlab.torproject.org/"),
         ("freedesktop", "https://gitlab.freedesktop.org/"),
+        ("wikimedia", "https://gitlab.wikimedia.org/"),
+        ("e3t",       "https://git.e3t.cc/"),
+        ("srht",      "https://git.sr.ht/"),
+        ("openprivacy", "https://git.openprivacy.ca/"),
     ]);
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
