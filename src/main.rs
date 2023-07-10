@@ -105,18 +105,18 @@ fn has_homepage_no_repo(w: &Record) -> bool {
 fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
     let repos  = HashMap::from([
-        ("github", "https://github.com/"),
-        ("gitlab", "https://gitlab.com/"),
-        ("codeberg", "https://codeberg.org/"),
-        ("gitee",    "https://gitee.com/"),
-        ("torproject", "https://gitlab.torproject.org/"),
-        ("freedesktop", "https://gitlab.freedesktop.org/"),
-        ("wikimedia", "https://gitlab.wikimedia.org/"),
-        ("e3t",       "https://git.e3t.cc/"),
-        ("srht",      "https://git.sr.ht/"),
-        ("openprivacy", "https://git.openprivacy.ca/"),
-        ("cronce",      "https://gitlab.cronce.io/"),
-        ("gnome", "https://gitlab.gnome.org/"),
+        ("github",       "https://github.com/"),
+        ("gitlab",       "https://gitlab.com/"),
+        ("codeberg",     "https://codeberg.org/"),
+        ("gitee",        "https://gitee.com/"),
+        ("torproject",   "https://gitlab.torproject.org/"),
+        ("freedesktop",  "https://gitlab.freedesktop.org/"),
+        ("wikimedia",    "https://gitlab.wikimedia.org/"),
+        ("e3t",          "https://git.e3t.cc/"),
+        ("srht",         "https://git.sr.ht/"),
+        ("openprivacy",  "https://git.openprivacy.ca/"),
+        ("cronce",       "https://gitlab.cronce.io/"),
+        ("gnome",        "https://gitlab.gnome.org/"),
     ]);
     let mut repo_type:HashMap<&str, usize> = HashMap::from([
         ("no_repo", 0),
