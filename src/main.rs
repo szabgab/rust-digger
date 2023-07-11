@@ -54,15 +54,19 @@ fn main() {
 
     let users: Users = read_users(limit);
 
+
+    let crates: Vec<Record>;
     let result = read_csv_file("data/data/crates.csv", limit);
     match result {
         Ok(mut rows) => {
             rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
-            match generate_pages(&rows, &users, &owner_by_crate_id, &crates_by_owner) {
-                Ok(_) => {},
-                Err(err) => panic!("Error: {}", err)
-            }
+            crates = rows;
         },
+        Err(err) => panic!("Error: {}", err)
+    }
+
+    match generate_pages(&crates, &users, &owner_by_crate_id, &crates_by_owner) {
+        Ok(_) => {},
         Err(err) => panic!("Error: {}", err)
     }
 
