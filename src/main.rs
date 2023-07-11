@@ -344,4 +344,13 @@ mod tests {
         let x: Record = HashMap::from([("repository".to_string(), "".to_string())]);
         assert!(!has_repo(&x));
     }
+
+    #[test]
+    fn test_percentage() {
+        assert_eq!(percentage(20, 100), "20");
+        assert_eq!(percentage(5, 20), "25");
+        assert_eq!(percentage(1234, 10000), "12.34");
+        assert_eq!(percentage(1234567, 10000000), "12.34");
+    }
+
 }
