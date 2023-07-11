@@ -22,6 +22,7 @@ type Record = HashMap<String, String>;
 type RepoPercentage<'a> = HashMap<&'a str, String>;
 type Owners = HashMap<String, String>;
 type CratesByOwner = HashMap<String, Vec<String>>;
+type Users = HashMap<String, Record>;
 
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -51,7 +52,7 @@ fn main() {
         Err(err) => panic!("Error: {}", err),
     };
 
-    let mut users: HashMap<String, Record> = HashMap::new();
+    let mut users: Users = HashMap::new();
     let result = read_csv_file("data/data/users.csv", limit);
     match result {
         Ok(rows) => {
@@ -163,7 +164,7 @@ fn percentage(num: usize, total: usize) -> String {
 }
 
 
-fn generate_user_pages(handlebar: &Handlebars, users: &HashMap<String, Record>) -> Result<(), Box<dyn Error>> {
+fn generate_user_pages(handlebar: &Handlebars, users: &Users) -> Result<(), Box<dyn Error>> {
     for (_uid, user) in users.iter() {
         render(&handlebar, &"user".to_string(), &format!("_site/users/{}.html", user["gh_login"].to_ascii_lowercase()), &user["name"], &json!({
             "user": user,
@@ -176,7 +177,7 @@ fn generate_user_pages(handlebar: &Handlebars, users: &HashMap<String, Record>) 
 fn generate_crate_pages(
     handlebar: &Handlebars,
     rows: &Vec<Record>,
-    users: &HashMap<String, Record>,
+    users: &Users,
     owner_by_crate_id: &Owners,
     ) -> Result<(), Box<dyn Error>> {
     for row in rows {
@@ -233,7 +234,7 @@ fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
 
 fn generate_pages(
     rows :&Vec<Record>,
-    users: &HashMap<String, Record>,
+    users: &Users,
     owner_by_crate_id: &Owners,
     crates_by_owner: &CratesByOwner
     ) -> Result<(), Box<dyn Error>> {
