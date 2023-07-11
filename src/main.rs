@@ -53,9 +53,7 @@ fn main() {
     };
 
     let users: Users = read_users(limit);
-
-
-    let crates = read_crates(limit);
+    let crates: Vec<Record> = read_crates(limit);
 
     match generate_pages(&crates, &users, &owner_by_crate_id, &crates_by_owner) {
         Ok(_) => {},
