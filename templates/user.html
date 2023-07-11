@@ -1,13 +1,15 @@
 {{#*inline "page"}}
-      <h1 class="title">{{title}}</h1>
+<section class="section">
+  <div class="container">
+    <h1 class="title">{{title}}</h1>
 
-<img src={{user.gh_avatar}}>
-
-<table class="table">
-  <tbody>
-    <tr><td>name</td><td><a href="https://crates.io/users/{{user.gh_login}}">{{ user.name }}</a></td></tr>
-  </tbody>
-</table>
-
+    <img src={{user.gh_avatar}}>
+    <table class="table">
+      <tbody>
+        <tr><td>name</td><td><a href="https://crates.io/users/{{user.gh_login}}">{{ user.name }}</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 {{/inline}}
 {{> (lookup this "parent")}}

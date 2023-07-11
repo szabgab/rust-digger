@@ -1,41 +1,43 @@
 {{#*inline "page"}}
-      <h1 class="title">{{title}}</h1>
+<section class="section">
+  <div class="container">
+    <h1 class="title">{{title}}</h1>
 
-<table class="table">
-  <tbody>
-    <tr><td>name</td><td><a href="https://crates.io/crates/{{crate.name}}">{{ crate.name }}</a></td></tr>
-    <tr><td>created_at</td><td>{{ crate.created_at }}</td></tr>
-    <tr><td>updated_at</td><td>{{ crate.updated_at }}</td></tr>
-    <tr><td>downloads</td><td>{{ crate.downloads }}</td></tr>
-    <tr><td>description</td><td>{{ crate.description }}</td></tr>
-    {{#if crate.homepage}}
-      <tr><td>homepage</td><td><a href="{{ crate.homepage }}">{{ crate.homepage }}</a></td></tr>
-    {{else}}
-       <td>NA</td>
-    {{/if}}
-    {{#if crate.repository}}
-        <tr><td>repository</td><td><a href="{{ crate.repository }}">{{ crate.repository }}</a></td></tr>
-    {{else}}
-       <td>NA</td>
-    {{/if}}
-    <tr><td>max_upload_size</td><td>{{ crate.max_upload_size }}</td></tr>
-    <tr><td>id</td><td>{{ crate.id }}</td></tr>
-  </tbody>
-</table>
+    <table class="table">
+      <tbody>
+        <tr><td>name</td><td><a href="https://crates.io/crates/{{crate.name}}">{{ crate.name }}</a></td></tr>
+        <tr><td>created_at</td><td>{{ crate.created_at }}</td></tr>
+        <tr><td>updated_at</td><td>{{ crate.updated_at }}</td></tr>
+        <tr><td>downloads</td><td>{{ crate.downloads }}</td></tr>
+        <tr><td>description</td><td>{{ crate.description }}</td></tr>
+        {{#if crate.homepage}}
+          <tr><td>homepage</td><td><a href="{{ crate.homepage }}">{{ crate.homepage }}</a></td></tr>
+        {{else}}
+           <td>NA</td>
+        {{/if}}
+        {{#if crate.repository}}
+            <tr><td>repository</td><td><a href="{{ crate.repository }}">{{ crate.repository }}</a></td></tr>
+        {{else}}
+           <td>NA</td>
+        {{/if}}
+        <tr><td>max_upload_size</td><td>{{ crate.max_upload_size }}</td></tr>
+        <tr><td>id</td><td>{{ crate.id }}</td></tr>
+      </tbody>
+    </table>
 
-<img src="{{user.gh_avatar}}">
-<a href="/users/{{user.gh_login}}">{{user.name}}</a>
+    <img src="{{user.gh_avatar}}">
+    <a href="/users/{{user.gh_login}}">{{user.name}}</a>
 
+    <h2 class="subtitle">documentation</h2>
+    <div>
+    {{crate.documentation}}
+    </div>
 
-<h2 class="subtitle">documentation</h2>
-<div>
-{{crate.documentation}}
-</div>
-
-<h2 class="subtitle">readme</h2>
-<div>
-{{crate.readme}}
-</div>
-
+    <h2 class="subtitle">readme</h2>
+    <div>
+    {{crate.readme}}
+    </div>
+  </div>
+</section>
 {{/inline}}
 {{> (lookup this "parent")}}
