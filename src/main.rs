@@ -52,19 +52,7 @@ fn main() {
         Err(err) => panic!("Error: {}", err),
     };
 
-    let mut users: Users = HashMap::new();
-    let result = read_csv_file("data/data/users.csv", limit);
-    match result {
-        Ok(rows) => {
-            for row in rows {
-                //dbg!(&row);
-                //dbg!(&row["id"]);
-                users.insert(row["id"].clone(), row);
-            }
-        }
-        Err(err) => panic!("Error: {}", err)
-    }
-    //dbg!(users);
+    let users: Users = read_users(limit);
 
     let result = read_csv_file("data/data/crates.csv", limit);
     match result {
@@ -304,6 +292,23 @@ fn generate_pages(
     generate_user_pages(&handlebar, &users)?;
 
     Ok(())
+}
+
+fn read_users(limit: i32) -> Users {
+    let mut users: Users = HashMap::new();
+    let result = read_csv_file("data/data/users.csv", limit);
+    match result {
+        Ok(rows) => {
+            for row in rows {
+                //dbg!(&row);
+                //dbg!(&row["id"]);
+                users.insert(row["id"].clone(), row);
+            }
+        }
+        Err(err) => panic!("Error: {}", err)
+    }
+    //dbg!(users);
+    users
 }
 
 
