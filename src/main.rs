@@ -145,13 +145,13 @@ fn generate_user_pages(handlebar: &Handlebars, users: &Users) -> Result<(), Box<
 
 fn generate_crate_pages(
     handlebar: &Handlebars,
-    rows: &Vec<Record>,
+    crates: &Vec<Record>,
     users: &Users,
     owner_by_crate_id: &Owners,
     ) -> Result<(), Box<dyn Error>> {
-    for row in rows {
-        //dbg!(row);
-        let crate_id = &row["id"];
+    for krate in crates {
+        //dbg!(crate);
+        let crate_id = &krate["id"];
         //dbg!(crate_id);
         let mut user: &Record = &HashMap::new();
         match owner_by_crate_id.get(crate_id) {
@@ -178,8 +178,8 @@ fn generate_crate_pages(
         //    //let user = &users[owner_id];
         //}
         //dbg!(user);
-        render(&handlebar, &"crate".to_string(), &format!("_site/crates/{}.html", row["name"]), &row["name"], &json!({
-            "crate": row,
+        render(&handlebar, &"crate".to_string(), &format!("_site/crates/{}.html", krate["name"]), &krate["name"], &json!({
+            "crate": krate,
             "user": user,
             }))?;
     }
@@ -202,7 +202,7 @@ fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
 }
 
 fn generate_pages(
-    rows :&Vec<Record>,
+    crates :&Vec<Record>,
     users: &Users,
     owner_by_crate_id: &Owners,
     crates_by_owner: &CratesByOwner
@@ -219,18 +219,18 @@ fn generate_pages(
     let _res = fs::create_dir_all("_site/crates");
     let _res = fs::create_dir_all("_site/users");
 
-    let home_page_but_no_repo = rows.into_iter().filter(|w| has_homepage_no_repo(w)).collect::<Vec<&Record>>();
-    let no_repo = rows.into_iter().filter(|w| !has_repo(w)).collect::<Vec<&Record>>();
+    let home_page_but_no_repo = crates.into_iter().filter(|w| has_homepage_no_repo(w)).collect::<Vec<&Record>>();
+    let no_repo = crates.into_iter().filter(|w| !has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
-    let (repo_type, repo_percentage, other_repos): (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) = get_repo_types(&rows);
+    let (repo_type, repo_percentage, other_repos): (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) = get_repo_types(&crates);
 
     const PAGE_SIZE: usize = 100;
 
-    let page_size = if rows.len() > PAGE_SIZE { PAGE_SIZE } else { rows.len() };
+    let page_size = if crates.len() > PAGE_SIZE { PAGE_SIZE } else { crates.len() };
     render(&handlebar, &"list".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(), &json!({
-        "total": rows.len(),
-        "rows": &rows[0..page_size],
+        "total": crates.len(),
+        "rows": &crates[0..page_size],
     }))?;
 
     let page_size = if no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { no_repo.len() };
@@ -259,16 +259,16 @@ fn generate_pages(
     log::info!("{:?}", repo_type);
     log::info!("{:?}", repo_percentage);
     render(&handlebar, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
-        "total": rows.len(),
+        "total": crates.len(),
         "no_repo": no_repo.len(),
-        "no_repo_percentage": percentage(no_repo.len(), rows.len()),
+        "no_repo_percentage": percentage(no_repo.len(), crates.len()),
         "repo_type": repo_type,
         "repo_percentage": repo_percentage,
         "home_page_but_no_repo": home_page_but_no_repo.len(),
-        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), rows.len()),
+        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
         }))?;
 
-    generate_crate_pages(&handlebar, &rows, &users, &owner_by_crate_id)?;
+    generate_crate_pages(&handlebar, &crates, &users, &owner_by_crate_id)?;
 
     generate_user_pages(&handlebar, &users)?;
 
