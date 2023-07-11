@@ -1,37 +1,51 @@
 {{#*inline "page"}}
-      <h1 class="title">About Rust Digger</h1>
+      <h1 class="title is-3">About Rust Digger</h1>
 
-We are collecting data about Rust Crates. Similar to the <a href="https://pydigger.com/">PyDigger</a> project collecting data about Python packages
-and the <a href="https://cpan-digger.perlmaven.com/">CPAN Digger</a> project collecting about Perl packages.
+We are collecting data about <a href="https://crates.io/">Rust Crates</a>. Similar to the <a href="https://pydigger.com/">PyDigger</a> project collecting data about Python packages,
+the <a href="https://cpan-digger.perlmaven.com/">CPAN Digger</a> project collecting about Perl packages, and the <a href="https://ruby-digger.code-maven.com/">Ruby Digger</a> about Ruby Gems.
 
-There are a number of goals:
+  </div>
+</section>
 
-<div class="list">
-    <li class="list-item">Understand the common practices in Rust projects.</li>
-    <li class="list-item">Find low-hanging fruits for contribution.</li>
-</div>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Goals</h2>
+    <div class="list">
+      <li class="list-item">Understand the common practices in Rust projects.</li>
+      <li class="list-item">Encourage people to follow these common practices.</li>
+      <li class="list-item">Help identify crates that have problematic dependencies (e.g. license-wise, being unmaintained, etc.).</li>
+      <li class="list-item">Find low-hanging fruits for contribution.</li>
+    </div>
+  </div>
+</section>
 
-<h2 class="subtitle">Topics</h2>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Topics</h2>
+    <div class="list">
+      <li class="list-item">Having a link to the public VCS of each crate will make it easier contribute to the project.
+         So we would like to encourage everyone to have a link to the public VCS of the crate in the <b>repository</b> field.
+         Make sure they follow a standard. (e.g. use https in the link, link to a page that is not redirecting, etc.).
+         We try to identify the various VCS hosting services.
+      </li>
+      <li class="list-item">Having Continuous integration enabled will provide fast feedback to the developers and to the contributors. (TODO)</li>
+      <li class="list-item">A low test coverage indicates that the project is not well tested. We would like to encourage adding more tests.</li>
+      <li class="list-item">List all the dependencies of each crate along with their license, number of open issues and PRs, last release date etc.</li>
+      <li class="list-item">List the crates that are the most dependent-on (even if they are not a direct dependency).</li>
+    </div>
+  </div>
+</section>
 
-Some of the items:
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Status</h2>
+    There are already some pages that work, but there are a lot of <a href="https://github.com/szabgab/rust-digger/issues">open issues</a> and there are probably a lot more tasks that don't have an issue yet.
 
-<div class="list">
-    <li class="list-item">Having a link to the public VCS of each crate will make it easier contribute to the project.
-    So we would like to encourage everyone to have a link to the public VCS of the crate in the <b>repository</b> field</li>
-    <li class="list-item">Having Continuous integration enabled will provide fast feedback to the developers and to the contributors. (TODO)</li>
-    <li class="list-item">A low test coverage indicates that the project is not well tested. We would like to encourage adding more tests.</li>
-</div>
+    This is the first project written by the author in Rust and thus the code is very far from being "good Rust code". Your suggestions and contributions are welcome.
 
-
-<h2 class="subtitle">Status</h2>
-
-There are already some pages that work, but there are a lot of <a href="https://github.com/szabgab/rust-digger/issues">open issues</a> and there are probably a lot more tasks that don't have an issue yet.
-
-This is the first project written by the author in Rust and thus the code is very far from being "good Rust code". Your suggestions and contributions are welcome.
-
-Right now in each listing we show the 100 most recently uploaded crates from the given list.
-We believe that contributing to a recently uploaded crate will more likely get a response than a crate that has not been touched for a long time.
-With that said we plan to create pagination to make it easier to go over all the crates.
+    Right now in each listing we show the 100 most recently uploaded crates from the given list.
+    We believe that contributing to a recently uploaded crate will more likely get a response than a crate that has not been touched for a long time.
+    With that said we plan to create pagination to make it easier to go over all the crates.
 
 
 {{/inline}}
