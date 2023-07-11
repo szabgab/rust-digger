@@ -41,6 +41,7 @@ fn main() {
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(limit);
     let users: Users = read_users(limit);
     let crates: Vec<Record> = read_crates(limit);
+    //dbg!(&crates_by_owner);
 
     match generate_pages(&crates, &users, &owner_by_crate_id, &crates_by_owner) {
         Ok(_) => {},
@@ -133,10 +134,39 @@ fn percentage(num: usize, total: usize) -> String {
 }
 
 
-fn generate_user_pages(handlebar: &Handlebars, users: &Users) -> Result<(), Box<dyn Error>> {
-    for (_uid, user) in users.iter() {
+fn generate_user_pages(
+    handlebar: &Handlebars,
+    crates: &Vec<Record>,
+    users: &Users,
+    crates_by_owner: &CratesByOwner,
+    ) -> Result<(), Box<dyn Error>> {
+    let mut crate_by_id: HashMap<&str, &Record> = HashMap::new();
+    for krate in crates {
+        crate_by_id.insert(&krate["id"], krate);
+    }
+    //dbg!(&crate_by_id);
+    //dbg!(&crate_by_id["81366"]);
+
+    for (uid, user) in users.iter() {
+        //dbg!(uid);
+        let mut selected_crates: Vec<&Record> = vec![];
+        match crates_by_owner.get(uid) {
+            Some(crate_ids) => {
+                //dbg!(crate_ids);
+                for crate_id in crate_ids {
+                    //dbg!(&crate_id);
+                    //dbg!(&crate_by_id[crate_id.as_str()]);
+                    //dbg!(&crate_by_id.get(&crate_id.clone()));
+                    selected_crates.push(&crate_by_id[crate_id.as_str()]);
+                }
+            },
+            None => {
+                log::warn!("user {uid} does not have crates");
+            },
+        }
         render(&handlebar, &"user".to_string(), &format!("_site/users/{}.html", user["gh_login"].to_ascii_lowercase()), &user["name"], &json!({
             "user": user,
+            "crates": selected_crates,
             }))?;
     }
 
@@ -268,9 +298,10 @@ fn generate_pages(
         "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
         }))?;
 
-    generate_crate_pages(&handlebar, &crates, &users, &owner_by_crate_id)?;
 
-    generate_user_pages(&handlebar, &users)?;
+    generate_user_pages(&handlebar, &crates, &users, &crates_by_owner)?;
+
+    generate_crate_pages(&handlebar, &crates, &users, &owner_by_crate_id)?;
 
     Ok(())
 }
@@ -285,6 +316,8 @@ fn read_crate_owners(limit: i32) -> (Owners, CratesByOwner) {
             for row in rows {
                 owner_by_crate_id.insert(row["crate_id"].clone(), row["owner_id"].clone());
                 crates_by_owner.entry(row["owner_id"].clone()).or_insert(vec![]);
+                let _ = &crates_by_owner.get_mut(&row["owner_id"]).unwrap().push( row["crate_id"].clone() );
+                //dbg!(&crates_by_owner[&row["owner_id"]]);
             }
         },
         Err(err) => panic!("Error: {}", err),

@@ -9,7 +9,16 @@
         <tr><td>name</td><td><a href="https://crates.io/users/{{user.gh_login}}">{{ user.name }}</a></td></tr>
       </tbody>
     </table>
+
+    <h2 class="title is-5">Crates</h2>
+    {{#each crates as |crate|}}
+<div>
+        {{crate.name}} {{crate.repository}}
+</div>
+    {{/each}}
+
   </div>
 </section>
+
 {{/inline}}
 {{> (lookup this "parent")}}
