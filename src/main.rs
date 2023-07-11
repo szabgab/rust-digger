@@ -78,7 +78,7 @@ fn has_homepage_no_repo(w: &Record) -> bool {
 }
 
 
-fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) {
+fn get_repo_types(crates: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
     let repos = vec![
         Repo {name: "github",       url: "https://github.com/"},
@@ -103,26 +103,26 @@ fn get_repo_types(rows: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, 
         repo_type.insert(repo.name, 0);
     }
 
-    'outer: for row in rows {
-        if row["repository"] == "" {
+    'outer: for krate in crates {
+        if krate["repository"] == "" {
             *repo_type.entry("no_repo").or_insert(0) += 1;
             continue;
         }
         for repo in &repos {
-            if row["repository"].starts_with(repo.url) {
+            if krate["repository"].starts_with(repo.url) {
                 *repo_type.entry(&repo.name).or_insert(0) += 1;
                 continue 'outer;
             }
         }
         *repo_type.entry("other").or_insert(0) += 1;
-        other.push(row);
+        other.push(krate);
     }
 
     for repo in repos {
-        repo_percentage.insert(repo.name, percentage(repo_type[repo.name], rows.len()));
+        repo_percentage.insert(repo.name, percentage(repo_type[repo.name], crates.len()));
     }
-    repo_percentage.insert("other", percentage(repo_type["other"], rows.len()));
-    repo_percentage.insert("no_repo", percentage(repo_type["no_repo"], rows.len()));
+    repo_percentage.insert("other", percentage(repo_type["other"], crates.len()));
+    repo_percentage.insert("no_repo", percentage(repo_type["no_repo"], crates.len()));
 
     (repo_type, repo_percentage, other)
 }
