@@ -38,9 +38,7 @@ fn main() {
     }
     log::info!("Limit {limit}");
 
-
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(limit);
-
     let users: Users = read_users(limit);
     let crates: Vec<Record> = read_crates(limit);
 
