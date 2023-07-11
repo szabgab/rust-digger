@@ -38,19 +38,8 @@ fn main() {
     }
     log::info!("Limit {limit}");
 
-    //crate_id,created_at,created_by,owner_id,owner_kind
-    let mut owner_by_crate_id: Owners = HashMap::new();
-    let mut crates_by_owner: CratesByOwner = HashMap::new();
-    let result = read_csv_file("data/data/crate_owners.csv", limit);
-    match result {
-        Ok(rows) => {
-            for row in rows {
-                owner_by_crate_id.insert(row["crate_id"].clone(), row["owner_id"].clone());
-                crates_by_owner.entry(row["owner_id"].clone()).or_insert(vec![]);
-            }
-        },
-        Err(err) => panic!("Error: {}", err),
-    };
+
+    let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(limit);
 
     let users: Users = read_users(limit);
     let crates: Vec<Record> = read_crates(limit);
@@ -287,6 +276,24 @@ fn generate_pages(
 
     Ok(())
 }
+
+fn read_crate_owners(limit: i32) -> (Owners, CratesByOwner) {
+    //crate_id,created_at,created_by,owner_id,owner_kind
+    let mut owner_by_crate_id: Owners = HashMap::new();
+    let mut crates_by_owner: CratesByOwner = HashMap::new();
+    let result = read_csv_file("data/data/crate_owners.csv", limit);
+    match result {
+        Ok(rows) => {
+            for row in rows {
+                owner_by_crate_id.insert(row["crate_id"].clone(), row["owner_id"].clone());
+                crates_by_owner.entry(row["owner_id"].clone()).or_insert(vec![]);
+            }
+        },
+        Err(err) => panic!("Error: {}", err),
+    };
+    (owner_by_crate_id, crates_by_owner)
+}
+
 
 fn read_crates(limit: i32) -> Vec<Record> {
     let crates: Vec<Record>;
