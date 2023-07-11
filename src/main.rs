@@ -55,15 +55,7 @@ fn main() {
     let users: Users = read_users(limit);
 
 
-    let crates: Vec<Record>;
-    let result = read_csv_file("data/data/crates.csv", limit);
-    match result {
-        Ok(mut rows) => {
-            rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
-            crates = rows;
-        },
-        Err(err) => panic!("Error: {}", err)
-    }
+    let crates = read_crates(limit);
 
     match generate_pages(&crates, &users, &owner_by_crate_id, &crates_by_owner) {
         Ok(_) => {},
@@ -297,6 +289,20 @@ fn generate_pages(
 
     Ok(())
 }
+
+fn read_crates(limit: i32) -> Vec<Record> {
+    let crates: Vec<Record>;
+    let result = read_csv_file("data/data/crates.csv", limit);
+    match result {
+        Ok(mut rows) => {
+            rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
+            crates = rows;
+        },
+        Err(err) => panic!("Error: {}", err)
+    }
+    crates
+}
+
 
 fn read_users(limit: i32) -> Users {
     let mut users: Users = HashMap::new();
