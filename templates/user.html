@@ -13,7 +13,7 @@
     <h2 class="title is-5">Crates</h2>
     {{#each crates as |crate|}}
 <div>
-        {{crate.name}} {{crate.repository}}
+        <a href="/crates/{{crate.name}}">{{crate.name}}</a> {{crate.repository}}
 </div>
     {{/each}}
 
