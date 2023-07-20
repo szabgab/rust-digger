@@ -30,6 +30,20 @@ cd rust-digger
 cargo run 200
 ```
 
+To run a local web server to serve the static files install [ruststatic](https://github.com/szabgab/rustatic) using:
+
+```
+cargo install rustatic
+```
+
+
+and then run:
+
+```
+rustatic --nice --indexfile index.html --path _site/
+```
+
+
 ## Deployment on Ubuntu-based server
 
 Based on https://www.rust-lang.org/tools/install
