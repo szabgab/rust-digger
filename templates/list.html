@@ -1,4 +1,6 @@
-{{#*inline "page"}}
+{% include 'templates/incl/header.html' %}
+
+
 <section class="section">
   <div class="container">
     <h1 class="title">Rust Digger</h1>
@@ -12,20 +14,20 @@
       </tr>
       </thead>
     <tbody>
-    {{#each rows as |row|}}
+    {% for row in rows %}
       <tr>
         <td><a href="/crates/{{row.name}}">{{row.name}}</a></td>
         <td>{{row.updated_at}}</td>
-        {{#if row.repository}}
+        {% if row.repository %}
           <td><a href="{{row.repository}}">repo</a></td>
-        {{else}}
+        {% else %}
           <td>NA</td>
-        {{/if}}
+        {% endif %}
       </tr>
-    {{/each}}
+    {% endfor %}
     </tbody>
     </table>
   </div>
 </section>
-{{/inline}}
-{{> (lookup this "parent")}}
+
+{% include 'templates/incl/footer.html' %}

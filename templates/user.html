@@ -1,4 +1,5 @@
-{{#*inline "page"}}
+{% include 'templates/incl/header.html' %}
+
 <section class="section">
   <div class="container">
     <h1 class="title">{{title}}</h1>
@@ -11,14 +12,13 @@
     </table>
 
     <h2 class="title is-5">Crates</h2>
-    {{#each crates as |crate|}}
+    {% for crate in rows %}
 <div>
         <a href="/crates/{{crate.name}}">{{crate.name}}</a> {{crate.repository}}
 </div>
-    {{/each}}
+    {% endfor %}
 
   </div>
 </section>
 
-{{/inline}}
-{{> (lookup this "parent")}}
+{% include 'templates/incl/footer.html' %}

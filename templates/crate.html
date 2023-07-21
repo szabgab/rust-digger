@@ -1,4 +1,5 @@
-{{#*inline "page"}}
+{% include 'templates/incl/header.html' %}
+
 <section class="section">
   <div class="container">
     <h1 class="title">{{title}}</h1>
@@ -10,23 +11,29 @@
         <tr><td>updated_at</td><td>{{ crate.updated_at }}</td></tr>
         <tr><td>downloads</td><td>{{ crate.downloads }}</td></tr>
         <tr><td>description</td><td>{{ crate.description }}</td></tr>
-        {{#if crate.homepage}}
+        {% if crate.homepage %}
           <tr><td>homepage</td><td><a href="{{ crate.homepage }}">{{ crate.homepage }}</a></td></tr>
-        {{else}}
+        {% else %}
            <td>NA</td>
-        {{/if}}
-        {{#if crate.repository}}
+        {% endif %}
+        {% if crate.repository %}
             <tr><td>repository</td><td><a href="{{ crate.repository }}">{{ crate.repository }}</a></td></tr>
-        {{else}}
+        {% else %}
            <td>NA</td>
-        {{/if}}
+        {% endif %}
         <tr><td>max_upload_size</td><td>{{ crate.max_upload_size }}</td></tr>
         <tr><td>id</td><td>{{ crate.id }}</td></tr>
       </tbody>
     </table>
 
-    <img src="{{user.gh_avatar}}">
-    <a href="/users/{{user.gh_login}}">{{user.name}}</a>
+    {% if user.gh_avatar %}
+       <img src="{{user.gh_avatar}}">
+    {% endif %}
+    {% if user.gh_login %}
+       {% if user.name %}
+          <a href="/users/{{user.gh_login}}">{{user.name}}</a>
+       {% endif %}
+    {% endif %}
 
     <h2 class="title is-4">documentation</h2>
     <div>
@@ -39,5 +46,5 @@
     </div>
   </div>
 </section>
-{{/inline}}
-{{> (lookup this "parent")}}
+
+{% include 'templates/incl/footer.html' %}

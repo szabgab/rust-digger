@@ -3,13 +3,12 @@ use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-//use std::io::Read;
+use std::io::Read;
 use std::collections::HashMap;
 
 use chrono::prelude::*;
-use handlebars::Handlebars;
-use serde_json::json;
-use serde_json::Value;
+
+pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -51,23 +50,42 @@ fn main() {
     log::info!("Ending the Rust Digger");
 }
 
-fn render(reg: &Handlebars, template: &String, filename: &String, title: &String, params: &Value) -> Result<(), Box<dyn Error>> {
+
+fn render(template: &String, filename: &String, title: &String,
+    total: usize,
+    rows: Vec<&Record>,
+) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
 
-    let utc: DateTime<Utc> = Utc::now();
-    let mut data = params.clone();
-    data["version"] = json!(format!("{VERSION}"));
-    data["utc"]     = json!(format!("{}", utc));
-    data["title"]   = json!(title);
-    data["parent"]  = json!("layout");
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
 
-    let res = reg.render(template, &data);
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   title,
+        "total":   total,
+        "rows":    rows,
+    });
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file(format!("templates/{}.html", template))
+        .unwrap();
+    let html = template.render(&globals).unwrap();
+
 
     let mut file = File::create(filename).unwrap();
-    match res {
-        Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
-        Err(error) => println!("{}", error)
-    }
+    writeln!(&mut file, "{}", html).unwrap();
+    //match res {
+    //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
+    //    Err(error) => println!("{}", error)
+    //}
     Ok(())
 }
 
@@ -135,11 +153,24 @@ fn percentage(num: usize, total: usize) -> String {
 
 
 fn generate_user_pages(
-    handlebar: &Handlebars,
     crates: &Vec<Record>,
     users: &Users,
     crates_by_owner: &CratesByOwner,
     ) -> Result<(), Box<dyn Error>> {
+
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/user.html")
+        .unwrap();
+
+
     let mut crate_by_id: HashMap<&str, &Record> = HashMap::new();
     for krate in crates {
         crate_by_id.insert(&krate["id"], krate);
@@ -164,21 +195,43 @@ fn generate_user_pages(
                 log::warn!("user {uid} does not have crates");
             },
         }
-        render(&handlebar, &"user".to_string(), &format!("_site/users/{}.html", user["gh_login"].to_ascii_lowercase()), &user["name"], &json!({
-            "user": user,
-            "crates": selected_crates,
-            }))?;
+        let filename = format!("_site/users/{}.html", user["gh_login"].to_ascii_lowercase());
+        let utc: DateTime<Utc> = Utc::now();
+        let globals = liquid::object!({
+            "version": format!("{VERSION}"),
+            "utc":     format!("{}", utc),
+            "title":   &user["name"],
+            "user":    user,
+            "rows":   selected_crates,
+        });
+        let html = template.render(&globals).unwrap();
+        let mut file = File::create(filename).unwrap();
+        writeln!(&mut file, "{}", html).unwrap();
+
     }
 
     Ok(())
 }
 
 fn generate_crate_pages(
-    handlebar: &Handlebars,
     crates: &Vec<Record>,
     users: &Users,
     owner_by_crate_id: &Owners,
     ) -> Result<(), Box<dyn Error>> {
+
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/crate.html")
+        .unwrap();
+
+
     for krate in crates {
         //dbg!(crate);
         let crate_id = &krate["id"];
@@ -208,27 +261,33 @@ fn generate_crate_pages(
         //    //let user = &users[owner_id];
         //}
         //dbg!(user);
-        render(&handlebar, &"crate".to_string(), &format!("_site/crates/{}.html", krate["name"]), &krate["name"], &json!({
-            "crate": krate,
-            "user": user,
-            }))?;
+        let filename = format!("_site/crates/{}.html", krate["name"]);
+        let utc: DateTime<Utc> = Utc::now();
+        let globals = liquid::object!({
+            "version": format!("{VERSION}"),
+            "utc":     format!("{}", utc),
+            "title":   &krate["name"],
+            "user":    user,
+            "crate":   krate,
+        });
+        let html = template.render(&globals).unwrap();
+        let mut file = File::create(filename).unwrap();
+        writeln!(&mut file, "{}", html).unwrap();
     }
     Ok(())
 }
 
 
-fn load_templates() -> Result<Handlebars<'static>, Box<dyn Error>> {
-    log::info!("load_templates");
+fn load_templates() -> Result<Partials, Box<dyn Error>> {
+    // log::info!("load_templates");
 
-    let mut handlebar = Handlebars::new();
-    handlebar.register_template_file("about", "templates/about.html")?;
-    handlebar.register_template_file("list",  "templates/list.html")?;
-    handlebar.register_template_file("stats", "templates/stats.html")?;
-    handlebar.register_template_file("crate", "templates/crate.html")?;
-    handlebar.register_template_file("user",  "templates/user.html")?;
-    handlebar.register_template_file("layout", "templates/layout.html")?;
+    let mut partials = Partials::empty();
+    let filename ="templates/incl/header.html";
+    partials.add(filename, read_file(filename));
+    let filename ="templates/incl/footer.html";
+    partials.add(filename, read_file(filename));
 
-    Ok(handlebar)
+    Ok(partials)
 }
 
 fn generate_pages(
@@ -239,16 +298,12 @@ fn generate_pages(
     ) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
-    let handlebar = match load_templates() {
-        Ok(handlebar) => handlebar,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
-
     // Create a folder _site
     let _res = fs::create_dir_all("_site");
     let _res = fs::create_dir_all("_site/crates");
     let _res = fs::create_dir_all("_site/users");
 
+    let all_crates = crates.into_iter().collect::<Vec<&Record>>();
     let home_page_but_no_repo = crates.into_iter().filter(|w| has_homepage_no_repo(w)).collect::<Vec<&Record>>();
     let no_repo = crates.into_iter().filter(|w| !has_repo(w)).collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
@@ -257,51 +312,81 @@ fn generate_pages(
 
     const PAGE_SIZE: usize = 100;
 
+    let mut partials = Partials::empty();
+    let filename ="templates/incl/header.html";
+    partials.add(filename, read_file(filename));
+    let filename ="templates/incl/footer.html";
+    partials.add(filename, read_file(filename));
+
     let page_size = if crates.len() > PAGE_SIZE { PAGE_SIZE } else { crates.len() };
-    render(&handlebar, &"list".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(), &json!({
-        "total": crates.len(),
-        "rows": &crates[0..page_size],
-    }))?;
-
-    let page_size = if no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { no_repo.len() };
-    render(&handlebar, &"list".to_string(), &"_site/no-repo.html".to_string(), &"Missing repository".to_string(), &json!({
-        "total": no_repo.len(),
-        "rows": &no_repo[0..page_size],
-    }))?;
-
-
-    let page_size = if home_page_but_no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { home_page_but_no_repo.len() };
-    render(&handlebar, &"list".to_string(), &"_site/has-homepage-but-no-repo.html".to_string(), &"Missing repository".to_string(), &json!({
-        "total": home_page_but_no_repo.len(),
-        "rows": &home_page_but_no_repo[0..page_size],
-    }))?;
+    render(&"list".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(),
+        all_crates.len(), // total
+        (&all_crates[0..page_size]).to_vec(), // rows
+    )?;
+     let page_size = if no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { no_repo.len() };
+     render(&"list".to_string(), &"_site/no-repo.html".to_string(), &"Missing repository".to_string(),
+         no_repo.len(), // total
+         (&no_repo[0..page_size]).to_vec(), // rows
+     )?;
 
 
-    let page_size = if other_repos.len() > PAGE_SIZE { PAGE_SIZE } else { other_repos.len() };
-    render(&handlebar, &"list".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(), &json!({
-        "total": other_repos.len(),
-        "rows": &other_repos[0..page_size],
-    }))?;
+     let page_size = if home_page_but_no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { home_page_but_no_repo.len() };
+     render(&"list".to_string(), &"_site/has-homepage-but-no-repo.html".to_string(), &"Missing repository".to_string(),
+         home_page_but_no_repo.len(), // total
+         (&home_page_but_no_repo[0..page_size]).to_vec(), // rows
+     )?;
 
 
-    render(&handlebar, &"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(), &json!({}))?;
-
-    log::info!("{:?}", repo_type);
-    log::info!("{:?}", repo_percentage);
-    render(&handlebar, &"stats".to_string(), &"_site/stats.html".to_string(), &"Rust Digger Stats".to_string(), &json!({
-        "total": crates.len(),
-        "no_repo": no_repo.len(),
-        "no_repo_percentage": percentage(no_repo.len(), crates.len()),
-        "repo_type": repo_type,
-        "repo_percentage": repo_percentage,
-        "home_page_but_no_repo": home_page_but_no_repo.len(),
-        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
-        }))?;
+     let page_size = if other_repos.len() > PAGE_SIZE { PAGE_SIZE } else { other_repos.len() };
+     render(&"list".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(),
+         other_repos.len(), // total
+         (&other_repos[0..page_size]).to_vec(), // rows
+     )?;
 
 
-    generate_user_pages(&handlebar, &crates, &users, &crates_by_owner)?;
+     render(&"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(),
+         0,
+         vec![],
+     )?;
 
-    generate_crate_pages(&handlebar, &crates, &users, &owner_by_crate_id)?;
+     log::info!("{:?}", repo_type);
+     log::info!("{:?}", repo_percentage);
+
+     let partials = match load_templates() {
+         Ok(partials) => partials,
+         Err(error) => panic!("Error loading templates {}", error),
+     };
+
+     let template = liquid::ParserBuilder::with_stdlib()
+         .partials(partials)
+         .build()
+         .unwrap()
+         .parse_file("templates/stats.html")
+         .unwrap();
+
+        let filename = "_site/stats.html";
+        let utc: DateTime<Utc> = Utc::now();
+        let globals = liquid::object!({
+            "version": format!("{VERSION}"),
+            "utc":     format!("{}", utc),
+            "title":   "Rust Digger Stats",
+            //"user":    user,
+            //"crate":   krate,
+            "total": crates.len(),
+            "no_repo": no_repo.len(),
+            "no_repo_percentage": percentage(no_repo.len(), crates.len()),
+            "repo_type": repo_type,
+            "repo_percentage": repo_percentage,
+            "home_page_but_no_repo": home_page_but_no_repo.len(),
+            "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
+        });
+        let html = template.render(&globals).unwrap();
+        let mut file = File::create(filename).unwrap();
+        writeln!(&mut file, "{}", html).unwrap();
+
+     generate_crate_pages(&crates, &users, &owner_by_crate_id)?;
+
+     generate_user_pages(&crates, &users, &crates_by_owner)?;
 
     Ok(())
 }
@@ -382,6 +467,19 @@ fn read_csv_file(filepath: &str, limit: i32) -> Result<Vec<Record>, Box<dyn Erro
 
     log::info!("Finished reading {filepath}");
     Ok(records)
+}
+
+fn read_file(filename: &str) -> String {
+    let mut content = String::new();
+    match File::open(filename) {
+        Ok(mut file) => {
+            file.read_to_string(&mut content).unwrap();
+        },
+        Err(error) => {
+            println!("Error opening file {}: {}", filename, error);
+        },
+    }
+    content
 }
 
 #[cfg(test)]
