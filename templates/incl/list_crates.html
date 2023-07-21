@@ -11,7 +11,7 @@
       <tr>
         <td><a href="/crates/{{row.name}}">{{row.name}}</a></td>
         <td>{{row.updated_at}}</td>
-        {% if row.repository %}
+        {% if row.repository != "" %}
           <td><a href="{{row.repository}}">repo</a></td>
         {% else %}
           <td>NA</td>
