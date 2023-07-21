@@ -12,12 +12,7 @@
     </table>
 
     <h2 class="title is-5">Crates</h2>
-    {% for crate in rows %}
-<div>
-        <a href="/crates/{{crate.name}}">{{crate.name}}</a> {{crate.repository}}
-</div>
-    {% endfor %}
-
+    {% include 'templates/incl/list_crates.html' %}
   </div>
 </section>
 
