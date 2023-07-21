@@ -77,7 +77,7 @@ fn render_about_page()  -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn render(template: &String, filename: &String, title: &String,
+fn render_list_page(filename: &String, title: &String,
     total: usize,
     rows: Vec<&Record>,
 ) -> Result<(), Box<dyn Error>> {
@@ -101,7 +101,7 @@ fn render(template: &String, filename: &String, title: &String,
         .partials(partials)
         .build()
         .unwrap()
-        .parse_file(format!("templates/{}.html", template))
+        .parse_file("templates/list.html")
         .unwrap();
     let html = template.render(&globals).unwrap();
 
@@ -345,26 +345,26 @@ fn generate_pages(
     partials.add(filename, read_file(filename));
 
     let page_size = if crates.len() > PAGE_SIZE { PAGE_SIZE } else { crates.len() };
-    render(&"list".to_string(), &"_site/index.html".to_string(), &"Rust Digger".to_string(),
+    render_list_page(&"_site/index.html".to_string(), &"Rust Digger".to_string(),
         all_crates.len(), // total
         (&all_crates[0..page_size]).to_vec(), // rows
     )?;
      let page_size = if no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { no_repo.len() };
-     render(&"list".to_string(), &"_site/no-repo.html".to_string(), &"Missing repository".to_string(),
+     render_list_page(&"_site/no-repo.html".to_string(), &"Missing repository".to_string(),
          no_repo.len(), // total
          (&no_repo[0..page_size]).to_vec(), // rows
      )?;
 
 
      let page_size = if home_page_but_no_repo.len() > PAGE_SIZE { PAGE_SIZE } else { home_page_but_no_repo.len() };
-     render(&"list".to_string(), &"_site/has-homepage-but-no-repo.html".to_string(), &"Missing repository".to_string(),
+     render_list_page(&"_site/has-homepage-but-no-repo.html".to_string(), &"Missing repository".to_string(),
          home_page_but_no_repo.len(), // total
          (&home_page_but_no_repo[0..page_size]).to_vec(), // rows
      )?;
 
 
      let page_size = if other_repos.len() > PAGE_SIZE { PAGE_SIZE } else { other_repos.len() };
-     render(&"list".to_string(), &"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(),
+     render_list_page(&"_site/other-repos.html".to_string(), &"Unknown repositories".to_string(),
          other_repos.len(), // total
          (&other_repos[0..page_size]).to_vec(), // rows
      )?;
