@@ -50,6 +50,32 @@ fn main() {
     log::info!("Ending the Rust Digger");
 }
 
+fn render_about_page()  -> Result<(), Box<dyn Error>> {
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
+
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "About Rust Digger",
+    });
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/about.html")
+        .unwrap();
+    let html = template.render(&globals).unwrap();
+
+
+    let mut file = File::create("_site/about.html").unwrap();
+    writeln!(&mut file, "{}", html).unwrap();
+    Ok(())
+}
 
 fn render(template: &String, filename: &String, title: &String,
     total: usize,
@@ -343,11 +369,7 @@ fn generate_pages(
          (&other_repos[0..page_size]).to_vec(), // rows
      )?;
 
-
-     render(&"about".to_string(), &"_site/about.html".to_string(), &"About Rust Digger".to_string(),
-         0,
-         vec![],
-     )?;
+     render_about_page();
 
      log::info!("{:?}", repo_type);
      log::info!("{:?}", repo_percentage);
