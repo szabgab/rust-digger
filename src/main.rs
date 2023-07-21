@@ -101,7 +101,7 @@ fn render_list_page(filename: &String, title: &String,
         .partials(partials)
         .build()
         .unwrap()
-        .parse_file("templates/list.html")
+        .parse_file("templates/crate_list_page.html")
         .unwrap();
     let html = template.render(&globals).unwrap();
 
