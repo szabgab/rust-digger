@@ -5,28 +5,8 @@
   <div class="container">
     <h1 class="title">Rust Digger</h1>
     Total:  {{total}}
-    <table class="table">
-      <thead>
-      <tr>
-       <th>name</th>
-       <th>update at</th>
-       <th>repo</th>
-      </tr>
-      </thead>
-    <tbody>
-    {% for row in rows %}
-      <tr>
-        <td><a href="/crates/{{row.name}}">{{row.name}}</a></td>
-        <td>{{row.updated_at}}</td>
-        {% if row.repository %}
-          <td><a href="{{row.repository}}">repo</a></td>
-        {% else %}
-          <td>NA</td>
-        {% endif %}
-      </tr>
-    {% endfor %}
-    </tbody>
-    </table>
+    {% include 'templates/incl/list_crates.html' %}
+
   </div>
 </section>
 

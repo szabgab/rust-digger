@@ -312,6 +312,8 @@ fn load_templates() -> Result<Partials, Box<dyn Error>> {
     partials.add(filename, read_file(filename));
     let filename ="templates/incl/footer.html";
     partials.add(filename, read_file(filename));
+    let filename ="templates/incl/list_crates.html";
+    partials.add(filename, read_file(filename));
 
     Ok(partials)
 }
