@@ -369,7 +369,7 @@ fn generate_pages(
          (&other_repos[0..page_size]).to_vec(), // rows
      )?;
 
-     render_about_page();
+     render_about_page()?;
 
      log::info!("{:?}", repo_type);
      log::info!("{:?}", repo_percentage);
