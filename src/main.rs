@@ -397,15 +397,16 @@ fn generate_pages(
         &"Rust Digger".to_string(),
         &all_crates,
     )?;
+
     render_list_page(
         &"_site/no-repo.html".to_string(),
-        &"Missing repository".to_string(),
+        &"Has no repository".to_string(),
         &no_repo,
     )?;
 
     render_list_page(
         &"_site/has-homepage-but-no-repo.html".to_string(),
-        &"Missing repository".to_string(),
+        &"Has homepage, but no repository".to_string(),
         &home_page_but_no_repo,
     )?;
 
@@ -417,7 +418,7 @@ fn generate_pages(
 
     render_list_page(
         &"_site/other-repos.html".to_string(),
-        &"Unknown repositories".to_string(),
+        &"Other repositories we don't recognize".to_string(),
         &other_repos,
     )?;
 
