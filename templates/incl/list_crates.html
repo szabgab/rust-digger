@@ -7,12 +7,12 @@
       </tr>
       </thead>
     <tbody>
-    {% for row in rows %}
+    {% for crate in crates %}
       <tr>
-        <td><a href="/crates/{{row.name}}">{{row.name}}</a></td>
-        <td>{{row.updated_at}}</td>
-        {% if row.repository != "" %}
-          <td><a href="{{row.repository}}">repo</a></td>
+        <td><a href="/crates/{{crate.name}}">{{crate.name}}</a></td>
+        <td>{{crate.updated_at}}</td>
+        {% if crate.repository != "" %}
+          <td><a href="{{crate.repository}}">repo</a></td>
         {% else %}
           <td>NA</td>
         {% endif %}

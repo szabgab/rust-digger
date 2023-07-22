@@ -80,7 +80,7 @@ fn render_list_page(
     filename: &String,
     title: &String,
     total: usize,
-    rows: Vec<&Record>,
+    crates: Vec<&Record>,
 ) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
 
@@ -95,7 +95,7 @@ fn render_list_page(
         "utc":     format!("{}", utc),
         "title":   title,
         "total":   total,
-        "rows":    rows,
+        "crates":  crates ,
     });
 
     let template = liquid::ParserBuilder::with_stdlib()
@@ -257,7 +257,7 @@ fn generate_user_pages(
             "utc":     format!("{}", utc),
             "title":   &user["name"],
             "user":    user,
-            "rows":   selected_crates,
+            "crates":  selected_crates,
         });
         let html = template.render(&globals).unwrap();
         let mut file = File::create(filename).unwrap();
