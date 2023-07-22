@@ -127,6 +127,9 @@ fn has_repo(w: &Record) -> bool {
 fn has_homepage_no_repo(w: &Record) -> bool {
     w["homepage"] != "" && w["repository"] == ""
 }
+fn no_homepage_no_repo(w: &Record) -> bool {
+    w["homepage"] == "" && w["repository"] == ""
+}
 
 fn get_repo_types(crates: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) {
     let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
@@ -367,6 +370,10 @@ fn generate_pages(
         .into_iter()
         .filter(|w| has_homepage_no_repo(w))
         .collect::<Vec<&Record>>();
+    let no_homepage_no_repo_crates = crates
+        .into_iter()
+        .filter(|w| no_homepage_no_repo(w))
+        .collect::<Vec<&Record>>();
     let no_repo = crates
         .into_iter()
         .filter(|w| !has_repo(w))
@@ -378,7 +385,6 @@ fn generate_pages(
         RepoPercentage,
         Vec<&Record>,
     ) = get_repo_types(&crates);
-
 
     let mut partials = Partials::empty();
     let filename = "templates/incl/header.html";
@@ -401,6 +407,12 @@ fn generate_pages(
         &"_site/has-homepage-but-no-repo.html".to_string(),
         &"Missing repository".to_string(),
         &home_page_but_no_repo,
+    )?;
+
+    render_list_page(
+        &"_site/no-homepage-no-repo.html".to_string(),
+        &"No repository, no homepage".to_string(),
+        &no_homepage_no_repo_crates,
     )?;
 
     render_list_page(
@@ -441,6 +453,8 @@ fn generate_pages(
         "repo_percentage": repo_percentage,
         "home_page_but_no_repo": home_page_but_no_repo.len(),
         "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
+        "no_homepage_no_repo_crates": no_homepage_no_repo_crates.len(),
+        "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
