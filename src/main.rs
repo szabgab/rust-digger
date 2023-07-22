@@ -11,6 +11,7 @@ use chrono::prelude::*;
 pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+const PAGE_SIZE: usize = 100;
 
 struct Repo<'a> {
     name: &'a str,
@@ -79,8 +80,7 @@ fn render_about_page() -> Result<(), Box<dyn Error>> {
 fn render_list_page(
     filename: &String,
     title: &String,
-    total: usize,
-    crates: Vec<&Record>,
+    crates: &Vec<&Record>,
 ) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
 
@@ -89,13 +89,19 @@ fn render_list_page(
         Err(error) => panic!("Error loading templates {}", error),
     };
 
+    let page_size = if crates.len() > PAGE_SIZE {
+        PAGE_SIZE
+    } else {
+        crates.len()
+    };
+
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
         "version": format!("{VERSION}"),
         "utc":     format!("{}", utc),
         "title":   title,
-        "total":   total,
-        "crates":  crates ,
+        "total":   crates.len(),
+        "crates":  (&crates[0..page_size]).to_vec(),
     });
 
     let template = liquid::ParserBuilder::with_stdlib()
@@ -373,7 +379,6 @@ fn generate_pages(
         Vec<&Record>,
     ) = get_repo_types(&crates);
 
-    const PAGE_SIZE: usize = 100;
 
     let mut partials = Partials::empty();
     let filename = "templates/incl/header.html";
@@ -381,51 +386,27 @@ fn generate_pages(
     let filename = "templates/incl/footer.html";
     partials.add(filename, read_file(filename));
 
-    let page_size = if crates.len() > PAGE_SIZE {
-        PAGE_SIZE
-    } else {
-        crates.len()
-    };
     render_list_page(
         &"_site/index.html".to_string(),
         &"Rust Digger".to_string(),
-        all_crates.len(),                     // total
-        (&all_crates[0..page_size]).to_vec(), // rows
+        &all_crates,
     )?;
-    let page_size = if no_repo.len() > PAGE_SIZE {
-        PAGE_SIZE
-    } else {
-        no_repo.len()
-    };
     render_list_page(
         &"_site/no-repo.html".to_string(),
         &"Missing repository".to_string(),
-        no_repo.len(),                     // total
-        (&no_repo[0..page_size]).to_vec(), // rows
+        &no_repo,
     )?;
 
-    let page_size = if home_page_but_no_repo.len() > PAGE_SIZE {
-        PAGE_SIZE
-    } else {
-        home_page_but_no_repo.len()
-    };
     render_list_page(
         &"_site/has-homepage-but-no-repo.html".to_string(),
         &"Missing repository".to_string(),
-        home_page_but_no_repo.len(),                     // total
-        (&home_page_but_no_repo[0..page_size]).to_vec(), // rows
+        &home_page_but_no_repo,
     )?;
 
-    let page_size = if other_repos.len() > PAGE_SIZE {
-        PAGE_SIZE
-    } else {
-        other_repos.len()
-    };
     render_list_page(
         &"_site/other-repos.html".to_string(),
         &"Unknown repositories".to_string(),
-        other_repos.len(),                     // total
-        (&other_repos[0..page_size]).to_vec(), // rows
+        &other_repos,
     )?;
 
     render_about_page()?;
