@@ -367,6 +367,8 @@ fn generate_pages(
     let _res = fs::create_dir_all("_site/users");
     let _res = fs::create_dir_all("_site/news");
 
+    fs::copy("digger.js", "_site/digger.js")?;
+
     let all_crates = crates.into_iter().collect::<Vec<&Record>>();
     let home_page_but_no_repo = crates
         .into_iter()
