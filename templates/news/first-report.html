@@ -17,12 +17,18 @@
     This is the first report based on the data collected by the <a href="/">Rust Digger</a>. Below you can find a copy of the <a href="/stats">stats</a> page.
     A few highlights: We found 120,484 crates. Almost 80% of them have a link to their <b>repository</b> (Public version control system). An additional 3% have
     a value in the <b>homepage</b> field. In many cases that is actully the link to their repository. <b>17.17%</b> of them have neither <b>repository</b> nor
-    <b>homepage</b>.
+    <b>homepage</b>. There are also 313 crates (<b>0.26%</b> of the total), that use an unsecure (http) link to their git repo. It is not a big issue, after all most likely
+    the VCS host will redirdect to the <b>https</b> version, but nevertheless using the https link is more correct.
     </p>
+    <p>
+     Is that 80% high or low you might ask. I <a href=https://pydigger.com/stats">stats on PyDigger</a> where only 63.49% of the <b>Python</b> packages have links to their VCS
+     and that only covers the 115,321 most recently uploaded packages. For older packages it is probably lower. So 80% is much better than those for Python, but still it means
+     for 17-20% of the crates we don't have a very easy way to find their repos.
+    </p>
+    <p>
     Almost 75% of all the crates use GitHub as their repository leaving 5% for the rest of the services. GitLab has 2.68%. There are also 1,821 crates (1.51% of all the crates)
     where we did not categorize the repository yet. That still needs some manual work. Some of these  have <b>http</b> link to github.com.
     </p>
-
 
     <table class="table">
       <thead>
@@ -122,6 +128,11 @@
           <td><a href="/no-homepage-no-repo">No homepage and no repository</a></td>
           <td>20693</td>
           <td>17.17%</td>
+      </tr>
+      <tr>
+          <td><a href="/repo-with-http">Unsecure repo url (using http)</a></td>
+          <td>313</td>
+          <td>0.26%</td>
       </tr>
      </tbody>
     </table>
