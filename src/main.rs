@@ -380,6 +380,10 @@ fn generate_pages(
         .into_iter()
         .filter(|w| !has_repo(w))
         .collect::<Vec<&Record>>();
+    let repo_with_http = crates
+        .into_iter()
+        .filter(|w| w["repository"] != "" && w["repository"].starts_with("http://"))
+        .collect::<Vec<&Record>>();
     //dbg!(&no_repo[0..1]);
 
     let (repo_type, repo_percentage, other_repos): (
@@ -404,6 +408,12 @@ fn generate_pages(
         &"_site/no-repo.html".to_string(),
         &"Has no repository".to_string(),
         &no_repo,
+    )?;
+
+    render_list_page(
+        &"_site/repo-with-http.html".to_string(),
+        &"Repository is unsecure".to_string(),
+        &repo_with_http,
     )?;
 
     render_list_page(
@@ -460,6 +470,8 @@ fn generate_pages(
         "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
         "no_homepage_no_repo_crates": no_homepage_no_repo_crates.len(),
         "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
+        "repo_with_http": repo_with_http.len(),
+        "repo_with_http_percentage": percentage(repo_with_http.len(), crates.len()),
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
@@ -485,7 +497,8 @@ fn render_news_pages() {
 
             println!("{:?}", entry.path());
             println!("{:?}", entry.path().strip_prefix("templates/"));
-            let output_path = Path::new("_site").join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
+            let output_path = Path::new("_site")
+                .join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
             let template = liquid::ParserBuilder::with_stdlib()
                 .partials(partials)
                 .build()
@@ -504,12 +517,12 @@ fn render_news_pages() {
         }
     }
 
-//            },
-//            Err(error) => {
-//                println!("Error opening file {:?}: {}", file.as_os_str(), error);
-//            },
-//        }
-//    }
+    //            },
+    //            Err(error) => {
+    //                println!("Error opening file {:?}: {}", file.as_os_str(), error);
+    //            },
+    //        }
+    //    }
 }
 
 fn read_crate_owners(limit: i32) -> (Owners, CratesByOwner) {
