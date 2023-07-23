@@ -2,3 +2,4 @@
 /data/
 /_site/
 *.bak
+db-dump.tar.gz
