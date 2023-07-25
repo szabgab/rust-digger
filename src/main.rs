@@ -525,6 +525,7 @@ fn generate_pages(
 }
 
 fn render_news_pages() {
+    log::info!("render_news_pages");
     let utc: DateTime<Utc> = Utc::now();
 
     let path = Path::new("templates/news");
@@ -534,9 +535,12 @@ fn render_news_pages() {
                 Ok(partials) => partials,
                 Err(error) => panic!("Error loading templates {}", error),
             };
+            if entry.path().extension().unwrap() != "html" {
+                continue;
+            }
 
-            println!("{:?}", entry.path());
-            println!("{:?}", entry.path().strip_prefix("templates/"));
+            log::info!("news file: {:?}", entry.path());
+            log::info!("{:?}", entry.path().strip_prefix("templates/"));
             let output_path = Path::new("_site")
                 .join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
             let template = liquid::ParserBuilder::with_stdlib()
