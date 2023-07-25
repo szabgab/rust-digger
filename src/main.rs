@@ -27,22 +27,21 @@ struct Crate {
     downloads: String,
     homepage: String,
     id: String,
-    max_upload_size:String,
-    name:String,
-    readme:String,
-    repository:String,
-    updated_at:String,
+    max_upload_size: String,
+    name: String,
+    readme: String,
+    repository: String,
+    updated_at: String,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct User {
     gh_avatar: String,
     gh_id: String,
-    gh_login:String,
-    id:String,
-    name:String,
+    gh_login: String,
+    id: String,
+    name: String,
 }
-
 
 type Record = HashMap<String, String>;
 type RepoPercentage<'a> = HashMap<&'a str, String>;
@@ -680,17 +679,17 @@ fn read_file(filename: &str) -> String {
 mod tests {
     use super::*;
 
-//    #[test]
-//    fn test_has_repo() {
-//        let x: Record = HashMap::from([(
-//            "repository".to_string(),
-//            "https://github.com/szabgab/rust-digger".to_string(),
-//        )]);
-//        assert!(has_repo(&x));
-//
-//        let x: Record = HashMap::from([("repository".to_string(), "".to_string())]);
-//        assert!(!has_repo(&x));
-//    }
+    //    #[test]
+    //    fn test_has_repo() {
+    //        let x: Record = HashMap::from([(
+    //            "repository".to_string(),
+    //            "https://github.com/szabgab/rust-digger".to_string(),
+    //        )]);
+    //        assert!(has_repo(&x));
+    //
+    //        let x: Record = HashMap::from([("repository".to_string(), "".to_string())]);
+    //        assert!(!has_repo(&x));
+    //    }
 
     #[test]
     fn test_percentage() {
