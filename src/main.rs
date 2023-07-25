@@ -292,6 +292,8 @@ fn generate_user_pages(
                 log::warn!("user {uid} does not have crates");
             }
         }
+
+        selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
         let filename = format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
         let utc: DateTime<Utc> = Utc::now();
         let globals = liquid::object!({
