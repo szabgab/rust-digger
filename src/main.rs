@@ -34,12 +34,21 @@ struct Crate {
     updated_at:String,
 }
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+struct User {
+    gh_avatar: String,
+    gh_id: String,
+    gh_login:String,
+    id:String,
+    name:String,
+}
+
 
 type Record = HashMap<String, String>;
 type RepoPercentage<'a> = HashMap<&'a str, String>;
 type Owners = HashMap<String, String>;
 type CratesByOwner = HashMap<String, Vec<String>>;
-type Users = HashMap<String, Record>;
+type Users = HashMap<String, User>;
 
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -276,12 +285,12 @@ fn generate_user_pages(
                 log::warn!("user {uid} does not have crates");
             }
         }
-        let filename = format!("_site/users/{}.html", user["gh_login"].to_ascii_lowercase());
+        let filename = format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
         let utc: DateTime<Utc> = Utc::now();
         let globals = liquid::object!({
             "version": format!("{VERSION}"),
             "utc":     format!("{}", utc),
-            "title":   &user["name"],
+            "title":   &user.name,
             "user":    user,
             "crates":  selected_crates,
         });
@@ -314,7 +323,13 @@ fn generate_crate_pages(
         //dbg!(crate);
         let crate_id = &krate.id;
         //dbg!(crate_id);
-        let mut user: &Record = &HashMap::new();
+        let mut user: &User = &User {
+            gh_avatar: "".to_string(),
+            gh_id: "".to_string(),
+            gh_login: "".to_string(),
+            id: "".to_string(),
+            name: "".to_string(),
+        };
         match owner_by_crate_id.get(crate_id) {
             Some(owner_id) => {
                 //println!("owner_id: {owner_id}");
@@ -598,18 +613,29 @@ fn read_crates(limit: i32) -> Vec<Crate> {
 
 fn read_users(limit: i32) -> Users {
     let mut users: Users = HashMap::new();
-    let result = read_csv_file("data/data/users.csv", limit);
-    match result {
-        Ok(rows) => {
-            for row in rows {
-                //dbg!(&row);
-                //dbg!(&row["id"]);
-                users.insert(row["id"].clone(), row);
+    let filepath = "data/data/users.csv";
+    log::info!("Start reading {}", filepath);
+    let mut count = 0;
+    match File::open(filepath.to_string()) {
+        Ok(file) => {
+            let mut rdr = csv::Reader::from_reader(file);
+            for result in rdr.deserialize() {
+                count += 1;
+                if limit > 0 && count >= limit {
+                    log::info!("Limit of {limit} reached");
+                    break;
+                }
+                let record: User = match result {
+                    Ok(value) => value,
+                    Err(err) => panic!("Error: {}", err),
+                };
+                users.insert(record.id.clone(), record);
             }
         }
-        Err(err) => panic!("Error: {}", err),
+        Err(error) => panic!("Error opening file {}: {}", filepath, error),
     }
-    //dbg!(users);
+
+    log::info!("Finished reading {filepath}");
     users
 }
 
