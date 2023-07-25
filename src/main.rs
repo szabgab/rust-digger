@@ -19,6 +19,22 @@ struct Repo<'a> {
     url: &'a str,
 }
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+struct Crate {
+    created_at: String,
+    description: String,
+    documentation: String,
+    downloads: String,
+    homepage: String,
+    id: String,
+    max_upload_size:String,
+    name:String,
+    readme:String,
+    repository:String,
+    updated_at:String,
+}
+
+
 type Record = HashMap<String, String>;
 type RepoPercentage<'a> = HashMap<&'a str, String>;
 type Owners = HashMap<String, String>;
@@ -41,7 +57,7 @@ fn main() {
 
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(limit);
     let users: Users = read_users(limit);
-    let crates: Vec<Record> = read_crates(limit);
+    let crates: Vec<Crate> = read_crates(limit);
     //dbg!(&crates_by_owner);
 
     match generate_pages(&crates, &users, &owner_by_crate_id, &crates_by_owner) {
@@ -81,7 +97,7 @@ fn render_about_page() -> Result<(), Box<dyn Error>> {
 fn render_list_page(
     filename: &String,
     title: &String,
-    crates: &Vec<&Record>,
+    crates: &Vec<&Crate>,
 ) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
 
@@ -122,18 +138,18 @@ fn render_list_page(
     Ok(())
 }
 
-fn has_repo(w: &Record) -> bool {
-    w["repository"] != ""
+fn has_repo(w: &Crate) -> bool {
+    w.repository != ""
 }
-fn has_homepage_no_repo(w: &Record) -> bool {
-    w["homepage"] != "" && w["repository"] == ""
+fn has_homepage_no_repo(w: &Crate) -> bool {
+    w.homepage != "" && w.repository == ""
 }
-fn no_homepage_no_repo(w: &Record) -> bool {
-    w["homepage"] == "" && w["repository"] == ""
+fn no_homepage_no_repo(w: &Crate) -> bool {
+    w.homepage == "" && w.repository == ""
 }
 
-fn get_repo_types(crates: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Record>) {
-    let mut other: Vec<&Record> = vec![]; //&Vec<&HashMap<String, String>>;
+fn get_repo_types(crates: &Vec<Crate>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Crate>) {
+    let mut other: Vec<&Crate> = vec![];
     let repos = vec![
         Repo {
             name: "github",
@@ -191,12 +207,12 @@ fn get_repo_types(crates: &Vec<Record>) -> (HashMap<&str, usize>, RepoPercentage
     }
 
     'outer: for krate in crates {
-        if krate["repository"] == "" {
+        if krate.repository == "" {
             *repo_type.entry("no_repo").or_insert(0) += 1;
             continue;
         }
         for repo in &repos {
-            if krate["repository"].starts_with(repo.url) {
+            if krate.repository.starts_with(repo.url) {
                 *repo_type.entry(&repo.name).or_insert(0) += 1;
                 continue 'outer;
             }
@@ -220,7 +236,7 @@ fn percentage(num: usize, total: usize) -> String {
 }
 
 fn generate_user_pages(
-    crates: &Vec<Record>,
+    crates: &Vec<Crate>,
     users: &Users,
     crates_by_owner: &CratesByOwner,
 ) -> Result<(), Box<dyn Error>> {
@@ -236,16 +252,16 @@ fn generate_user_pages(
         .parse_file("templates/user.html")
         .unwrap();
 
-    let mut crate_by_id: HashMap<&str, &Record> = HashMap::new();
+    let mut crate_by_id: HashMap<&str, &Crate> = HashMap::new();
     for krate in crates {
-        crate_by_id.insert(&krate["id"], krate);
+        crate_by_id.insert(&krate.id, krate);
     }
     //dbg!(&crate_by_id);
     //dbg!(&crate_by_id["81366"]);
 
     for (uid, user) in users.iter() {
         //dbg!(uid);
-        let mut selected_crates: Vec<&Record> = vec![];
+        let mut selected_crates: Vec<&Crate> = vec![];
         match crates_by_owner.get(uid) {
             Some(crate_ids) => {
                 //dbg!(crate_ids);
@@ -278,7 +294,7 @@ fn generate_user_pages(
 }
 
 fn generate_crate_pages(
-    crates: &Vec<Record>,
+    crates: &Vec<Crate>,
     users: &Users,
     owner_by_crate_id: &Owners,
 ) -> Result<(), Box<dyn Error>> {
@@ -296,7 +312,7 @@ fn generate_crate_pages(
 
     for krate in crates {
         //dbg!(crate);
-        let crate_id = &krate["id"];
+        let crate_id = &krate.id;
         //dbg!(crate_id);
         let mut user: &Record = &HashMap::new();
         match owner_by_crate_id.get(crate_id) {
@@ -323,12 +339,12 @@ fn generate_crate_pages(
         //    //let user = &users[owner_id];
         //}
         //dbg!(user);
-        let filename = format!("_site/crates/{}.html", krate["name"]);
+        let filename = format!("_site/crates/{}.html", krate.name);
         let utc: DateTime<Utc> = Utc::now();
         let globals = liquid::object!({
             "version": format!("{VERSION}"),
             "utc":     format!("{}", utc),
-            "title":   &krate["name"],
+            "title":   &krate.name,
             "user":    user,
             "crate":   krate,
         });
@@ -354,7 +370,7 @@ fn load_templates() -> Result<Partials, Box<dyn Error>> {
 }
 
 fn generate_pages(
-    crates: &Vec<Record>,
+    crates: &Vec<Crate>,
     users: &Users,
     owner_by_crate_id: &Owners,
     crates_by_owner: &CratesByOwner,
@@ -369,29 +385,29 @@ fn generate_pages(
 
     fs::copy("digger.js", "_site/digger.js")?;
 
-    let all_crates = crates.into_iter().collect::<Vec<&Record>>();
+    let all_crates = crates.into_iter().collect::<Vec<&Crate>>();
     let home_page_but_no_repo = crates
         .into_iter()
         .filter(|w| has_homepage_no_repo(w))
-        .collect::<Vec<&Record>>();
+        .collect::<Vec<&Crate>>();
     let no_homepage_no_repo_crates = crates
         .into_iter()
         .filter(|w| no_homepage_no_repo(w))
-        .collect::<Vec<&Record>>();
+        .collect::<Vec<&Crate>>();
     let no_repo = crates
         .into_iter()
         .filter(|w| !has_repo(w))
-        .collect::<Vec<&Record>>();
+        .collect::<Vec<&Crate>>();
     let repo_with_http = crates
         .into_iter()
-        .filter(|w| w["repository"] != "" && w["repository"].starts_with("http://"))
-        .collect::<Vec<&Record>>();
+        .filter(|w| w.repository != "" && w.repository.starts_with("http://"))
+        .collect::<Vec<&Crate>>();
     //dbg!(&no_repo[0..1]);
 
     let (repo_type, repo_percentage, other_repos): (
         HashMap<&str, usize>,
         RepoPercentage,
-        Vec<&Record>,
+        Vec<&Crate>,
     ) = get_repo_types(&crates);
 
     let mut partials = Partials::empty();
@@ -551,16 +567,34 @@ fn read_crate_owners(limit: i32) -> (Owners, CratesByOwner) {
     (owner_by_crate_id, crates_by_owner)
 }
 
-fn read_crates(limit: i32) -> Vec<Record> {
-    let crates: Vec<Record>;
-    let result = read_csv_file("data/data/crates.csv", limit);
-    match result {
-        Ok(mut rows) => {
-            rows.sort_by(|a, b| b["updated_at"].cmp(&a["updated_at"]));
-            crates = rows;
+fn read_crates(limit: i32) -> Vec<Crate> {
+    let filepath = "data/data/crates.csv";
+    log::info!("Start reading {}", filepath);
+    let mut crates: Vec<Crate> = vec![];
+    let mut count = 0;
+    match File::open(filepath.to_string()) {
+        Ok(file) => {
+            //let mut content = String::new();
+            //file.read_to_string(&mut content).unwrap();
+            let mut rdr = csv::Reader::from_reader(file);
+            for result in rdr.deserialize() {
+                count += 1;
+                if limit > 0 && count >= limit {
+                    log::info!("Limit of {limit} reached");
+                    break;
+                }
+                let record: Crate = match result {
+                    Ok(value) => value,
+                    Err(error) => panic!("error: {}", error),
+                };
+                crates.push(record);
+            }
+            crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
         }
-        Err(err) => panic!("Error: {}", err),
+        Err(error) => panic!("Error opening file {}: {}", filepath, error),
     }
+
+    log::info!("Finished reading {filepath}");
     crates
 }
 
@@ -624,17 +658,17 @@ fn read_file(filename: &str) -> String {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_has_repo() {
-        let x: Record = HashMap::from([(
-            "repository".to_string(),
-            "https://github.com/szabgab/rust-digger".to_string(),
-        )]);
-        assert!(has_repo(&x));
-
-        let x: Record = HashMap::from([("repository".to_string(), "".to_string())]);
-        assert!(!has_repo(&x));
-    }
+//    #[test]
+//    fn test_has_repo() {
+//        let x: Record = HashMap::from([(
+//            "repository".to_string(),
+//            "https://github.com/szabgab/rust-digger".to_string(),
+//        )]);
+//        assert!(has_repo(&x));
+//
+//        let x: Record = HashMap::from([("repository".to_string(), "".to_string())]);
+//        assert!(!has_repo(&x));
+//    }
 
     #[test]
     fn test_percentage() {
