@@ -679,17 +679,38 @@ fn read_file(filename: &str) -> String {
 mod tests {
     use super::*;
 
-    //    #[test]
-    //    fn test_has_repo() {
-    //        let x: Record = HashMap::from([(
-    //            "repository".to_string(),
-    //            "https://github.com/szabgab/rust-digger".to_string(),
-    //        )]);
-    //        assert!(has_repo(&x));
-    //
-    //        let x: Record = HashMap::from([("repository".to_string(), "".to_string())]);
-    //        assert!(!has_repo(&x));
-    //    }
+    #[test]
+    fn test_has_repo() {
+        let x = Crate {
+            created_at: "".to_string(),
+            description: "".to_string(),
+            documentation: "".to_string(),
+            downloads: "".to_string(),
+            homepage: "".to_string(),
+            id: "".to_string(),
+            max_upload_size: "".to_string(),
+            name: "".to_string(),
+            readme: "".to_string(),
+            repository: "https://github.com/szabgab/rust-digger".to_string(),
+            updated_at: "".to_string(),
+        };
+        assert!(has_repo(&x));
+
+        let x = Crate {
+            created_at: "".to_string(),
+            description: "".to_string(),
+            documentation: "".to_string(),
+            downloads: "".to_string(),
+            homepage: "".to_string(),
+            id: "".to_string(),
+            max_upload_size: "".to_string(),
+            name: "".to_string(),
+            readme: "".to_string(),
+            repository: "".to_string(),
+            updated_at: "".to_string(),
+        };
+        assert!(!has_repo(&x));
+    }
 
     #[test]
     fn test_percentage() {
