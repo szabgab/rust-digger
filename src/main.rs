@@ -574,8 +574,6 @@ fn read_crates(limit: i32) -> Vec<Crate> {
     let mut count = 0;
     match File::open(filepath.to_string()) {
         Ok(file) => {
-            //let mut content = String::new();
-            //file.read_to_string(&mut content).unwrap();
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {
                 count += 1;
@@ -621,8 +619,6 @@ fn read_csv_file(filepath: &str, limit: i32) -> Result<Vec<Record>, Box<dyn Erro
     let mut count = 0;
     match File::open(filepath.to_string()) {
         Ok(file) => {
-            //let mut content = String::new();
-            //file.read_to_string(&mut content).unwrap();
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {
                 count += 1;
