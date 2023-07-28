@@ -15,6 +15,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
 struct Repo<'a> {
+    display: &'a str,
     name: &'a str,
     url: &'a str,
 }
@@ -170,50 +171,62 @@ fn get_repo_types(crates: &Vec<Crate>) -> (HashMap<&str, usize>, RepoPercentage,
     let mut other: Vec<&Crate> = vec![];
     let repos = vec![
         Repo {
+            display: "GitHub",
             name: "github",
             url: "https://github.com/",
         },
         Repo {
+            display: "GitLab",
             name: "gitlab",
             url: "https://gitlab.com/",
         },
         Repo {
+            display: "Codeberg",
             name: "codeberg",
             url: "https://codeberg.org/",
         },
         Repo {
+            display: "Gitee",
             name: "gitee",
             url: "https://gitee.com/",
         },
         Repo {
+            display: "Tor Project (GitLab)",
             name: "torproject",
             url: "https://gitlab.torproject.org/",
         },
         Repo {
+            display: "Free Desktop (GitLab)",
             name: "freedesktop",
             url: "https://gitlab.freedesktop.org/",
         },
         Repo {
+            display: "Wikimedia (GitLab)",
             name: "wikimedia",
             url: "https://gitlab.wikimedia.org/",
         },
         Repo {
+            display: "e3t",
             name: "e3t",
             url: "https://git.e3t.cc/",
         },
         Repo {
+            display: "srht",
             name: "srht",
             url: "https://git.sr.ht/",
         },
         Repo {
+            display: "Open Privacy",
             name: "openprivacy",
             url: "https://git.openprivacy.ca/",
         },
         Repo {
+            display: "Cronce (GitLab)",
             name: "cronce",
             url: "https://gitlab.cronce.io/",
         },
         Repo {
+            display: "Gnome (GitLab)",
             name: "gnome",
             url: "https://gitlab.gnome.org/",
         },
