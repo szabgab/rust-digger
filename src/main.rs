@@ -85,6 +85,8 @@ fn main() {
 }
 
 fn render_about_page() -> Result<(), Box<dyn Error>> {
+    log::info!("render_about_page");
+
     let partials = match load_templates() {
         Ok(partials) => partials,
         Err(error) => panic!("Error loading templates {}", error),
@@ -426,6 +428,10 @@ fn generate_pages(
         .into_iter()
         .filter(|w| w.repository != "" && w.repository.starts_with("http://"))
         .collect::<Vec<&Crate>>();
+    let github_with_www = crates
+        .into_iter()
+        .filter(|w| w.repository != "" && w.repository.contains("www.github.com"))
+        .collect::<Vec<&Crate>>();
     //dbg!(&no_repo[0..1]);
 
     let (repo_type, repo_percentage, other_repos): (
@@ -459,6 +465,12 @@ fn generate_pages(
     )?;
 
     render_list_page(
+        &"_site/github-with-www.html".to_string(),
+        &"Github with www".to_string(),
+        &github_with_www,
+    )?;
+
+    render_list_page(
         &"_site/has-homepage-but-no-repo.html".to_string(),
         &"Has homepage, but no repository".to_string(),
         &home_page_but_no_repo,
@@ -480,9 +492,10 @@ fn generate_pages(
 
     render_about_page()?;
 
-    log::info!("{:?}", repo_type);
-    log::info!("{:?}", repo_percentage);
+    log::info!("repo_type: {:?}", repo_type);
+    log::info!("repo_percentage: {:?}", repo_percentage);
 
+    log::info!("render_stats_page");
     let partials = match load_templates() {
         Ok(partials) => partials,
         Err(error) => panic!("Error loading templates {}", error),
@@ -514,6 +527,8 @@ fn generate_pages(
         "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
         "repo_with_http": repo_with_http.len(),
         "repo_with_http_percentage": percentage(repo_with_http.len(), crates.len()),
+        "github_with_www": github_with_www.len(),
+        "github_with_www_percentage": percentage(github_with_www.len(), crates.len()),
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
