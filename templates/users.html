@@ -1,0 +1,25 @@
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title is-3">Users</h1>
+
+
+    <table class="table">
+      <thead>
+      <tr>
+       <th>name</th>
+      </tr>
+      </thead>
+    <tbody>
+    {% for user in users %}
+      <tr>
+        <td><a href="/users/{{user.gh_login | downcase}}">{{user.name}} ({{user.gh_login}})</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</div>
+</section>
+
+{% include 'templates/incl/footer.html' %}

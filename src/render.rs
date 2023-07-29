@@ -251,6 +251,7 @@ pub fn generate_user_pages(
     //dbg!(&crate_by_id);
     //dbg!(&crate_by_id["81366"]);
 
+    let mut users_with_crates: Vec<&User> = vec![];
     for (uid, user) in users.iter() {
         //dbg!(uid);
         let mut selected_crates: Vec<&Crate> = vec![];
@@ -263,6 +264,7 @@ pub fn generate_user_pages(
                     //dbg!(&crate_by_id.get(&crate_id.clone()));
                     selected_crates.push(&crate_by_id[crate_id.as_str()]);
                 }
+                users_with_crates.push(user);
             }
             None => {
                 // We do not create a page for people who don't have crates.
@@ -285,6 +287,32 @@ pub fn generate_user_pages(
         let mut file = File::create(filename).unwrap();
         writeln!(&mut file, "{}", html).unwrap();
     }
+
+    // list all the users on the /users/ page
+    users_with_crates.sort_by(|a, b| a.name.cmp(&b.name));
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/users.html")
+        .unwrap();
+
+    let filename = "_site/users/index.html";
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "Users".to_string(),
+        "users":    users_with_crates,
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{}", html).unwrap();
 
     Ok(())
 }
