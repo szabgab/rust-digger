@@ -85,8 +85,8 @@ fn main() {
     log::info!("Ending the Rust Digger");
 }
 
-fn render_about_page() -> Result<(), Box<dyn Error>> {
-    log::info!("render_about_page");
+fn render_static_pages() -> Result<(), Box<dyn Error>> {
+    log::info!("render_static_pages");
 
     let pages = vec![
         ("about", "About Rust Digger"),
@@ -509,7 +509,7 @@ fn generate_pages(
 
     render_news_pages();
 
-    render_about_page()?;
+    render_static_pages()?;
 
     log::info!("repo_type: {:?}", repo_type);
     log::info!("repo_percentage: {:?}", repo_percentage);
