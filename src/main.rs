@@ -555,7 +555,7 @@ fn generate_pages(
 
     render_news_pages();
 
-    render_about_page()?;
+    render_static_pages()?;
 
     //log::info!("repos: {:?}", repos);
 
