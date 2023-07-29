@@ -16,7 +16,7 @@ const PAGE_SIZE: usize = 100;
 mod read;
 use read::{read_crate_owners, read_crates, read_users};
 mod render;
-use render::{load_templates, read_file, render_static_pages};
+use render::{load_templates, read_file, render_list_page, render_static_pages};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct Repo {
@@ -90,50 +90,6 @@ fn main() {
     }
 
     log::info!("Ending the Rust Digger");
-}
-
-fn render_list_page(
-    filename: &String,
-    title: &String,
-    crates: &Vec<&Crate>,
-) -> Result<(), Box<dyn Error>> {
-    // log::info!("render {filename}");
-
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
-
-    let page_size = if crates.len() > PAGE_SIZE {
-        PAGE_SIZE
-    } else {
-        crates.len()
-    };
-
-    let utc: DateTime<Utc> = Utc::now();
-    let globals = liquid::object!({
-        "version": format!("{VERSION}"),
-        "utc":     format!("{}", utc),
-        "title":   title,
-        "total":   crates.len(),
-        "crates":  (&crates[0..page_size]).to_vec(),
-    });
-
-    let template = liquid::ParserBuilder::with_stdlib()
-        .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/crate_list_page.html")
-        .unwrap();
-    let html = template.render(&globals).unwrap();
-
-    let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{}", html).unwrap();
-    //match res {
-    //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
-    //    Err(error) => println!("{}", error)
-    //}
-    Ok(())
 }
 
 // fn has_repo(w: &Crate) -> bool {

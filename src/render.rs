@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 
-use crate::{Partials, VERSION};
+use crate::{Crate, Partials, PAGE_SIZE, VERSION};
 
 pub fn read_file(filename: &str) -> String {
     let mut content = String::new();
@@ -65,5 +65,49 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
         let mut file = File::create(format!("_site/{}.html", page.0)).unwrap();
         writeln!(&mut file, "{}", html).unwrap();
     }
+    Ok(())
+}
+
+pub fn render_list_page(
+    filename: &String,
+    title: &String,
+    crates: &Vec<&Crate>,
+) -> Result<(), Box<dyn Error>> {
+    // log::info!("render {filename}");
+
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
+
+    let page_size = if crates.len() > PAGE_SIZE {
+        PAGE_SIZE
+    } else {
+        crates.len()
+    };
+
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   title,
+        "total":   crates.len(),
+        "crates":  (&crates[0..page_size]).to_vec(),
+    });
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/crate_list_page.html")
+        .unwrap();
+    let html = template.render(&globals).unwrap();
+
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{}", html).unwrap();
+    //match res {
+    //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
+    //    Err(error) => println!("{}", error)
+    //}
     Ok(())
 }
