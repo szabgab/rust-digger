@@ -3,3 +3,4 @@
 /_site/
 *.bak
 db-dump.tar.gz
+*.swp
