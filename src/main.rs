@@ -14,6 +14,9 @@ pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySo
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
+mod read;
+use read::read_users;
+
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct Repo {
     display: String,
@@ -39,7 +42,7 @@ struct Crate {
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct User {
+pub struct User {
     gh_avatar: String,
     gh_id: String,
     gh_login: String,
@@ -717,34 +720,6 @@ fn read_crates(limit: i32) -> Vec<Crate> {
 
     log::info!("Finished reading {filepath}");
     crates
-}
-
-fn read_users(limit: i32) -> Users {
-    let mut users: Users = HashMap::new();
-    let filepath = "data/data/users.csv";
-    log::info!("Start reading {}", filepath);
-    let mut count = 0;
-    match File::open(filepath.to_string()) {
-        Ok(file) => {
-            let mut rdr = csv::Reader::from_reader(file);
-            for result in rdr.deserialize() {
-                count += 1;
-                if limit > 0 && count >= limit {
-                    log::info!("Limit of {limit} reached");
-                    break;
-                }
-                let record: User = match result {
-                    Ok(value) => value,
-                    Err(err) => panic!("Error: {}", err),
-                };
-                users.insert(record.id.clone(), record);
-            }
-        }
-        Err(error) => panic!("Error opening file {}: {}", filepath, error),
-    }
-
-    log::info!("Finished reading {filepath}");
-    users
 }
 
 fn read_file(filename: &str) -> String {
