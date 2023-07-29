@@ -6,7 +6,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-use crate::{Crate, CratesByOwner, Owners, Partials, User, Users, PAGE_SIZE, VERSION};
+use crate::{Crate, CratesByOwner, Owners, Partials, User, PAGE_SIZE, VERSION};
 
 pub fn read_file(filename: &str) -> String {
     let mut content = String::new();
@@ -161,9 +161,14 @@ pub fn render_news_pages() {
 
 pub fn generate_crate_pages(
     crates: &Vec<Crate>,
-    users: &Users,
+    users: &Vec<User>,
     owner_by_crate_id: &Owners,
 ) -> Result<(), Box<dyn Error>> {
+    let mut mapping: HashMap<String, &User> = HashMap::new();
+    for user in users {
+        mapping.insert(user.id.clone(), user);
+    }
+
     let partials = match load_templates() {
         Ok(partials) => partials,
         Err(error) => panic!("Error loading templates {}", error),
@@ -190,7 +195,7 @@ pub fn generate_crate_pages(
         match owner_by_crate_id.get(crate_id) {
             Some(owner_id) => {
                 //println!("owner_id: {owner_id}");
-                match users.get(owner_id) {
+                match mapping.get(owner_id) {
                     Some(val) => {
                         user = val;
                         //println!("user: {:?}", user);
@@ -229,7 +234,7 @@ pub fn generate_crate_pages(
 
 pub fn generate_user_pages(
     crates: &Vec<Crate>,
-    users: &Users,
+    users: &Vec<User>,
     crates_by_owner: &CratesByOwner,
 ) -> Result<(), Box<dyn Error>> {
     let partials = match load_templates() {
@@ -252,10 +257,10 @@ pub fn generate_user_pages(
     //dbg!(&crate_by_id["81366"]);
 
     let mut users_with_crates: Vec<&User> = vec![];
-    for (uid, user) in users.iter() {
+    for user in users.iter() {
         //dbg!(uid);
         let mut selected_crates: Vec<&Crate> = vec![];
-        match crates_by_owner.get(uid) {
+        match crates_by_owner.get(&user.id) {
             Some(crate_ids) => {
                 //dbg!(crate_ids);
                 for crate_id in crate_ids {

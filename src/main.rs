@@ -65,7 +65,7 @@ struct CrateOwner {
 //type RepoPercentage<'a> = HashMap<&'a str, String>;
 type Owners = HashMap<String, String>;
 type CratesByOwner = HashMap<String, Vec<String>>;
-type Users = HashMap<String, User>;
+// type Users = HashMap<String, User>;
 
 fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -82,7 +82,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     log::info!("Limit {limit}");
 
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(limit);
-    let users: Users = read_users(limit);
+    let users = read_users(limit);
     let crates: Vec<Crate> = read_crates(limit);
     //dbg!(&crates_by_owner);
 

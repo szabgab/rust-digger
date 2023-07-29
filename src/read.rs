@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use std::fs::File;
 
-use crate::{Crate, CrateOwner, CratesByOwner, Owners, User, Users};
+use crate::{Crate, CrateOwner, CratesByOwner, Owners, User};
 
-pub fn read_users(limit: i32) -> Users {
-    let mut users: Users = HashMap::new();
+pub fn read_users(limit: i32) -> Vec<User> {
+    let mut users: Vec<User> = vec![];
     let filepath = "data/data/users.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
@@ -21,7 +21,7 @@ pub fn read_users(limit: i32) -> Users {
                     Ok(value) => value,
                     Err(err) => panic!("Error: {}", err),
                 };
-                users.insert(record.id.clone(), record);
+                users.push(record);
             }
         }
         Err(error) => panic!("Error opening file {}: {}", filepath, error),
