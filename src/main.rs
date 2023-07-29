@@ -67,7 +67,7 @@ type Owners = HashMap<String, String>;
 type CratesByOwner = HashMap<String, Vec<String>>;
 type Users = HashMap<String, User>;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::init_with_level(log::Level::Info).unwrap();
     log::info!("Starting the Rust Digger");
     log::info!("{VERSION}");
@@ -86,12 +86,10 @@ fn main() {
     let crates: Vec<Crate> = read_crates(limit);
     //dbg!(&crates_by_owner);
 
-    match generate_pages(&crates, &users, &owner_by_crate_id, &crates_by_owner) {
-        Ok(_) => {}
-        Err(err) => panic!("Error: {}", err),
-    }
+    generate_pages(&crates, &users, &owner_by_crate_id, &crates_by_owner)?;
 
     log::info!("Ending the Rust Digger");
+    Ok(())
 }
 
 // fn has_repo(w: &Crate) -> bool {
