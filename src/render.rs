@@ -1,11 +1,12 @@
 use chrono::prelude::{DateTime, Utc};
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-use crate::{Crate, Owners, Partials, User, Users, PAGE_SIZE, VERSION};
+use crate::{Crate, CratesByOwner, Owners, Partials, User, Users, PAGE_SIZE, VERSION};
 
 pub fn read_file(filename: &str) -> String {
     let mut content = String::new();
@@ -223,5 +224,65 @@ pub fn generate_crate_pages(
         let mut file = File::create(filename).unwrap();
         writeln!(&mut file, "{}", html).unwrap();
     }
+    Ok(())
+}
+
+pub fn generate_user_pages(
+    crates: &Vec<Crate>,
+    users: &Users,
+    crates_by_owner: &CratesByOwner,
+) -> Result<(), Box<dyn Error>> {
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/user.html")
+        .unwrap();
+
+    let mut crate_by_id: HashMap<&str, &Crate> = HashMap::new();
+    for krate in crates {
+        crate_by_id.insert(&krate.id, krate);
+    }
+    //dbg!(&crate_by_id);
+    //dbg!(&crate_by_id["81366"]);
+
+    for (uid, user) in users.iter() {
+        //dbg!(uid);
+        let mut selected_crates: Vec<&Crate> = vec![];
+        match crates_by_owner.get(uid) {
+            Some(crate_ids) => {
+                //dbg!(crate_ids);
+                for crate_id in crate_ids {
+                    //dbg!(&crate_id);
+                    //dbg!(&crate_by_id[crate_id.as_str()]);
+                    //dbg!(&crate_by_id.get(&crate_id.clone()));
+                    selected_crates.push(&crate_by_id[crate_id.as_str()]);
+                }
+            }
+            None => {
+                log::warn!("user {uid} does not have crates");
+            }
+        }
+
+        selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+        let filename = format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
+        let utc: DateTime<Utc> = Utc::now();
+        let globals = liquid::object!({
+            "version": format!("{VERSION}"),
+            "utc":     format!("{}", utc),
+            "title":   &user.name,
+            "user":    user,
+            "crates":  selected_crates,
+        });
+        let html = template.render(&globals).unwrap();
+        let mut file = File::create(filename).unwrap();
+        writeln!(&mut file, "{}", html).unwrap();
+    }
+
     Ok(())
 }
