@@ -278,41 +278,45 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<&Crate>, Vec<Repo>, Vec<&Crate>) {
             continue;
         }
         let mut matched = false;
-        repos = repos.into_iter().map(|mut repo| {
-            if krate.repository.starts_with(&repo.url) {
-                repo.count += 1;
-                matched = true;
-            }
-            repo
-        }).collect();
+        repos = repos
+            .into_iter()
+            .map(|mut repo| {
+                if krate.repository.starts_with(&repo.url) {
+                    repo.count += 1;
+                    matched = true;
+                }
+                repo
+            })
+            .collect();
 
         if !matched {
             other_repo.push(krate);
         }
     }
 
-    repos.push(
-        Repo {
-            display: "No repo".to_string(),
-            name: "no_repo".to_string(),
-            url: "".to_string(),
-            count: no_repo.len(),
-            percentage: "0".to_string(),
-        });
+    repos.push(Repo {
+        display: "No repo".to_string(),
+        name: "no_repo".to_string(),
+        url: "".to_string(),
+        count: no_repo.len(),
+        percentage: "0".to_string(),
+    });
 
-    repos.push(
-        Repo {
-            display: "Other repo".to_string(),
-            name: "other_repo".to_string(),
-            url: "".to_string(),
-            count: other_repo.len(),
-            percentage: "0".to_string(),
-        });
-    
-    repos = repos.into_iter().map(|mut repo| {
-        repo.percentage = percentage(repo.count, crates.len());
-        repo
-    }).collect();
+    repos.push(Repo {
+        display: "Other repo".to_string(),
+        name: "other_repo".to_string(),
+        url: "".to_string(),
+        count: other_repo.len(),
+        percentage: "0".to_string(),
+    });
+
+    repos = repos
+        .into_iter()
+        .map(|mut repo| {
+            repo.percentage = percentage(repo.count, crates.len());
+            repo
+        })
+        .collect();
 
     (no_repo, repos, other_repo)
 }
