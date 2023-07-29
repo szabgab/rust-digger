@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
 
-use crate::{CrateOwner, CratesByOwner, Owners, User, Users};
+use crate::{Crate, CrateOwner, CratesByOwner, Owners, User, Users};
 
 pub fn read_users(limit: i32) -> Users {
     let mut users: Users = HashMap::new();
@@ -68,4 +68,33 @@ pub fn read_crate_owners(limit: i32) -> (Owners, CratesByOwner) {
     log::info!("Finished reading {filepath}");
 
     (owner_by_crate_id, crates_by_owner)
+}
+
+pub fn read_crates(limit: i32) -> Vec<Crate> {
+    let filepath = "data/data/crates.csv";
+    log::info!("Start reading {}", filepath);
+    let mut crates: Vec<Crate> = vec![];
+    let mut count = 0;
+    match File::open(filepath.to_string()) {
+        Ok(file) => {
+            let mut rdr = csv::Reader::from_reader(file);
+            for result in rdr.deserialize() {
+                count += 1;
+                if limit > 0 && count >= limit {
+                    log::info!("Limit of {limit} reached");
+                    break;
+                }
+                let record: Crate = match result {
+                    Ok(value) => value,
+                    Err(error) => panic!("error: {}", error),
+                };
+                crates.push(record);
+            }
+            crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+        }
+        Err(error) => panic!("Error opening file {}: {}", filepath, error),
+    }
+
+    log::info!("Finished reading {filepath}");
+    crates
 }
