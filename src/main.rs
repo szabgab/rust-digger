@@ -15,7 +15,10 @@ const PAGE_SIZE: usize = 100;
 mod read;
 use read::{read_crate_owners, read_crates, read_users};
 mod render;
-use render::{load_templates, read_file, render_list_page, render_news_pages, render_static_pages};
+use render::{
+    generate_crate_pages, load_templates, read_file, render_list_page, render_news_pages,
+    render_static_pages,
+};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct Repo {
@@ -307,74 +310,6 @@ fn generate_user_pages(
         writeln!(&mut file, "{}", html).unwrap();
     }
 
-    Ok(())
-}
-
-fn generate_crate_pages(
-    crates: &Vec<Crate>,
-    users: &Users,
-    owner_by_crate_id: &Owners,
-) -> Result<(), Box<dyn Error>> {
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
-
-    let template = liquid::ParserBuilder::with_stdlib()
-        .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/crate.html")
-        .unwrap();
-
-    for krate in crates {
-        //dbg!(crate);
-        let crate_id = &krate.id;
-        //dbg!(crate_id);
-        let mut user: &User = &User {
-            gh_avatar: "".to_string(),
-            gh_id: "".to_string(),
-            gh_login: "".to_string(),
-            id: "".to_string(),
-            name: "".to_string(),
-        };
-        match owner_by_crate_id.get(crate_id) {
-            Some(owner_id) => {
-                //println!("owner_id: {owner_id}");
-                match users.get(owner_id) {
-                    Some(val) => {
-                        user = val;
-                        //println!("user: {:?}", user);
-                    }
-                    None => {
-                        log::warn!("crate {crate_id} owner_id {owner_id} does not have a user");
-                    }
-                }
-            }
-            None => {
-                log::warn!("crate {crate_id} does not have an owner");
-            }
-        };
-        //let owner_id = &owner_by_crate_id[crate_id];
-        //if owner_id != None {
-        //    //dbg!(&owner_id);
-        //    //dbg!(owner_id);
-        //    //let user = &users[owner_id];
-        //}
-        //dbg!(user);
-        let filename = format!("_site/crates/{}.html", krate.name);
-        let utc: DateTime<Utc> = Utc::now();
-        let globals = liquid::object!({
-            "version": format!("{VERSION}"),
-            "utc":     format!("{}", utc),
-            "title":   &krate.name,
-            "user":    user,
-            "crate":   krate,
-        });
-        let html = template.render(&globals).unwrap();
-        let mut file = File::create(filename).unwrap();
-        writeln!(&mut file, "{}", html).unwrap();
-    }
     Ok(())
 }
 
