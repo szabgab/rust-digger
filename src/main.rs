@@ -3,7 +3,6 @@ use std::env;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
-use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
@@ -16,6 +15,8 @@ const PAGE_SIZE: usize = 100;
 
 mod read;
 use read::{read_crate_owners, read_crates, read_users};
+mod render;
+use render::read_file;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct Repo {
@@ -652,19 +653,6 @@ fn render_news_pages() {
     //            },
     //        }
     //    }
-}
-
-fn read_file(filename: &str) -> String {
-    let mut content = String::new();
-    match File::open(filename) {
-        Ok(mut file) => {
-            file.read_to_string(&mut content).unwrap();
-        }
-        Err(error) => {
-            println!("Error opening file {}: {}", filename, error);
-        }
-    }
-    content
 }
 
 #[cfg(test)]
