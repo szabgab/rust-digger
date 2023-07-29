@@ -14,10 +14,13 @@ pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySo
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
-struct Repo<'a> {
-    display: &'a str,
-    name: &'a str,
-    url: &'a str,
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+struct Repo {
+    display: String,
+    name: String,
+    url: String,
+    count: usize,
+    percentage: String,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -53,7 +56,7 @@ struct CrateOwner {
     owner_kind: String,
 }
 
-type RepoPercentage<'a> = HashMap<&'a str, String>;
+//type RepoPercentage<'a> = HashMap<&'a str, String>;
 type Owners = HashMap<String, String>;
 type CratesByOwner = HashMap<String, Vec<String>>;
 type Users = HashMap<String, User>;
@@ -164,9 +167,9 @@ fn render_list_page(
     Ok(())
 }
 
-fn has_repo(w: &Crate) -> bool {
-    w.repository != ""
-}
+// fn has_repo(w: &Crate) -> bool {
+//     w.repository != ""
+// }
 fn has_homepage_no_repo(w: &Crate) -> bool {
     w.homepage != "" && w.repository == ""
 }
@@ -174,98 +177,144 @@ fn no_homepage_no_repo(w: &Crate) -> bool {
     w.homepage == "" && w.repository == ""
 }
 
-fn get_repo_types(crates: &Vec<Crate>) -> (HashMap<&str, usize>, RepoPercentage, Vec<&Crate>) {
-    let mut other: Vec<&Crate> = vec![];
-    let repos = vec![
+fn get_repo_types() -> Vec<Repo> {
+    let repos: Vec<Repo> = vec![
         Repo {
-            display: "GitHub",
-            name: "github",
-            url: "https://github.com/",
+            display: "GitHub".to_string(),
+            name: "github".to_string(),
+            url: "https://github.com/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "GitLab",
-            name: "gitlab",
-            url: "https://gitlab.com/",
+            display: "GitLab".to_string(),
+            name: "gitlab".to_string(),
+            url: "https://gitlab.com/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "Codeberg",
-            name: "codeberg",
-            url: "https://codeberg.org/",
+            display: "Codeberg".to_string(),
+            name: "codeberg".to_string(),
+            url: "https://codeberg.org/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "Gitee",
-            name: "gitee",
-            url: "https://gitee.com/",
+            display: "Gitee".to_string(),
+            name: "gitee".to_string(),
+            url: "https://gitee.com/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "Tor Project (GitLab)",
-            name: "torproject",
-            url: "https://gitlab.torproject.org/",
+            display: "Tor Project (GitLab)".to_string(),
+            name: "torproject".to_string(),
+            url: "https://gitlab.torproject.org/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "Free Desktop (GitLab)",
-            name: "freedesktop",
-            url: "https://gitlab.freedesktop.org/",
+            display: "Free Desktop (GitLab)".to_string(),
+            name: "freedesktop".to_string(),
+            url: "https://gitlab.freedesktop.org/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "Wikimedia (GitLab)",
-            name: "wikimedia",
-            url: "https://gitlab.wikimedia.org/",
+            display: "Wikimedia (GitLab)".to_string(),
+            name: "wikimedia".to_string(),
+            url: "https://gitlab.wikimedia.org/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "e3t",
-            name: "e3t",
-            url: "https://git.e3t.cc/",
+            display: "e3t".to_string(),
+            name: "e3t".to_string(),
+            url: "https://git.e3t.cc/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "srht",
-            name: "srht",
-            url: "https://git.sr.ht/",
+            display: "srht".to_string(),
+            name: "srht".to_string(),
+            url: "https://git.sr.ht/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "Open Privacy",
-            name: "openprivacy",
-            url: "https://git.openprivacy.ca/",
+            display: "Open Privacy".to_string(),
+            name: "openprivacy".to_string(),
+            url: "https://git.openprivacy.ca/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "Cronce (GitLab)",
-            name: "cronce",
-            url: "https://gitlab.cronce.io/",
+            display: "Cronce (GitLab)".to_string(),
+            name: "cronce".to_string(),
+            url: "https://gitlab.cronce.io/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
         Repo {
-            display: "Gnome (GitLab)",
-            name: "gnome",
-            url: "https://gitlab.gnome.org/",
+            display: "Gnome (GitLab)".to_string(),
+            name: "gnome".to_string(),
+            url: "https://gitlab.gnome.org/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
         },
     ];
-    let mut repo_type: HashMap<&str, usize> = HashMap::from([("no_repo", 0), ("other", 0)]);
-    let mut repo_percentage: RepoPercentage = HashMap::new();
-    for repo in &repos {
-        repo_type.insert(repo.name, 0);
-    }
+    repos
+}
 
-    'outer: for krate in crates {
+fn collect_repos(crates: &Vec<Crate>) -> (Vec<&Crate>, Vec<Repo>, Vec<&Crate>) {
+    let mut repos: Vec<Repo> = get_repo_types();
+    let mut no_repo: Vec<&Crate> = vec![];
+    let mut other_repo: Vec<&Crate> = vec![];
+
+    for krate in crates {
         if krate.repository == "" {
-            *repo_type.entry("no_repo").or_insert(0) += 1;
+            no_repo.push(krate);
             continue;
         }
-        for repo in &repos {
-            if krate.repository.starts_with(repo.url) {
-                *repo_type.entry(&repo.name).or_insert(0) += 1;
-                continue 'outer;
+        let mut matched = false;
+        repos = repos.into_iter().map(|mut repo| {
+            if krate.repository.starts_with(&repo.url) {
+                repo.count += 1;
+                matched = true;
             }
+            repo
+        }).collect();
+
+        if !matched {
+            other_repo.push(krate);
         }
-        *repo_type.entry("other").or_insert(0) += 1;
-        other.push(krate);
     }
 
-    for repo in repos {
-        repo_percentage.insert(repo.name, percentage(repo_type[repo.name], crates.len()));
-    }
-    repo_percentage.insert("other", percentage(repo_type["other"], crates.len()));
-    repo_percentage.insert("no_repo", percentage(repo_type["no_repo"], crates.len()));
+    repos.push(
+        Repo {
+            display: "No repo".to_string(),
+            name: "no_repo".to_string(),
+            url: "".to_string(),
+            count: no_repo.len(),
+            percentage: "0".to_string(),
+        });
 
-    (repo_type, repo_percentage, other)
+    repos.push(
+        Repo {
+            display: "Other repo".to_string(),
+            name: "other_repo".to_string(),
+            url: "".to_string(),
+            count: other_repo.len(),
+            percentage: "0".to_string(),
+        });
+    
+    repos = repos.into_iter().map(|mut repo| {
+        repo.percentage = percentage(repo.count, crates.len());
+        repo
+    }).collect();
+
+    (no_repo, repos, other_repo)
 }
 
 fn percentage(num: usize, total: usize) -> String {
@@ -440,10 +489,10 @@ fn generate_pages(
         .into_iter()
         .filter(|w| no_homepage_no_repo(w))
         .collect::<Vec<&Crate>>();
-    let no_repo = crates
-        .into_iter()
-        .filter(|w| !has_repo(w))
-        .collect::<Vec<&Crate>>();
+    // let no_repo = crates
+    //     .into_iter()
+    //     .filter(|w| !has_repo(w))
+    //     .collect::<Vec<&Crate>>();
     let repo_with_http = crates
         .into_iter()
         .filter(|w| w.repository != "" && w.repository.starts_with("http://"))
@@ -454,11 +503,7 @@ fn generate_pages(
         .collect::<Vec<&Crate>>();
     //dbg!(&no_repo[0..1]);
 
-    let (repo_type, repo_percentage, other_repos): (
-        HashMap<&str, usize>,
-        RepoPercentage,
-        Vec<&Crate>,
-    ) = get_repo_types(&crates);
+    let (no_repo, repos, other_repos) = collect_repos(&crates);
 
     let mut partials = Partials::empty();
     let filename = "templates/incl/header.html";
@@ -510,10 +555,9 @@ fn generate_pages(
 
     render_news_pages();
 
-    render_static_pages()?;
+    render_about_page()?;
 
-    log::info!("repo_type: {:?}", repo_type);
-    log::info!("repo_percentage: {:?}", repo_percentage);
+    //log::info!("repos: {:?}", repos);
 
     log::info!("render_stats_page");
     let partials = match load_templates() {
@@ -537,10 +581,7 @@ fn generate_pages(
         //"user":    user,
         //"crate":   krate,
         "total": crates.len(),
-        "no_repo": no_repo.len(),
-        "no_repo_percentage": percentage(no_repo.len(), crates.len()),
-        "repo_type": repo_type,
-        "repo_percentage": repo_percentage,
+        "repos": repos,
         "home_page_but_no_repo": home_page_but_no_repo.len(),
         "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
         "no_homepage_no_repo_crates": no_homepage_no_repo_crates.len(),
