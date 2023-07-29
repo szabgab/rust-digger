@@ -51,6 +51,13 @@ pub struct User {
     gh_login: String,
     id: String,
     name: String,
+
+    #[serde(default = "get_zero")]
+    count: u16,
+}
+
+fn get_zero() -> u16 {
+    0
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -90,7 +97,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     render_news_pages();
     render_static_pages()?;
     generate_crate_pages(&crates, &users, &owner_by_crate_id)?;
-    generate_user_pages(&crates, &users, &crates_by_owner)?;
+    generate_user_pages(&crates, users, &crates_by_owner)?;
 
     log::info!("Ending the Rust Digger");
     Ok(())

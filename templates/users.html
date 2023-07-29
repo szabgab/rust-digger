@@ -9,12 +9,14 @@
       <thead>
       <tr>
        <th>name</th>
+       <th>crates</th>
       </tr>
       </thead>
     <tbody>
     {% for user in users %}
       <tr>
         <td><a href="/users/{{user.gh_login | downcase}}">{{user.name}} ({{user.gh_login}})</a></td>
+        <td>{{user.count}}</td>
       </tr>
     {% endfor %}
     </tbody>

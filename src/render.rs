@@ -191,6 +191,7 @@ pub fn generate_crate_pages(
             gh_login: "".to_string(),
             id: "".to_string(),
             name: "".to_string(),
+            count: 0,
         };
         match owner_by_crate_id.get(crate_id) {
             Some(owner_id) => {
@@ -234,7 +235,7 @@ pub fn generate_crate_pages(
 
 pub fn generate_user_pages(
     crates: &Vec<Crate>,
-    users: &Vec<User>,
+    users: Vec<User>,
     crates_by_owner: &CratesByOwner,
 ) -> Result<(), Box<dyn Error>> {
     let partials = match load_templates() {
@@ -256,42 +257,46 @@ pub fn generate_user_pages(
     //dbg!(&crate_by_id);
     //dbg!(&crate_by_id["81366"]);
 
-    let mut users_with_crates: Vec<&User> = vec![];
-    for user in users.iter() {
-        //dbg!(uid);
-        let mut selected_crates: Vec<&Crate> = vec![];
-        match crates_by_owner.get(&user.id) {
-            Some(crate_ids) => {
-                //dbg!(crate_ids);
-                for crate_id in crate_ids {
-                    //dbg!(&crate_id);
-                    //dbg!(&crate_by_id[crate_id.as_str()]);
-                    //dbg!(&crate_by_id.get(&crate_id.clone()));
-                    selected_crates.push(&crate_by_id[crate_id.as_str()]);
-                }
-                users_with_crates.push(user);
-            }
-            None => {
-                // We do not create a page for people who don't have crates.
-                //log::warn!("user {uid} does not have crates");
-                continue;
-            }
-        }
+    let mut users_with_crates: Vec<User> = users
+        .into_iter()
+        .map(|mut user| {
+            let mut selected_crates: Vec<&Crate> = vec![];
+            match crates_by_owner.get(&user.id) {
+                Some(crate_ids) => {
+                    //dbg!(crate_ids);
+                    for crate_id in crate_ids {
+                        //dbg!(&crate_id);
+                        //dbg!(&crate_by_id[crate_id.as_str()]);
+                        //dbg!(&crate_by_id.get(&crate_id.clone()));
+                        selected_crates.push(&crate_by_id[crate_id.as_str()]);
+                    }
+                    user.count = selected_crates.len() as u16;
+                    //users_with_crates.push(user);
 
-        selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
-        let filename = format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
-        let utc: DateTime<Utc> = Utc::now();
-        let globals = liquid::object!({
-            "version": format!("{VERSION}"),
-            "utc":     format!("{}", utc),
-            "title":   &user.name,
-            "user":    user,
-            "crates":  selected_crates,
-        });
-        let html = template.render(&globals).unwrap();
-        let mut file = File::create(filename).unwrap();
-        writeln!(&mut file, "{}", html).unwrap();
-    }
+                    selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+                    let filename =
+                        format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
+                    let utc: DateTime<Utc> = Utc::now();
+                    let globals = liquid::object!({
+                        "version": format!("{VERSION}"),
+                        "utc":     format!("{}", utc),
+                        "title":   &user.name,
+                        "user":    user,
+                        "crates":  selected_crates,
+                    });
+                    let html = template.render(&globals).unwrap();
+                    let mut file = File::create(filename).unwrap();
+                    writeln!(&mut file, "{}", html).unwrap();
+                }
+                None => {
+                    // We do not create a page for people who don't have crates.
+                    //log::warn!("user {uid} does not have crates");
+                }
+            }
+            user
+        })
+        .filter(|user| user.count > 0)
+        .collect();
 
     // list all the users on the /users/ page
     users_with_crates.sort_by(|a, b| a.name.cmp(&b.name));
