@@ -4,7 +4,6 @@ use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
 
 use chrono::prelude::*;
 
@@ -16,7 +15,7 @@ const PAGE_SIZE: usize = 100;
 mod read;
 use read::{read_crate_owners, read_crates, read_users};
 mod render;
-use render::{load_templates, read_file, render_list_page, render_static_pages};
+use render::{load_templates, read_file, render_list_page, render_news_pages, render_static_pages};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct Repo {
@@ -515,51 +514,6 @@ fn generate_pages(
     generate_user_pages(&crates, &users, &crates_by_owner)?;
 
     Ok(())
-}
-
-fn render_news_pages() {
-    log::info!("render_news_pages");
-    let utc: DateTime<Utc> = Utc::now();
-
-    let path = Path::new("templates/news");
-    for entry in path.read_dir().expect("read_dir call failed") {
-        if let Ok(entry) = entry {
-            let partials = match load_templates() {
-                Ok(partials) => partials,
-                Err(error) => panic!("Error loading templates {}", error),
-            };
-            if entry.path().extension().unwrap() != "html" {
-                continue;
-            }
-
-            log::info!("news file: {:?}", entry.path());
-            log::info!("{:?}", entry.path().strip_prefix("templates/"));
-            let output_path = Path::new("_site")
-                .join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
-            let template = liquid::ParserBuilder::with_stdlib()
-                .partials(partials)
-                .build()
-                .unwrap()
-                .parse_file(entry.path())
-                .unwrap();
-
-            let globals = liquid::object!({
-                "version": format!("{VERSION}"),
-                "utc":     format!("{}", utc),
-            });
-            let html = template.render(&globals).unwrap();
-            //let filename = "_site/news.html";
-            let mut file = File::create(output_path).unwrap();
-            writeln!(&mut file, "{}", html).unwrap();
-        }
-    }
-
-    //            },
-    //            Err(error) => {
-    //                println!("Error opening file {:?}: {}", file.as_os_str(), error);
-    //            },
-    //        }
-    //    }
 }
 
 #[cfg(test)]

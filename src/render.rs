@@ -3,6 +3,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
+use std::path::Path;
 
 use crate::{Crate, Partials, PAGE_SIZE, VERSION};
 
@@ -110,4 +111,49 @@ pub fn render_list_page(
     //    Err(error) => println!("{}", error)
     //}
     Ok(())
+}
+
+pub fn render_news_pages() {
+    log::info!("render_news_pages");
+    let utc: DateTime<Utc> = Utc::now();
+
+    let path = Path::new("templates/news");
+    for entry in path.read_dir().expect("read_dir call failed") {
+        if let Ok(entry) = entry {
+            let partials = match load_templates() {
+                Ok(partials) => partials,
+                Err(error) => panic!("Error loading templates {}", error),
+            };
+            if entry.path().extension().unwrap() != "html" {
+                continue;
+            }
+
+            log::info!("news file: {:?}", entry.path());
+            log::info!("{:?}", entry.path().strip_prefix("templates/"));
+            let output_path = Path::new("_site")
+                .join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
+            let template = liquid::ParserBuilder::with_stdlib()
+                .partials(partials)
+                .build()
+                .unwrap()
+                .parse_file(entry.path())
+                .unwrap();
+
+            let globals = liquid::object!({
+                "version": format!("{VERSION}"),
+                "utc":     format!("{}", utc),
+            });
+            let html = template.render(&globals).unwrap();
+            //let filename = "_site/news.html";
+            let mut file = File::create(output_path).unwrap();
+            writeln!(&mut file, "{}", html).unwrap();
+        }
+    }
+
+    //            },
+    //            Err(error) => {
+    //                println!("Error opening file {:?}: {}", file.as_os_str(), error);
+    //            },
+    //        }
+    //    }
 }
