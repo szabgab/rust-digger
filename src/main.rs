@@ -86,7 +86,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let crates: Vec<Crate> = read_crates(limit);
     //dbg!(&crates_by_owner);
 
-    generate_pages(&crates, &users, &owner_by_crate_id, &crates_by_owner)?;
+    generate_pages(&crates)?;
+    generate_crate_pages(&crates, &users, &owner_by_crate_id)?;
+    generate_user_pages(&crates, &users, &crates_by_owner)?;
 
     log::info!("Ending the Rust Digger");
     Ok(())
@@ -251,12 +253,7 @@ fn percentage(num: usize, total: usize) -> String {
     (t / 100.0).to_string()
 }
 
-fn generate_pages(
-    crates: &Vec<Crate>,
-    users: &Users,
-    owner_by_crate_id: &Owners,
-    crates_by_owner: &CratesByOwner,
-) -> Result<(), Box<dyn Error>> {
+fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
     // Create a folder _site
@@ -381,10 +378,6 @@ fn generate_pages(
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{}", html).unwrap();
-
-    generate_crate_pages(&crates, &users, &owner_by_crate_id)?;
-
-    generate_user_pages(&crates, &users, &crates_by_owner)?;
 
     Ok(())
 }
