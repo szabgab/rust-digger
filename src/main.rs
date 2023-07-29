@@ -16,7 +16,7 @@ const PAGE_SIZE: usize = 100;
 mod read;
 use read::{read_crate_owners, read_crates, read_users};
 mod render;
-use render::{load_templates, read_file};
+use render::{load_templates, read_file, render_static_pages};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct Repo {
@@ -90,41 +90,6 @@ fn main() {
     }
 
     log::info!("Ending the Rust Digger");
-}
-
-fn render_static_pages() -> Result<(), Box<dyn Error>> {
-    log::info!("render_static_pages");
-
-    let pages = vec![
-        ("about", "About Rust Digger"),
-        ("support", "Support Rust Digger"),
-    ];
-
-    for page in pages {
-        let partials = match load_templates() {
-            Ok(partials) => partials,
-            Err(error) => panic!("Error loading templates {}", error),
-        };
-
-        let utc: DateTime<Utc> = Utc::now();
-        let globals = liquid::object!({
-            "version": format!("{VERSION}"),
-            "utc":     format!("{}", utc),
-            "title":   page.1,
-        });
-
-        let template = liquid::ParserBuilder::with_stdlib()
-            .partials(partials)
-            .build()
-            .unwrap()
-            .parse_file(format!("templates/{}.html", page.0))
-            .unwrap();
-        let html = template.render(&globals).unwrap();
-
-        let mut file = File::create(format!("_site/{}.html", page.0)).unwrap();
-        writeln!(&mut file, "{}", html).unwrap();
-    }
-    Ok(())
 }
 
 fn render_list_page(
