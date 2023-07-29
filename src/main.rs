@@ -87,6 +87,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     //dbg!(&crates_by_owner);
 
     generate_pages(&crates)?;
+    render_news_pages();
+    render_static_pages()?;
     generate_crate_pages(&crates, &users, &owner_by_crate_id)?;
     generate_user_pages(&crates, &users, &crates_by_owner)?;
 
@@ -336,10 +338,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         &"Other repositories we don't recognize".to_string(),
         &other_repos,
     )?;
-
-    render_news_pages();
-
-    render_static_pages()?;
 
     //log::info!("repos: {:?}", repos);
 
