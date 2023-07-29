@@ -265,7 +265,9 @@ pub fn generate_user_pages(
                 }
             }
             None => {
-                log::warn!("user {uid} does not have crates");
+                // We do not create a page for people who don't have crates.
+                //log::warn!("user {uid} does not have crates");
+                continue;
             }
         }
 
