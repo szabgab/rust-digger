@@ -16,7 +16,7 @@ const PAGE_SIZE: usize = 100;
 mod read;
 use read::{read_crate_owners, read_crates, read_users};
 mod render;
-use render::read_file;
+use render::{load_templates, read_file};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct Repo {
@@ -456,20 +456,6 @@ fn generate_crate_pages(
         writeln!(&mut file, "{}", html).unwrap();
     }
     Ok(())
-}
-
-fn load_templates() -> Result<Partials, Box<dyn Error>> {
-    // log::info!("load_templates");
-
-    let mut partials = Partials::empty();
-    let filename = "templates/incl/header.html";
-    partials.add(filename, read_file(filename));
-    let filename = "templates/incl/footer.html";
-    partials.add(filename, read_file(filename));
-    let filename = "templates/incl/list_crates.html";
-    partials.add(filename, read_file(filename));
-
-    Ok(partials)
 }
 
 fn generate_pages(
