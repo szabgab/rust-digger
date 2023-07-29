@@ -88,28 +88,34 @@ fn main() {
 fn render_about_page() -> Result<(), Box<dyn Error>> {
     log::info!("render_about_page");
 
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
+    let pages = vec![
+        ("about", "About Rust Digger"),
+    ];
 
-    let utc: DateTime<Utc> = Utc::now();
-    let globals = liquid::object!({
-        "version": format!("{VERSION}"),
-        "utc":     format!("{}", utc),
-        "title":   "About Rust Digger",
-    });
+    for page in pages {
+        let partials = match load_templates() {
+            Ok(partials) => partials,
+            Err(error) => panic!("Error loading templates {}", error),
+        };
 
-    let template = liquid::ParserBuilder::with_stdlib()
-        .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/about.html")
-        .unwrap();
-    let html = template.render(&globals).unwrap();
+        let utc: DateTime<Utc> = Utc::now();
+        let globals = liquid::object!({
+            "version": format!("{VERSION}"),
+            "utc":     format!("{}", utc),
+            "title":   page.1,
+        });
 
-    let mut file = File::create("_site/about.html").unwrap();
-    writeln!(&mut file, "{}", html).unwrap();
+        let template = liquid::ParserBuilder::with_stdlib()
+            .partials(partials)
+            .build()
+            .unwrap()
+            .parse_file(format!("templates/{}.html", page.0))
+            .unwrap();
+        let html = template.render(&globals).unwrap();
+
+        let mut file = File::create(format!("_site/{}.html", page.0)).unwrap();
+        writeln!(&mut file, "{}", html).unwrap();
+    }
     Ok(())
 }
 
