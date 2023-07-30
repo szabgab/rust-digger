@@ -27,11 +27,11 @@
     </table>
 
     {% if user.gh_avatar %}
-       <img src="{{user.gh_avatar}}">
+       <img src="{{crate.owner_gh_avatar}}">
     {% endif %}
     {% if user.gh_login %}
        {% if user.name %}
-          <a href="/users/{{user.gh_login | downcase}}">{{user.name}}</a>
+          <a href="/users/{{crate.owner_gh_login | downcase}}">{{crate.owner_name}}</a>
        {% endif %}
     {% endif %}
 

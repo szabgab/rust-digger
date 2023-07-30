@@ -6,7 +6,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-use crate::{Crate, CratesByOwner, Owners, Partials, User, PAGE_SIZE, VERSION};
+use crate::{Crate, CratesByOwner, Partials, User, PAGE_SIZE, VERSION};
 
 pub fn read_file(filename: &str) -> String {
     let mut content = String::new();
@@ -159,16 +159,7 @@ pub fn render_news_pages() {
     //    }
 }
 
-pub fn generate_crate_pages(
-    crates: &Vec<Crate>,
-    users: &Vec<User>,
-    owner_by_crate_id: &Owners,
-) -> Result<(), Box<dyn Error>> {
-    let mut user_mapping: HashMap<String, &User> = HashMap::new();
-    for user in users {
-        user_mapping.insert(user.id.clone(), user);
-    }
-
+pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     let partials = match load_templates() {
         Ok(partials) => partials,
         Err(error) => panic!("Error loading templates {}", error),
@@ -183,33 +174,9 @@ pub fn generate_crate_pages(
 
     for krate in crates {
         //dbg!(crate);
-        let crate_id = &krate.id;
+        //let crate_id = &krate.id;
         //dbg!(crate_id);
-        let mut user: &User = &User {
-            gh_avatar: "".to_string(),
-            gh_id: "".to_string(),
-            gh_login: "".to_string(),
-            id: "".to_string(),
-            name: "".to_string(),
-            count: 0,
-        };
-        match owner_by_crate_id.get(crate_id) {
-            Some(owner_id) => {
-                //println!("owner_id: {owner_id}");
-                match user_mapping.get(owner_id) {
-                    Some(val) => {
-                        user = val;
-                        //println!("user: {:?}", user);
-                    }
-                    None => {
-                        log::warn!("crate {crate_id} owner_id {owner_id} does not have a user");
-                    }
-                }
-            }
-            None => {
-                log::warn!("crate {crate_id} does not have an owner");
-            }
-        };
+
         //let owner_id = &owner_by_crate_id[crate_id];
         //if owner_id != None {
         //    //dbg!(&owner_id);
@@ -223,7 +190,6 @@ pub fn generate_crate_pages(
             "version": format!("{VERSION}"),
             "utc":     format!("{}", utc),
             "title":   &krate.name,
-            "user":    user,
             "crate":   krate,
         });
         let html = template.render(&globals).unwrap();

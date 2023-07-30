@@ -3,6 +3,7 @@
       <tr>
        <th>name</th>
        <th>update at</th>
+       <th>owner</th>
        <th>repo</th>
       </tr>
       </thead>
@@ -11,6 +12,13 @@
       <tr>
         <td><a href="/crates/{{crate.name}}">{{crate.name}}</a></td>
         <td>{{crate.updated_at}}</td>
+      
+        {% if crate.owner_gh_login == "" %}
+          <td>NA</td>
+        {% else %}
+          <td><a href="/users/{{crate.owner_gh_login | downcase }}">{{crate.owner_name}}</a></td>
+        {% endif %}
+
         {% if crate.repository != "" %}
           <td><a href="{{crate.repository}}">repo</a></td>
         {% else %}

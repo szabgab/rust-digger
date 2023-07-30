@@ -42,6 +42,15 @@ pub struct Crate {
     readme: String,
     repository: String,
     updated_at: String,
+
+    #[serde(default = "empty_string")]
+    owner_gh_login: String,
+
+    #[serde(default = "empty_string")]
+    owner_name: String,
+
+    #[serde(default = "empty_string")]
+    owner_gh_avatar: String,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -54,6 +63,10 @@ pub struct User {
 
     #[serde(default = "get_zero")]
     count: u16,
+}
+
+fn empty_string() -> String {
+    "".to_string()
 }
 
 fn get_zero() -> u16 {
@@ -101,17 +114,48 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(limit);
     let mut users = read_users(limit);
     read_teams(&mut users, limit);
-    let crates: Vec<Crate> = read_crates(limit);
+    let mut crates: Vec<Crate> = read_crates(limit);
     //dbg!(&crates_by_owner);
+
+    add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
 
     generate_pages(&crates)?;
     render_news_pages();
     render_static_pages()?;
-    generate_crate_pages(&crates, &users, &owner_by_crate_id)?;
+    generate_crate_pages(&crates)?;
     generate_user_pages(&crates, users, &crates_by_owner)?;
 
     log::info!("Ending the Rust Digger");
     Ok(())
+}
+
+fn add_owners_to_crates(crates: &mut Vec<Crate>, users: &Vec<User>, owner_by_crate_id: &Owners) {
+    let mut mapping: HashMap<String, &User> = HashMap::new();
+    for user in users {
+        mapping.insert(user.id.clone(), user);
+    }
+
+    for krate in crates.into_iter() {
+        let crate_id = &krate.id;
+        match owner_by_crate_id.get(crate_id) {
+            Some(owner_id) => {
+                //println!("owner_id: {owner_id}");
+                match mapping.get(owner_id) {
+                    Some(val) => {
+                        krate.owner_gh_login = val.gh_login.clone();
+                        krate.owner_name = val.name.clone();
+                        krate.owner_gh_avatar = val.gh_avatar.clone();
+                    }
+                    None => {
+                        log::warn!("crate {crate_id} owner_id {owner_id} does not have a user");
+                    }
+                }
+            }
+            None => {
+                log::warn!("crate {crate_id} does not have an owner");
+            }
+        }
+    }
 }
 
 // fn has_repo(w: &Crate) -> bool {
