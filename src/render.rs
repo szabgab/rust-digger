@@ -173,17 +173,6 @@ pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .unwrap();
 
     for krate in crates {
-        //dbg!(crate);
-        //let crate_id = &krate.id;
-        //dbg!(crate_id);
-
-        //let owner_id = &owner_by_crate_id[crate_id];
-        //if owner_id != None {
-        //    //dbg!(&owner_id);
-        //    //dbg!(owner_id);
-        //    //let user = &users[owner_id];
-        //}
-        //dbg!(user);
         let filename = format!("_site/crates/{}.html", krate.name);
         let utc: DateTime<Utc> = Utc::now();
         let globals = liquid::object!({
