@@ -164,9 +164,9 @@ pub fn generate_crate_pages(
     users: &Vec<User>,
     owner_by_crate_id: &Owners,
 ) -> Result<(), Box<dyn Error>> {
-    let mut mapping: HashMap<String, &User> = HashMap::new();
+    let mut user_mapping: HashMap<String, &User> = HashMap::new();
     for user in users {
-        mapping.insert(user.id.clone(), user);
+        user_mapping.insert(user.id.clone(), user);
     }
 
     let partials = match load_templates() {
@@ -196,7 +196,7 @@ pub fn generate_crate_pages(
         match owner_by_crate_id.get(crate_id) {
             Some(owner_id) => {
                 //println!("owner_id: {owner_id}");
-                match mapping.get(owner_id) {
+                match user_mapping.get(owner_id) {
                     Some(val) => {
                         user = val;
                         //println!("user: {:?}", user);

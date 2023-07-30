@@ -13,7 +13,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
 mod read;
-use read::{read_crate_owners, read_crates, read_users};
+use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
 use render::{
     generate_crate_pages, generate_user_pages, load_templates, read_file, render_list_page,
@@ -61,6 +61,16 @@ fn get_zero() -> u16 {
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Team {
+    avatar: String,
+    github_id: String,
+    login: String,
+    id: String,
+    name: String,
+    org_id: String,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct CrateOwner {
     crate_id: String,
     created_at: String,
@@ -89,7 +99,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     log::info!("Limit {limit}");
 
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(limit);
-    let users = read_users(limit);
+    let mut users = read_users(limit);
+    read_teams(&mut users, limit);
     let crates: Vec<Crate> = read_crates(limit);
     //dbg!(&crates_by_owner);
 

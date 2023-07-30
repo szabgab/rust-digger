@@ -1,7 +1,43 @@
 use std::collections::HashMap;
 use std::fs::File;
 
-use crate::{Crate, CrateOwner, CratesByOwner, Owners, User};
+use crate::{Crate, CrateOwner, CratesByOwner, Owners, Team, User};
+
+pub fn read_teams(users: &mut Vec<User>, limit: i32) {
+    let filepath = "data/data/teams.csv";
+    log::info!("Start reading {}", filepath);
+    let mut count = 0;
+    match File::open(filepath.to_string()) {
+        Ok(file) => {
+            let mut rdr = csv::Reader::from_reader(file);
+            for result in rdr.deserialize() {
+                count += 1;
+                if limit > 0 && count >= limit {
+                    log::info!("Limit of {limit} reached");
+                    break;
+                }
+                let record: Team = match result {
+                    Ok(value) => value,
+                    Err(err) => panic!("Error: {}", err),
+                };
+                let user = User {
+                    gh_avatar: record.avatar,
+                    gh_login: record.login,
+                    gh_id: record.github_id,
+                    name: record.name,
+                    id: record.id,
+                    count: 0,
+                    //org_id: record.org_id
+                    //team: true
+                };
+                users.push(user);
+            }
+        }
+        Err(error) => panic!("Error opening file {}: {}", filepath, error),
+    }
+
+    log::info!("Finished reading {filepath}");
+}
 
 pub fn read_users(limit: i32) -> Vec<User> {
     let mut users: Vec<User> = vec![];
