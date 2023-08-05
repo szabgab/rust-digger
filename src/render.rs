@@ -46,7 +46,6 @@ pub fn render_list_of_repos(repos: &Vec<Repo>) {
     writeln!(&mut file, "{}", html).unwrap();
 }
 
-
 pub fn read_file(filename: &str) -> String {
     let mut content = String::new();
     match File::open(filename) {

@@ -17,9 +17,9 @@ use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
 use render::{
     generate_crate_pages, generate_user_pages, load_templates, read_file,
-    render_list_crates_by_repo, render_list_page, render_news_pages, render_static_pages,
-
-    render_list_of_repos};
+    render_list_crates_by_repo, render_list_of_repos, render_list_page, render_news_pages,
+    render_static_pages,
+};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Repo {
