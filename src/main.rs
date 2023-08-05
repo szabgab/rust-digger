@@ -357,10 +357,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .filter(|w| no_homepage_no_repo(w))
         .cloned()
         .collect::<Vec<Crate>>();
-    // let no_repo = crates
-    //     .into_iter()
-    //     .filter(|w| !has_repo(w))
-    //     .collect::<Vec<&Crate>>();
     let repo_with_http = crates
         .into_iter()
         .filter(|w| w.repository != "" && w.repository.starts_with("http://"))
@@ -371,7 +367,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .filter(|w| w.repository != "" && w.repository.contains("www.github.com"))
         .cloned()
         .collect::<Vec<Crate>>();
-    //dbg!(&no_repo[0..1]);
 
     let repos = collect_repos(&crates);
 
