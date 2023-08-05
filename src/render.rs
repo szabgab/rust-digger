@@ -8,7 +8,6 @@ use std::path::Path;
 
 use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
 
-
 pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     for repo in repos {
         // dbg!(&repo);
