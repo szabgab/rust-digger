@@ -272,7 +272,7 @@ fn get_repo_types() -> Vec<Repo> {
     repos
 }
 
-fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>) {
+fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
     let mut repos: Vec<Repo> = get_repo_types();
     let mut no_repo: Vec<Crate> = vec![];
     let mut other_repo: Vec<Crate> = vec![];
@@ -301,12 +301,12 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>) {
     }
 
     repos.push(Repo {
-        display: "No repo".to_string(),
+        display: "Has no repository".to_string(),
         name: "no-repo".to_string(),
         url: "".to_string(),
         count: no_repo.len(),
         percentage: "0".to_string(),
-        crates: vec![],
+        crates: no_repo,
     });
 
     repos.push(Repo {
@@ -326,7 +326,7 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>) {
         })
         .collect();
 
-    (no_repo, repos)
+    repos
 }
 
 fn percentage(num: usize, total: usize) -> String {
@@ -373,7 +373,7 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .collect::<Vec<Crate>>();
     //dbg!(&no_repo[0..1]);
 
-    let (no_repo, repos) = collect_repos(&crates);
+    let repos = collect_repos(&crates);
 
     let mut partials = Partials::empty();
     let filename = "templates/incl/header.html";
@@ -388,12 +388,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         &"_site/index.html".to_string(),
         &"Rust Digger".to_string(),
         &all_crates,
-    )?;
-
-    render_list_page(
-        &"_site/no-repo.html".to_string(),
-        &"Has no repository".to_string(),
-        &no_repo,
     )?;
 
     render_list_page(
