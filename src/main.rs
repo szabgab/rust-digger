@@ -276,6 +276,14 @@ fn get_repo_types() -> Vec<Repo> {
             percentage: "0".to_string(),
             crates: vec![],
         },
+        Repo {
+            display: "GitHub with www".to_string(),
+            name: "github-with-www".to_string(),
+            url: "https://www.github.com/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
+            crates: vec![],
+        },
     ];
     repos
 }
@@ -365,11 +373,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .filter(|w| no_homepage_no_repo(w))
         .cloned()
         .collect::<Vec<Crate>>();
-    let github_with_www = crates
-        .into_iter()
-        .filter(|w| w.repository != "" && w.repository.contains("www.github.com"))
-        .cloned()
-        .collect::<Vec<Crate>>();
 
     let repos = collect_repos(&crates);
 
@@ -386,12 +389,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         &"_site/index.html".to_string(),
         &"Rust Digger".to_string(),
         &all_crates,
-    )?;
-
-    render_list_page(
-        &"_site/github-with-www.html".to_string(),
-        &"Github with www".to_string(),
-        &github_with_www,
     )?;
 
     render_list_page(
@@ -435,8 +432,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
         "no_homepage_no_repo_crates": no_homepage_no_repo_crates.len(),
         "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
-        "github_with_www": github_with_www.len(),
-        "github_with_www_percentage": percentage(github_with_www.len(), crates.len()),
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
