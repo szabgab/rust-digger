@@ -18,7 +18,8 @@ mod render;
 use render::{
     generate_crate_pages, generate_user_pages, load_templates, read_file,
     render_list_crates_by_repo, render_list_page, render_news_pages, render_static_pages,
-};
+
+    render_list_of_repos};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Repo {
@@ -381,6 +382,7 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     partials.add(filename, read_file(filename));
 
     render_list_crates_by_repo(&repos)?;
+    render_list_of_repos(&repos);
 
     render_list_page(
         &"_site/index.html".to_string(),

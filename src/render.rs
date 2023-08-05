@@ -20,6 +20,33 @@ pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error
     Ok(())
 }
 
+pub fn render_list_of_repos(repos: &Vec<Repo>) {
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/repos.html")
+        .unwrap();
+
+    let filename = "_site/vcs/index.html";
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "Repositories".to_string(),
+        "repos":    repos,
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{}", html).unwrap();
+}
+
+
 pub fn read_file(filename: &str) -> String {
     let mut content = String::new();
     match File::open(filename) {

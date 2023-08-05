@@ -1,0 +1,26 @@
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title is-3">VCS hosts</h1>
+
+    <table class="table">
+      <thead>
+      <tr>
+       <th>name</th>
+       <th>crates</th>
+      </tr>
+      </thead>
+    <tbody>
+    {% for repo in repos %}
+      <tr>
+        <td><a href="/vcs/{{repo.name | downcase}}">{{repo.display}}</a></td>
+        <td>{{repo.count}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</div>
+</section>
+
+{% include 'templates/incl/footer.html' %}
