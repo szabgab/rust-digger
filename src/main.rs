@@ -272,7 +272,7 @@ fn get_repo_types() -> Vec<Repo> {
     repos
 }
 
-fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>, Vec<Crate>) {
+fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>) {
     let mut repos: Vec<Repo> = get_repo_types();
     let mut no_repo: Vec<Crate> = vec![];
     let mut other_repo: Vec<Crate> = vec![];
@@ -302,7 +302,7 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>, Vec<Crate>) {
 
     repos.push(Repo {
         display: "No repo".to_string(),
-        name: "no_repo".to_string(),
+        name: "no-repo".to_string(),
         url: "".to_string(),
         count: no_repo.len(),
         percentage: "0".to_string(),
@@ -310,12 +310,12 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>, Vec<Crate>) {
     });
 
     repos.push(Repo {
-        display: "Other repo".to_string(),
-        name: "other_repo".to_string(),
+        display: "Other repositories we don't recognize".to_string(),
+        name: "other-repos".to_string(),
         url: "".to_string(),
         count: other_repo.len(),
         percentage: "0".to_string(),
-        crates: vec![],
+        crates: other_repo,
     });
 
     repos = repos
@@ -326,7 +326,7 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>, Vec<Crate>) {
         })
         .collect();
 
-    (no_repo, repos, other_repo)
+    (no_repo, repos)
 }
 
 fn percentage(num: usize, total: usize) -> String {
@@ -373,7 +373,7 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .collect::<Vec<Crate>>();
     //dbg!(&no_repo[0..1]);
 
-    let (no_repo, repos, other_repos) = collect_repos(&crates);
+    let (no_repo, repos) = collect_repos(&crates);
 
     let mut partials = Partials::empty();
     let filename = "templates/incl/header.html";
@@ -418,12 +418,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         &"_site/no-homepage-no-repo.html".to_string(),
         &"No repository, no homepage".to_string(),
         &no_homepage_no_repo_crates,
-    )?;
-
-    render_list_page(
-        &"_site/other-repos.html".to_string(),
-        &"Other repositories we don't recognize".to_string(),
-        &other_repos,
     )?;
 
     //log::info!("repos: {:?}", repos);
