@@ -268,6 +268,14 @@ fn get_repo_types() -> Vec<Repo> {
             percentage: "0".to_string(),
             crates: vec![],
         },
+        Repo {
+            display: "Repo with http".to_string(),
+            name: "repo-with-http".to_string(),
+            url: "http://".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
+            crates: vec![],
+        },
     ];
     repos
 }
@@ -357,11 +365,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .filter(|w| no_homepage_no_repo(w))
         .cloned()
         .collect::<Vec<Crate>>();
-    let repo_with_http = crates
-        .into_iter()
-        .filter(|w| w.repository != "" && w.repository.starts_with("http://"))
-        .cloned()
-        .collect::<Vec<Crate>>();
     let github_with_www = crates
         .into_iter()
         .filter(|w| w.repository != "" && w.repository.contains("www.github.com"))
@@ -383,12 +386,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         &"_site/index.html".to_string(),
         &"Rust Digger".to_string(),
         &all_crates,
-    )?;
-
-    render_list_page(
-        &"_site/repo-with-http.html".to_string(),
-        &"Repository is unsecure".to_string(),
-        &repo_with_http,
     )?;
 
     render_list_page(
@@ -438,8 +435,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
         "no_homepage_no_repo_crates": no_homepage_no_repo_crates.len(),
         "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
-        "repo_with_http": repo_with_http.len(),
-        "repo_with_http_percentage": percentage(repo_with_http.len(), crates.len()),
         "github_with_www": github_with_www.len(),
         "github_with_www_percentage": percentage(github_with_www.len(), crates.len()),
     });
