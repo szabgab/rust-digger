@@ -221,6 +221,14 @@ fn get_repo_types() -> Vec<Repo> {
             crates: vec![],
         },
         Repo {
+            display: "CERN (GitLab)".to_string(),
+            name: "cern".to_string(),
+            url: "https://gitlab.cern.ch/".to_string(),
+            count: 0,
+            percentage: "0".to_string(),
+            crates: vec![],
+        },
+        Repo {
             display: "Wikimedia (GitLab)".to_string(),
             name: "wikimedia".to_string(),
             url: "https://gitlab.wikimedia.org/".to_string(),
