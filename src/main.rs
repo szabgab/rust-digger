@@ -27,9 +27,10 @@ struct Repo {
     url: String,
     count: usize,
     percentage: String,
+    crates: Vec<Crate>,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Crate {
     created_at: String,
     description: String,
@@ -176,6 +177,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://github.com/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "GitLab".to_string(),
@@ -183,6 +185,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://gitlab.com/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "Codeberg".to_string(),
@@ -190,6 +193,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://codeberg.org/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "Gitee".to_string(),
@@ -197,6 +201,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://gitee.com/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "Tor Project (GitLab)".to_string(),
@@ -204,6 +209,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://gitlab.torproject.org/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "Free Desktop (GitLab)".to_string(),
@@ -211,6 +217,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://gitlab.freedesktop.org/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "Wikimedia (GitLab)".to_string(),
@@ -218,6 +225,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://gitlab.wikimedia.org/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "e3t".to_string(),
@@ -225,6 +233,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://git.e3t.cc/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "srht".to_string(),
@@ -232,6 +241,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://git.sr.ht/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "Open Privacy".to_string(),
@@ -239,6 +249,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://git.openprivacy.ca/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "Cronce (GitLab)".to_string(),
@@ -246,6 +257,7 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://gitlab.cronce.io/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
         Repo {
             display: "Gnome (GitLab)".to_string(),
@@ -253,19 +265,20 @@ fn get_repo_types() -> Vec<Repo> {
             url: "https://gitlab.gnome.org/".to_string(),
             count: 0,
             percentage: "0".to_string(),
+            crates: vec![],
         },
     ];
     repos
 }
 
-fn collect_repos(crates: &Vec<Crate>) -> (Vec<&Crate>, Vec<Repo>, Vec<&Crate>) {
+fn collect_repos(crates: &Vec<Crate>) -> (Vec<Crate>, Vec<Repo>, Vec<Crate>) {
     let mut repos: Vec<Repo> = get_repo_types();
-    let mut no_repo: Vec<&Crate> = vec![];
-    let mut other_repo: Vec<&Crate> = vec![];
+    let mut no_repo: Vec<Crate> = vec![];
+    let mut other_repo: Vec<Crate> = vec![];
 
     for krate in crates {
         if krate.repository == "" {
-            no_repo.push(krate);
+            no_repo.push(krate.clone());
             continue;
         }
         let mut matched = false;
@@ -275,13 +288,14 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<&Crate>, Vec<Repo>, Vec<&Crate>) {
                 if krate.repository.starts_with(&repo.url) {
                     repo.count += 1;
                     matched = true;
+                    repo.crates.push(krate.clone());
                 }
                 repo
             })
             .collect();
 
         if !matched {
-            other_repo.push(krate);
+            other_repo.push(krate.clone());
         }
     }
 
@@ -291,6 +305,7 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<&Crate>, Vec<Repo>, Vec<&Crate>) {
         url: "".to_string(),
         count: no_repo.len(),
         percentage: "0".to_string(),
+        crates: vec![],
     });
 
     repos.push(Repo {
@@ -299,6 +314,7 @@ fn collect_repos(crates: &Vec<Crate>) -> (Vec<&Crate>, Vec<Repo>, Vec<&Crate>) {
         url: "".to_string(),
         count: other_repo.len(),
         percentage: "0".to_string(),
+        crates: vec![],
     });
 
     repos = repos
@@ -325,18 +341,21 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     let _res = fs::create_dir_all("_site/crates");
     let _res = fs::create_dir_all("_site/users");
     let _res = fs::create_dir_all("_site/news");
+    let _res = fs::create_dir_all("_site/vcs");
 
     fs::copy("digger.js", "_site/digger.js")?;
 
-    let all_crates = crates.into_iter().collect::<Vec<&Crate>>();
+    let all_crates: Vec<Crate> = crates.into_iter().cloned().collect();
     let home_page_but_no_repo = crates
         .into_iter()
         .filter(|w| has_homepage_no_repo(w))
-        .collect::<Vec<&Crate>>();
+        .cloned()
+        .collect::<Vec<Crate>>();
     let no_homepage_no_repo_crates = crates
         .into_iter()
         .filter(|w| no_homepage_no_repo(w))
-        .collect::<Vec<&Crate>>();
+        .cloned()
+        .collect::<Vec<Crate>>();
     // let no_repo = crates
     //     .into_iter()
     //     .filter(|w| !has_repo(w))
@@ -344,11 +363,13 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     let repo_with_http = crates
         .into_iter()
         .filter(|w| w.repository != "" && w.repository.starts_with("http://"))
-        .collect::<Vec<&Crate>>();
+        .cloned()
+        .collect::<Vec<Crate>>();
     let github_with_www = crates
         .into_iter()
         .filter(|w| w.repository != "" && w.repository.contains("www.github.com"))
-        .collect::<Vec<&Crate>>();
+        .cloned()
+        .collect::<Vec<Crate>>();
     //dbg!(&no_repo[0..1]);
 
     let (no_repo, repos, other_repos) = collect_repos(&crates);
@@ -358,6 +379,8 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     partials.add(filename, read_file(filename));
     let filename = "templates/incl/footer.html";
     partials.add(filename, read_file(filename));
+
+    render_list_crates_by_repo(&repos)?;
 
     render_list_page(
         &"_site/index.html".to_string(),
@@ -439,6 +462,18 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{}", html).unwrap();
 
+    Ok(())
+}
+
+fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
+    for repo in repos {
+        // dbg!(&repo);
+        render_list_page(
+            &format!("_site/vcs/{}.html", repo.name),
+            &format!("Crates in {}", repo.display),
+            &repo.crates,
+        )?;
+    }
     Ok(())
 }
 

@@ -73,7 +73,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
 pub fn render_list_page(
     filename: &String,
     title: &String,
-    crates: &Vec<&Crate>,
+    crates: &Vec<Crate>,
 ) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
 
