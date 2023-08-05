@@ -6,7 +6,20 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-use crate::{Crate, CratesByOwner, Partials, User, PAGE_SIZE, VERSION};
+use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
+
+
+pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
+    for repo in repos {
+        // dbg!(&repo);
+        render_list_page(
+            &format!("_site/vcs/{}.html", repo.name),
+            &format!("Crates in {}", repo.display),
+            &repo.crates,
+        )?;
+    }
+    Ok(())
+}
 
 pub fn read_file(filename: &str) -> String {
     let mut content = String::new();

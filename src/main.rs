@@ -17,11 +17,11 @@ use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
 use render::{
     generate_crate_pages, generate_user_pages, load_templates, read_file, render_list_page,
-    render_news_pages, render_static_pages,
+    render_news_pages, render_static_pages, render_list_crates_by_repo,
 };
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct Repo {
+pub struct Repo {
     display: String,
     name: String,
     url: String,
@@ -465,17 +465,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
-    for repo in repos {
-        // dbg!(&repo);
-        render_list_page(
-            &format!("_site/vcs/{}.html", repo.name),
-            &format!("Crates in {}", repo.display),
-            &repo.crates,
-        )?;
-    }
-    Ok(())
-}
 
 #[cfg(test)]
 mod tests {
