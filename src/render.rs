@@ -253,8 +253,15 @@ pub fn generate_user_pages(
         .filter(|user| user.count > 0)
         .collect();
 
-    // list all the users on the /users/ page
     users_with_crates.sort_by(|a, b| a.name.cmp(&b.name));
+
+    generate_list_of_users(&users_with_crates);
+
+    Ok(())
+}
+
+fn generate_list_of_users(users: &Vec<User>) {
+    // list all the users on the /users/ page
     let partials = match load_templates() {
         Ok(partials) => partials,
         Err(error) => panic!("Error loading templates {}", error),
@@ -273,11 +280,9 @@ pub fn generate_user_pages(
         "version": format!("{VERSION}"),
         "utc":     format!("{}", utc),
         "title":   "Users".to_string(),
-        "users":    users_with_crates,
+        "users":    users,
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{}", html).unwrap();
-
-    Ok(())
 }
