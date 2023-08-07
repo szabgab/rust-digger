@@ -382,6 +382,18 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .cloned()
         .collect::<Vec<Crate>>();
 
+    let crates_without_owner_name = crates
+        .into_iter()
+        .filter(|krate| krate.owner_name == "")
+        .cloned()
+        .collect::<Vec<Crate>>();
+
+    let crates_without_owner = crates
+        .into_iter()
+        .filter(|krate| krate.owner_name == "" && krate.owner_gh_login == "")
+        .cloned()
+        .collect::<Vec<Crate>>();
+
     let repos = collect_repos(&crates);
 
     let mut partials = Partials::empty();
@@ -409,6 +421,18 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         &"_site/no-homepage-no-repo.html".to_string(),
         &"No repository, no homepage".to_string(),
         &no_homepage_no_repo_crates,
+    )?;
+
+    render_list_page(
+        &"_site/crates-without-owner-name.html".to_string(),
+        &"Crates without owner name".to_string(),
+        &crates_without_owner_name,
+    )?;
+
+    render_list_page(
+        &"_site/crates-without-owner.html".to_string(),
+        &"Crates without owner".to_string(),
+        &crates_without_owner,
     )?;
 
     //log::info!("repos: {:?}", repos);
