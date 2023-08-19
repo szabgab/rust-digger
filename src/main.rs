@@ -30,6 +30,9 @@ struct Cli {
 
     #[arg(long, default_value_t = 0, help = "Number of git repositories to try to clone or pull. 0 means all")]
     pull: u32,
+
+    #[arg(long, default_value_t = false)]
+    html: bool,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -127,13 +130,16 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
 
-    generate_pages(&crates)?;
-    render_news_pages();
-    render_static_pages()?;
-    generate_crate_pages(&crates)?;
-    generate_user_pages(&crates, users, &crates_by_owner)?;
+    update_repositories(&crates, args.pull);
 
-    update_repositories(crates, args.pull);
+    if args.html {
+        generate_pages(&crates)?;
+        render_news_pages();
+        render_static_pages()?;
+        generate_crate_pages(&crates)?;
+        generate_user_pages(&crates, users, &crates_by_owner)?;    
+    }
+
 
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the Rust Digger");
@@ -141,11 +147,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 
-fn update_repositories(crates: Vec<Crate>, pull: u32) {
+fn update_repositories(crates: &Vec<Crate>, pull: u32) {
     log::info!("start update repositories");
     let mut count: u32 = 0; 
     for krate in crates {
-        if pull != 0 && pull < count {
+        if pull != 0 && pull <= count {
             break;
         }
         log::info!("update repository '{}'", krate.repository);
