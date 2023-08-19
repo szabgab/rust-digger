@@ -13,3 +13,4 @@ csv = "1.2.2"
 simple_logger = "4.2"
 log = "0.4"
 liquid = "0.26.4"
+clap = { version = "4.3", features = ["derive"] }

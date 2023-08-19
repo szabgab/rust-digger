@@ -6,6 +6,7 @@ use std::fs::File;
 use std::io::Write;
 
 use chrono::prelude::{Utc, DateTime};
+use clap::Parser;
 
 pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
@@ -20,6 +21,13 @@ use render::{
     render_list_crates_by_repo, render_list_of_repos, render_list_page, render_news_pages,
     render_static_pages,
 };
+
+#[derive(Parser, Debug)]
+#[command(version)]
+struct Cli {
+    #[arg(long, default_value_t = 0)]
+    limit: i32,
+}
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Repo {
@@ -100,24 +108,18 @@ type CratesByOwner = HashMap<String, Vec<String>>;
 // type Users = HashMap<String, User>;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
     let start_time = std::time::Instant::now();
     log::info!("Starting the Rust Digger");
     log::info!("{VERSION}");
 
-    let args: Vec<String> = env::args().collect();
-    let limit;
-    if args.len() == 2 {
-        limit = args[1].parse().expect("Could not convert to i32");
-    } else {
-        limit = 0;
-    }
-    log::info!("Limit {limit}");
+//    log::info!("Limit {args.limit}");
 
-    let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(limit);
-    let mut users = read_users(limit);
-    read_teams(&mut users, limit);
-    let mut crates: Vec<Crate> = read_crates(limit);
+    let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(args.limit);
+    let mut users = read_users(args.limit);
+    read_teams(&mut users, args.limit);
+    let mut crates: Vec<Crate> = read_crates(args.limit);
     //dbg!(&crates_by_owner);
 
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);

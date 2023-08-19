@@ -27,7 +27,7 @@ As of 2023.06.17
 ```
 git clone https://github.com/szabgab/rust-digger.git
 cd rust-digger
-cargo run 200
+cargo run -- --limit 200
 ```
 
 To run a local web server to serve the static files install [ruststatic](https://github.com/szabgab/rustatic) using:
