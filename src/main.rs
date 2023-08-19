@@ -101,6 +101,7 @@ type CratesByOwner = HashMap<String, Vec<String>>;
 
 fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::init_with_level(log::Level::Info).unwrap();
+    let start_time = std::time::Instant::now();
     log::info!("Starting the Rust Digger");
     log::info!("{VERSION}");
 
@@ -127,6 +128,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     generate_crate_pages(&crates)?;
     generate_user_pages(&crates, users, &crates_by_owner)?;
 
+    log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the Rust Digger");
     Ok(())
 }
