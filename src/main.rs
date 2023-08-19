@@ -151,7 +151,7 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
     log::info!("start update repositories");
     let mut count: u32 = 0; 
     for krate in crates {
-        if pull != 0 && pull <= count {
+        if pull <= count {
             break;
         }
         log::info!("update repository '{}'", krate.repository);
