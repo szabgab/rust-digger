@@ -5,7 +5,7 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 
-use chrono::prelude::*;
+use chrono::prelude::{Utc, DateTime};
 
 pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
