@@ -7,6 +7,7 @@ use std::io::Write;
 
 use chrono::prelude::{Utc, DateTime};
 use clap::Parser;
+use regex::Regex;
 
 pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
@@ -154,6 +155,15 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
         if pull <= count {
             break;
         }
+        let re = Regex::new(r"^https://github.com/([^/])+/([^/])+$").unwrap();
+        match re.captures(&krate.repository) {
+            Some(_value) => {},
+            None => {
+                println!("No match");
+                continue;
+            }
+        };
+
         log::info!("update repository '{}'", krate.repository);
         count += 1;
 
