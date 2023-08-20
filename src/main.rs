@@ -4,6 +4,8 @@ use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
+use std::process::Command;
+use std::path::Path;
 
 use chrono::prelude::{Utc, DateTime};
 use clap::Parser;
@@ -150,24 +152,58 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn update_repositories(crates: &Vec<Crate>, pull: u32) {
     log::info!("start update repositories");
+
+    let _res = fs::create_dir_all("repos");
+    let _res = fs::create_dir_all("repos/github");
+
     let mut count: u32 = 0; 
     for krate in crates {
         if pull <= count {
             break;
         }
-        let re = Regex::new(r"^https://github.com/([^/])+/([^/])+$").unwrap();
-        match re.captures(&krate.repository) {
-            Some(_value) => {},
+        let re = Regex::new(r"^https://github.com/([^/]+)/([^/]+)$").unwrap();
+        let repo_url = match re.captures(&krate.repository) {
+            Some(value) => value,
             None => {
                 println!("No match");
                 continue;
             }
         };
 
+        let owner = &repo_url[1].to_lowercase();
+        let repo = &repo_url[2].to_lowercase();
         log::info!("update repository '{}'", krate.repository);
+        //log::info!("repo 0 '{}'", &repo[0]);
+        //log::info!("repo 1 '{}'", &repo[1]);
+        //log::info!("repo 2 '{}'", &repo[2]);
+        let owner_path = format!("repos/github/{owner}");
+        let _res = fs::create_dir_all(&owner_path);
+        let repo_path = format!("{owner_path}/{repo}");
+        let current_dir = env::current_dir().unwrap();
+        if Path::new(&repo_path).exists() {
+            env::set_current_dir(&repo_path).unwrap();
+            git_pull();
+        } else {
+            env::set_current_dir(owner_path).unwrap();
+            git_clone(&krate.repository, repo);
+        }
+
+        env::set_current_dir(current_dir).unwrap();
         count += 1;
 
     }
+}
+
+fn git_clone(url: &str, path: &str) {
+    log::info!("git clone {} {}", url, path);
+    let result = Command::new("git").arg("clone").arg(url).arg(path).output().expect("Could not run");
+    log::info!("Run command exit code {}", result.status);
+}
+
+fn git_pull() {
+    log::info!("git pull");
+    let result = Command::new("git").arg("pull").output().expect("Could not run");
+    log::info!("Run command exit code {}", result.status);
 }
 
 fn add_owners_to_crates(crates: &mut Vec<Crate>, users: &Vec<User>, owner_by_crate_id: &Owners) {
