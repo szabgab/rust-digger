@@ -28,13 +28,16 @@ use render::{
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
-    #[arg(long, default_value_t = 0)]
+    #[arg(long, default_value_t = 0, help= "Limit the number of items we process.")]
     limit: i32,
 
-    #[arg(long, default_value_t = 0, help = "Number of git repositories to try to clone or pull. 0 means all")]
+    #[arg(long, default_value_t = 0, help = "Number of git repositories to try to clone or pull.")]
     pull: u32,
 
-    #[arg(long, default_value_t = false)]
+    #[arg(long, default_value_t = 0, help = "Number of git repositories to process.")]
+    vcs: u32,
+
+    #[arg(long, default_value_t = false, help = "Generate HTML pages")]
     html: bool,
 }
 
@@ -134,6 +137,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
 
     update_repositories(&crates, args.pull);
+    collect_data_from_vcs(&crates, args.vcs);
+
 
     if args.html {
         generate_pages(&crates)?;
@@ -149,6 +154,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn collect_data_from_vcs(crates: &Vec<Crate>, vcs: u32) {
+    log::info!("process VCS");
+
+    let mut count: u32 = 0; 
+    for krate in crates {
+        if vcs <= count {
+            break;
+        }
+        log::info!("process repository '{}'", krate.repository);
+
+        count += 1;
+    }
+
+}
 
 fn update_repositories(crates: &Vec<Crate>, pull: u32) {
     log::info!("start update repositories");
