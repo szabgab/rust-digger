@@ -169,6 +169,21 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, vcs: u32) {
 
 }
 
+fn get_owner_and_repo(repository: &str) -> (String, String) {
+    let re = Regex::new(r"^https://github.com/([^/]+)/([^/]+)$").unwrap();
+    let repo_url = match re.captures(&repository) {
+        Some(value) => value,
+        None => {
+            println!("No match");
+            return ("".to_string(), "".to_string())
+        }
+    };
+    let owner = repo_url[1].to_lowercase();
+    let repo = repo_url[2].to_lowercase();
+    (owner, repo)
+}
+
+
 fn update_repositories(crates: &Vec<Crate>, pull: u32) {
     log::info!("start update repositories");
 
@@ -180,21 +195,12 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
         if pull <= count {
             break;
         }
-        let re = Regex::new(r"^https://github.com/([^/]+)/([^/]+)$").unwrap();
-        let repo_url = match re.captures(&krate.repository) {
-            Some(value) => value,
-            None => {
-                println!("No match");
-                continue;
-            }
-        };
+        let (owner, repo) = get_owner_and_repo(&krate.repository);
+        if owner == "" {
+            continue;
+        }
 
-        let owner = &repo_url[1].to_lowercase();
-        let repo = &repo_url[2].to_lowercase();
         log::info!("update repository '{}'", krate.repository);
-        //log::info!("repo 0 '{}'", &repo[0]);
-        //log::info!("repo 1 '{}'", &repo[1]);
-        //log::info!("repo 2 '{}'", &repo[2]);
         let owner_path = format!("repos/github/{owner}");
         let _res = fs::create_dir_all(&owner_path);
         let repo_path = format!("{owner_path}/{repo}");
@@ -204,7 +210,7 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
             git_pull();
         } else {
             env::set_current_dir(owner_path).unwrap();
-            git_clone(&krate.repository, repo);
+            git_clone(&krate.repository, &repo);
         }
 
         env::set_current_dir(current_dir).unwrap();
