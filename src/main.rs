@@ -4,10 +4,10 @@ use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::process::Command;
 use std::path::Path;
+use std::process::Command;
 
-use chrono::prelude::{Utc, DateTime};
+use chrono::prelude::{DateTime, Utc};
 use clap::Parser;
 use regex::Regex;
 
@@ -28,13 +28,25 @@ use render::{
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
-    #[arg(long, default_value_t = 0, help= "Limit the number of items we process.")]
+    #[arg(
+        long,
+        default_value_t = 0,
+        help = "Limit the number of items we process."
+    )]
     limit: i32,
 
-    #[arg(long, default_value_t = 0, help = "Number of git repositories to try to clone or pull.")]
+    #[arg(
+        long,
+        default_value_t = 0,
+        help = "Number of git repositories to try to clone or pull."
+    )]
     pull: u32,
 
-    #[arg(long, default_value_t = 0, help = "Number of git repositories to process.")]
+    #[arg(
+        long,
+        default_value_t = 0,
+        help = "Number of git repositories to process."
+    )]
     vcs: u32,
 
     #[arg(long, default_value_t = false, help = "Generate HTML pages")]
@@ -126,9 +138,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     log::info!("Starting the Rust Digger");
     log::info!("{VERSION}");
 
-//    log::info!("Limit {args.limit}");
+    //    log::info!("Limit {args.limit}");
 
-    let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners(args.limit);
+    let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) =
+        read_crate_owners(args.limit);
     let mut users = read_users(args.limit);
     read_teams(&mut users, args.limit);
     let mut crates: Vec<Crate> = read_crates(args.limit);
@@ -139,15 +152,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     update_repositories(&crates, args.pull);
     collect_data_from_vcs(&crates, args.vcs);
 
-
     if args.html {
         generate_pages(&crates)?;
         render_news_pages();
         render_static_pages()?;
         generate_crate_pages(&crates)?;
-        generate_user_pages(&crates, users, &crates_by_owner)?;    
+        generate_user_pages(&crates, users, &crates_by_owner)?;
     }
-
 
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the Rust Digger");
@@ -157,7 +168,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn collect_data_from_vcs(crates: &Vec<Crate>, vcs: u32) {
     log::info!("process VCS");
 
-    let mut count: u32 = 0; 
+    let mut count: u32 = 0;
     for krate in crates {
         if vcs <= count {
             break;
@@ -166,7 +177,6 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, vcs: u32) {
 
         count += 1;
     }
-
 }
 
 fn get_owner_and_repo(repository: &str) -> (String, String) {
@@ -175,7 +185,7 @@ fn get_owner_and_repo(repository: &str) -> (String, String) {
         Some(value) => value,
         None => {
             println!("No match");
-            return ("".to_string(), "".to_string())
+            return ("".to_string(), "".to_string());
         }
     };
     let owner = repo_url[1].to_lowercase();
@@ -183,14 +193,13 @@ fn get_owner_and_repo(repository: &str) -> (String, String) {
     (owner, repo)
 }
 
-
 fn update_repositories(crates: &Vec<Crate>, pull: u32) {
     log::info!("start update repositories");
 
     let _res = fs::create_dir_all("repos");
     let _res = fs::create_dir_all("repos/github");
 
-    let mut count: u32 = 0; 
+    let mut count: u32 = 0;
     for krate in crates {
         if pull <= count {
             break;
@@ -215,19 +224,26 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
 
         env::set_current_dir(current_dir).unwrap();
         count += 1;
-
     }
 }
 
 fn git_clone(url: &str, path: &str) {
     log::info!("git clone {} {}", url, path);
-    let result = Command::new("git").arg("clone").arg(url).arg(path).output().expect("Could not run");
+    let result = Command::new("git")
+        .arg("clone")
+        .arg(url)
+        .arg(path)
+        .output()
+        .expect("Could not run");
     log::info!("Run command exit code {}", result.status);
 }
 
 fn git_pull() {
     log::info!("git pull");
-    let result = Command::new("git").arg("pull").output().expect("Could not run");
+    let result = Command::new("git")
+        .arg("pull")
+        .output()
+        .expect("Could not run");
     log::info!("Run command exit code {}", result.status);
 }
 
