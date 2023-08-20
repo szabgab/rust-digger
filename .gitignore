@@ -1,6 +1,7 @@
 /target
 /data/
 /_site/
+/repos/
 *.bak
 db-dump.tar.gz
 *.swp
