@@ -5,6 +5,7 @@
        <th>update at</th>
        <th>owner</th>
        <th>repo</th>
+       <th>CI</th>
       </tr>
       </thead>
     <tbody>
@@ -23,6 +24,12 @@
           <td><a href="{{crate.repository}}">repo</a></td>
         {% else %}
           <td>NA</td>
+        {% endif %}
+
+        {% if crate.details.has_github_action %}
+           <td>GitHub Action</td>
+        {% else %}
+           <td>NA</td>
         {% endif %}
       </tr>
     {% endfor %}

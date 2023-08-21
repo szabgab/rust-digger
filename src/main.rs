@@ -85,6 +85,9 @@ pub struct Crate {
 
     #[serde(default = "empty_string")]
     owner_gh_avatar: String,
+
+    #[serde(default = "empty_details")]
+    details: Details,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -97,6 +100,10 @@ pub struct User {
 
     #[serde(default = "get_zero")]
     count: u16,
+}
+
+fn empty_details() -> Details {
+    Details::new()
 }
 
 fn empty_string() -> String {
@@ -126,6 +133,19 @@ struct CrateOwner {
     owner_kind: String,
 }
 
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+struct Details {
+    has_github_action: bool,
+}
+
+impl Details {
+    pub fn new() -> Details {
+        Details {
+            has_github_action: false,
+        }
+    }
+}
+
 //type RepoPercentage<'a> = HashMap<&'a str, String>;
 type Owners = HashMap<String, String>;
 type CratesByOwner = HashMap<String, Vec<String>>;
@@ -150,7 +170,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
 
     update_repositories(&crates, args.pull);
-    collect_data_from_vcs(&crates, args.vcs);
+    collect_data_from_vcs(&mut crates, args.vcs);
 
     if args.html {
         generate_pages(&crates)?;
@@ -165,7 +185,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn collect_data_from_vcs(crates: &Vec<Crate>, vcs: u32) {
+fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
     log::info!("process VCS");
 
     let mut count: u32 = 0;
@@ -173,8 +193,33 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, vcs: u32) {
         if vcs <= count {
             break;
         }
-        log::info!("process repository '{}'", krate.repository);
+        let mut details = Details {
+            has_github_action: false,
+        };
+        log::info!("process repository '{}'", &krate.repository);
+        let (owner, repo) = get_owner_and_repo(&krate.repository);
+        if owner == "" {
+            continue;
+        }
+        let repo_path = format!("repos/github/{owner}/{repo}");
+        if !Path::new(&repo_path).exists() {
+            log::error!("Cloned path does not exist for {}", &krate.repository);
+            continue;
+        }
+        let current_dir = env::current_dir().unwrap();
+        env::set_current_dir(&repo_path).unwrap();
 
+        let workflows = Path::new(".github/workflows");
+        if workflows.exists() {
+            for entry in workflows.read_dir().expect("read_dir call failed") {
+                if let Ok(entry) = entry {
+                    log::info!("workflows: {:?}", entry.path());
+                    details.has_github_action = true;
+                }
+            }
+        }
+        krate.details = details;
+        env::set_current_dir(&current_dir).unwrap();
         count += 1;
     }
 }
