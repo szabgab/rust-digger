@@ -1,0 +1,41 @@
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-home">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div id="navbar-home" class="navbar-menu">
+        <div class="navbar-start">
+          <a href="/" class="navbar-item">Home</a>
+          <a href="/stats" class="navbar-item">Stats</a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">Reports</a>
+
+            <div class="navbar-dropdown">
+              <a href="/vcs/no-repo" class="navbar-item">No Repository</a>
+              <a href="/has-homepage-but-no-repo" class="navbar-item">Has homepage but no repository</a>
+              <a href="/no-homepage-no-repo" class="navbar-item">No homepage and no repository</a>
+              <a href="/crates-without-owner" class="navbar-item">Crates without owner</a>
+              <a href="/crates-without-owner-name" class="navbar-item">Crates without owner name</a>
+              <a href="/vcs/repo-with-http" class="navbar-item">Unsecure repo url (using http)</a>
+              <a href="/vcs/github-with-www" class="navbar-item">GitHub with www</a>
+              <hr class="navbar-divider">
+              <a href="/about" class="navbar-item">About</a>
+            </div>
+          </div>
+          <a href="/users/" class="navbar-item">Owners</a>
+          <a href="/vcs/" class="navbar-item">VCS</a>
+          <a href="/news/" class="navbar-item">News</a>
+          <a href="/support" class="navbar-item">Support</a>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+          <a class="navbar-item" href="/about">About</a>
+          </div>
+        </div>
+      </div>
+    </nav>

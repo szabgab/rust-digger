@@ -562,6 +562,8 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     partials.add(filename, read_file(filename));
     let filename = "templates/incl/footer.html";
     partials.add(filename, read_file(filename));
+    let filename = "templates/incl/navigation.html";
+    partials.add(filename, read_file(filename));
 
     render_list_crates_by_repo(&repos)?;
     render_list_of_repos(&repos);
