@@ -20,7 +20,7 @@ mod read;
 use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
 use render::{
-    generate_crate_pages, generate_user_pages, load_templates, read_file,
+    generate_crate_pages, generate_user_pages, load_templates,
     render_list_crates_by_repo, render_list_of_repos, render_list_page, render_news_pages,
     render_static_pages,
 };
@@ -556,14 +556,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .collect::<Vec<Crate>>();
 
     let repos = collect_repos(&crates);
-
-    let mut partials = Partials::empty();
-    let filename = "templates/incl/header.html";
-    partials.add(filename, read_file(filename));
-    let filename = "templates/incl/footer.html";
-    partials.add(filename, read_file(filename));
-    let filename = "templates/incl/navigation.html";
-    partials.add(filename, read_file(filename));
 
     render_list_crates_by_repo(&repos)?;
     render_list_of_repos(&repos);
