@@ -81,6 +81,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
     let pages = vec![
         ("about", "About Rust Digger"),
         ("support", "Support Rust Digger"),
+        ("training", "Training courses"),
     ];
 
     for page in pages {
