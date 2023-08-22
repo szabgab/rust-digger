@@ -52,4 +52,11 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 cargo run
 ```
 
+## cloning repositories
+
+* `git pull` takes 0.3 sec when it does not need to copy any files.
+* There are  123,216 crates
+* Assuming all of them will have git repositories and most of them won't change we'll need
+  123,000 * 0.3 = 41,000 sec to update all the repos = that is 683 minues = 11.5 hours.
+
 
