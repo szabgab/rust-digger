@@ -201,6 +201,9 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
             vcs,
             &krate.repository
         );
+        if krate.repository == "" {
+            continue;
+        }
         let (owner, repo) = get_owner_and_repo(&krate.repository);
         if owner == "" {
             continue;
@@ -233,7 +236,7 @@ fn get_owner_and_repo(repository: &str) -> (String, String) {
     let repo_url = match re.captures(&repository) {
         Some(value) => value,
         None => {
-            println!("No match");
+            println!("No match in {}", &repository);
             return ("".to_string(), "".to_string());
         }
     };
@@ -253,6 +256,10 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
         if pull <= count {
             break;
         }
+        if krate.repository == "" {
+            continue;
+        }
+
         let (owner, repo) = get_owner_and_repo(&krate.repository);
         if owner == "" {
             continue;
@@ -333,6 +340,23 @@ fn add_owners_to_crates(crates: &mut Vec<Crate>, users: &Vec<User>, owner_by_cra
 // fn has_repo(w: &Crate) -> bool {
 //     w.repository != ""
 // }
+fn on_github_but_no_ci(krate: &Crate) -> bool {
+    if krate.repository == "" {
+        return false;
+    }
+
+    let (owner, _) = get_owner_and_repo(&krate.repository);
+    if owner == "" {
+        return false;
+    }
+
+    if krate.details.has_github_action {
+        return false;
+    }
+
+    true
+}
+
 fn has_homepage_no_repo(w: &Crate) -> bool {
     w.homepage != "" && w.repository == ""
 }
@@ -541,6 +565,11 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     fs::copy("digger.js", "_site/digger.js")?;
 
     let all_crates: Vec<Crate> = crates.into_iter().cloned().collect();
+    let github_but_no_ci = crates
+        .into_iter()
+        .filter(|w| on_github_but_no_ci(w))
+        .cloned()
+        .collect::<Vec<Crate>>();
     let home_page_but_no_repo = crates
         .into_iter()
         .filter(|w| has_homepage_no_repo(w))
@@ -573,6 +602,12 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         &"_site/index.html".to_string(),
         &"Rust Digger".to_string(),
         &all_crates,
+    )?;
+
+    render_list_page(
+        &"_site/github-but-no-ci.html".to_string(),
+        &"On GitHub but has no CI".to_string(),
+        &github_but_no_ci,
     )?;
 
     render_list_page(
@@ -628,6 +663,9 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
         "no_homepage_no_repo_crates": no_homepage_no_repo_crates.len(),
         "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
+        "github_but_no_ci": github_but_no_ci.len(),
+        "github_but_no_ci_percentage": percentage(github_but_no_ci.len(), crates.len()),
+
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
