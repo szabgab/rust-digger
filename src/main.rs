@@ -20,9 +20,8 @@ mod read;
 use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
 use render::{
-    generate_crate_pages, generate_user_pages, load_templates,
-    render_list_crates_by_repo, render_list_of_repos, render_list_page, render_news_pages,
-    render_static_pages,
+    generate_crate_pages, generate_user_pages, load_templates, render_list_crates_by_repo,
+    render_list_of_repos, render_list_page, render_news_pages, render_static_pages,
 };
 
 #[derive(Parser, Debug)]
@@ -196,7 +195,12 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
         let mut details = Details {
             has_github_action: false,
         };
-        log::info!("process repository '{}'", &krate.repository);
+        log::info!(
+            "process ({}/{}) repository '{}'",
+            count,
+            vcs,
+            &krate.repository
+        );
         let (owner, repo) = get_owner_and_repo(&krate.repository);
         if owner == "" {
             continue;
@@ -254,7 +258,12 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
             continue;
         }
 
-        log::info!("update repository '{}'", krate.repository);
+        log::info!(
+            "update ({}/{}) repository '{}'",
+            count,
+            pull,
+            krate.repository
+        );
         let owner_path = format!("repos/github/{owner}");
         let _res = fs::create_dir_all(&owner_path);
         let repo_path = format!("{owner_path}/{repo}");
