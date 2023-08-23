@@ -204,11 +204,11 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
         if krate.repository == "" {
             continue;
         }
-        let (owner, repo) = get_owner_and_repo(&krate.repository);
+        let (host, owner, repo) = get_owner_and_repo(&krate.repository);
         if owner == "" {
             continue;
         }
-        let repo_path = format!("repos/github/{owner}/{repo}");
+        let repo_path = format!("repos/{host}/{owner}/{repo}");
         if !Path::new(&repo_path).exists() {
             log::error!("Cloned path does not exist for {}", &krate.repository);
             continue;
@@ -231,18 +231,19 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
     }
 }
 
-fn get_owner_and_repo(repository: &str) -> (String, String) {
+fn get_owner_and_repo(repository: &str) -> (String, String, String) {
     let re = Regex::new(r"^https://github.com/([^/]+)/([^/]+)/?$").unwrap();
     let repo_url = match re.captures(&repository) {
         Some(value) => value,
         None => {
             println!("No match in {}", &repository);
-            return ("".to_string(), "".to_string());
+            return ("".to_string(), "".to_string(), "".to_string());
         }
     };
+    let host = "github".to_string();
     let owner = repo_url[1].to_lowercase();
     let repo = repo_url[2].to_lowercase();
-    (owner, repo)
+    (host, owner, repo)
 }
 
 fn update_repositories(crates: &Vec<Crate>, pull: u32) {
@@ -260,7 +261,7 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
             continue;
         }
 
-        let (owner, repo) = get_owner_and_repo(&krate.repository);
+        let (host, owner, repo) = get_owner_and_repo(&krate.repository);
         if owner == "" {
             continue;
         }
@@ -271,7 +272,7 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
             pull,
             krate.repository
         );
-        let owner_path = format!("repos/github/{owner}");
+        let owner_path = format!("repos/{host}/{owner}");
         let _res = fs::create_dir_all(&owner_path);
         let repo_path = format!("{owner_path}/{repo}");
         let current_dir = env::current_dir().unwrap();
@@ -345,7 +346,7 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    let (owner, _) = get_owner_and_repo(&krate.repository);
+    let (_, owner, _) = get_owner_and_repo(&krate.repository);
     if owner == "" {
         return false;
     }
@@ -723,11 +724,19 @@ mod tests {
     fn test_get_owner_and_repo() {
         assert_eq!(
             get_owner_and_repo("https://github.com/szabgab/rust-digger"),
-            ("szabgab".to_string(), "rust-digger".to_string())
+            (
+                "github".to_string(),
+                "szabgab".to_string(),
+                "rust-digger".to_string()
+            )
         );
         assert_eq!(
             get_owner_and_repo("https://github.com/szabgab/rust-digger/"),
-            ("szabgab".to_string(), "rust-digger".to_string())
+            (
+                "github".to_string(),
+                "szabgab".to_string(),
+                "rust-digger".to_string()
+            )
         );
     }
 }
