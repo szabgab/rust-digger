@@ -232,7 +232,7 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
 }
 
 fn get_owner_and_repo(repository: &str) -> (String, String) {
-    let re = Regex::new(r"^https://github.com/([^/]+)/([^/]+)$").unwrap();
+    let re = Regex::new(r"^https://github.com/([^/]+)/([^/]+)/?$").unwrap();
     let repo_url = match re.captures(&repository) {
         Some(value) => value,
         None => {
@@ -717,5 +717,17 @@ mod tests {
         assert_eq!(percentage(5, 20), "25");
         assert_eq!(percentage(1234, 10000), "12.34");
         assert_eq!(percentage(1234567, 10000000), "12.34");
+    }
+
+    #[test]
+    fn test_get_owner_and_repo() {
+        assert_eq!(
+            get_owner_and_repo("https://github.com/szabgab/rust-digger"),
+            ("szabgab".to_string(), "rust-digger".to_string())
+        );
+        assert_eq!(
+            get_owner_and_repo("https://github.com/szabgab/rust-digger/"),
+            ("szabgab".to_string(), "rust-digger".to_string())
+        );
     }
 }
