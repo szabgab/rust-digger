@@ -252,6 +252,7 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
     let _res = fs::create_dir_all("repos");
     let _res = fs::create_dir_all("repos/github");
     let _res = fs::create_dir_all("repos/gitlab");
+    let mut repo_reuse: HashMap<String, i32> = HashMap::new();
 
     let mut count: u32 = 0;
     for krate in crates {
@@ -262,7 +263,13 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
             continue;
         }
 
-        let (host, owner, repo) = get_owner_and_repo(&krate.repository);
+        let repository = krate.repository.to_lowercase();
+        *repo_reuse.entry(repository.clone()).or_insert(0) += 1;
+        if *repo_reuse.get(&repository as &str).unwrap() > 1 {
+            continue;
+        }
+
+        let (host, owner, repo) = get_owner_and_repo(&repository);
         if owner == "" {
             continue;
         }
