@@ -232,7 +232,7 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
 }
 
 fn get_owner_and_repo(repository: &str) -> (String, String, String) {
-    let re = Regex::new(r"^https://github.com/([^/]+)/([^/]+)/?$").unwrap();
+    let re = Regex::new(r"^https://(github|gitlab).com/([^/]+)/([^/]+)/?$").unwrap();
     let repo_url = match re.captures(&repository) {
         Some(value) => value,
         None => {
@@ -240,9 +240,9 @@ fn get_owner_and_repo(repository: &str) -> (String, String, String) {
             return ("".to_string(), "".to_string(), "".to_string());
         }
     };
-    let host = "github".to_string();
-    let owner = repo_url[1].to_lowercase();
-    let repo = repo_url[2].to_lowercase();
+    let host = repo_url[1].to_lowercase();
+    let owner = repo_url[2].to_lowercase();
+    let repo = repo_url[3].to_lowercase();
     (host, owner, repo)
 }
 
@@ -251,6 +251,7 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
 
     let _res = fs::create_dir_all("repos");
     let _res = fs::create_dir_all("repos/github");
+    let _res = fs::create_dir_all("repos/gitlab");
 
     let mut count: u32 = 0;
     for krate in crates {
@@ -734,6 +735,22 @@ mod tests {
             get_owner_and_repo("https://github.com/szabgab/rust-digger/"),
             (
                 "github".to_string(),
+                "szabgab".to_string(),
+                "rust-digger".to_string()
+            )
+        );
+        assert_eq!(
+            get_owner_and_repo("https://gitlab.com/szabgab/rust-digger"),
+            (
+                "gitlab".to_string(),
+                "szabgab".to_string(),
+                "rust-digger".to_string()
+            )
+        );
+        assert_eq!(
+            get_owner_and_repo("https://gitlab.com/Szabgab/Rust-digger/"),
+            (
+                "gitlab".to_string(),
                 "szabgab".to_string(),
                 "rust-digger".to_string()
             )
