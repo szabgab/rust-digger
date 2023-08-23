@@ -232,7 +232,7 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
 }
 
 fn get_owner_and_repo(repository: &str) -> (String, String, String) {
-    let re = Regex::new(r"^https://(github|gitlab).com/([^/]+)/([^/]+)/?$").unwrap();
+    let re = Regex::new(r"^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap();
     let repo_url = match re.captures(&repository) {
         Some(value) => value,
         None => {
@@ -752,6 +752,16 @@ mod tests {
                 "github".to_string(),
                 "szabgab".to_string(),
                 "rust-digger".to_string()
+            )
+        );
+        assert_eq!(
+            get_owner_and_repo(
+                "https://github.com/crypto-crawler/crypto-crawler-rs/tree/main/crypto-market-type"
+            ),
+            (
+                "github".to_string(),
+                "crypto-crawler".to_string(),
+                "crypto-crawler-rs".to_string()
             )
         );
         assert_eq!(
