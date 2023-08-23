@@ -210,7 +210,7 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
         }
         let repo_path = format!("repos/{host}/{owner}/{repo}");
         if !Path::new(&repo_path).exists() {
-            log::error!("Cloned path does not exist for {}", &krate.repository);
+            log::warn!("Cloned path does not exist for {}", &krate.repository);
             continue;
         }
         let current_dir = env::current_dir().unwrap();
@@ -236,7 +236,7 @@ fn get_owner_and_repo(repository: &str) -> (String, String, String) {
     let repo_url = match re.captures(&repository) {
         Some(value) => value,
         None => {
-            println!("No match in {}", &repository);
+            log::warn!("No match for repo in {}", &repository);
             return ("".to_string(), "".to_string(), "".to_string());
         }
     };
