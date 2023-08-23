@@ -298,7 +298,11 @@ fn git_clone(url: &str, path: &str) {
         .arg(path)
         .output()
         .expect("Could not run");
-    log::info!("Run command exit code {}", result.status);
+    if result.status.success() {
+        log::info!("git_clone exit code {}", result.status);
+    } else {
+        log::warn!("git_clone exit code {}", result.status);
+    }
 }
 
 fn git_pull() {
@@ -307,7 +311,11 @@ fn git_pull() {
         .arg("pull")
         .output()
         .expect("Could not run");
-    log::info!("Run command exit code {}", result.status);
+    if result.status.success() {
+        log::info!("git_pull exit code {}", result.status);
+    } else {
+        log::warn!("git_pull exit code {}", result.status);
+    }
 }
 
 fn add_owners_to_crates(crates: &mut Vec<Crate>, users: &Vec<User>, owner_by_crate_id: &Owners) {
