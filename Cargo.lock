@@ -589,6 +589,7 @@ dependencies = [
  "csv",
  "liquid",
  "log",
+ "once_cell",
  "regex",
  "serde",
  "serde_json",
