@@ -9,8 +9,8 @@ use std::process::Command;
 
 use chrono::prelude::{DateTime, Utc};
 use clap::Parser;
-use regex::Regex;
 use once_cell::sync::Lazy;
+use regex::Regex;
 
 pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
@@ -233,7 +233,8 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
 }
 
 fn get_owner_and_repo(repository: &str) -> (String, String, String) {
-    static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());
+    static RE: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r"^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());
     let repo_url = match RE.captures(&repository) {
         Some(value) => value,
         None => {
@@ -509,6 +510,7 @@ fn get_repo_types() -> Vec<Repo> {
 }
 
 fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
+    log::info!("collect_repos start");
     let mut repos: Vec<Repo> = get_repo_types();
     let mut no_repo: Vec<Crate> = vec![];
     let mut other_repo: Vec<Crate> = vec![];
@@ -562,6 +564,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
         })
         .collect();
 
+    log::info!("collect_repos end");
     repos
 }
 

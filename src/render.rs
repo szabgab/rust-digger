@@ -9,6 +9,7 @@ use std::path::Path;
 use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
 
 pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
+    log::info!("render_list_crates_by_repo start");
     for repo in repos {
         // dbg!(&repo);
         render_list_page(
@@ -17,10 +18,12 @@ pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error
             &repo.crates,
         )?;
     }
+    log::info!("render_list_crates_by_repo end");
     Ok(())
 }
 
 pub fn render_list_of_repos(repos: &Vec<Repo>) {
+    log::info!("render_list_of_repos start");
     let partials = match load_templates() {
         Ok(partials) => partials,
         Err(error) => panic!("Error loading templates {}", error),
@@ -44,6 +47,7 @@ pub fn render_list_of_repos(repos: &Vec<Repo>) {
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{}", html).unwrap();
+    log::info!("render_list_of_repos end");
 }
 
 pub fn read_file(filename: &str) -> String {
@@ -76,7 +80,7 @@ pub fn load_templates() -> Result<Partials, Box<dyn Error>> {
 }
 
 pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
-    log::info!("render_static_pages");
+    log::info!("render_static_pages start");
 
     let pages = vec![
         ("about", "About Rust Digger"),
@@ -108,6 +112,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
         let mut file = File::create(format!("_site/{}.html", page.0)).unwrap();
         writeln!(&mut file, "{}", html).unwrap();
     }
+    log::info!("render_static_pages end");
     Ok(())
 }
 
@@ -201,6 +206,7 @@ pub fn render_news_pages() {
 }
 
 pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_crate_pages start");
     let partials = match load_templates() {
         Ok(partials) => partials,
         Err(error) => panic!("Error loading templates {}", error),
@@ -226,6 +232,7 @@ pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         let mut file = File::create(filename).unwrap();
         writeln!(&mut file, "{}", html).unwrap();
     }
+    log::info!("generate_crate_pages end");
     Ok(())
 }
 
@@ -234,6 +241,8 @@ pub fn generate_user_pages(
     users: Vec<User>,
     crates_by_owner: &CratesByOwner,
 ) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_user_pages start");
+
     let partials = match load_templates() {
         Ok(partials) => partials,
         Err(error) => panic!("Error loading templates {}", error),
@@ -298,10 +307,12 @@ pub fn generate_user_pages(
 
     generate_list_of_users(&users_with_crates);
 
+    log::info!("generate_user_pages end");
     Ok(())
 }
 
 fn generate_list_of_users(users: &Vec<User>) {
+    log::info!("generate_list_of_users start");
     // list all the users on the /users/ page
     let partials = match load_templates() {
         Ok(partials) => partials,
@@ -326,4 +337,5 @@ fn generate_list_of_users(users: &Vec<User>) {
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{}", html).unwrap();
+    log::info!("generate_list_of_users end");
 }
