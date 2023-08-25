@@ -658,6 +658,12 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
 
     //log::info!("repos: {:?}", repos);
 
+    render_stats_page(crates, repos, home_page_but_no_repo, no_homepage_no_repo_crates, github_but_no_ci);
+
+    Ok(())
+}
+
+fn render_stats_page(crates: &Vec<Crate>, repos: Vec<Repo>, home_page_but_no_repo: Vec<Crate>, no_homepage_no_repo_crates: Vec<Crate>, github_but_no_ci: Vec<Crate>) {
     log::info!("render_stats_page");
     let partials = match load_templates() {
         Ok(partials) => partials,
@@ -692,8 +698,6 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{}", html).unwrap();
-
-    Ok(())
 }
 
 #[cfg(test)]
