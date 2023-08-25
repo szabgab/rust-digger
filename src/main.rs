@@ -588,69 +588,67 @@ fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
 
     fs::copy("digger.js", "_site/digger.js")?;
 
-    let all_crates: Vec<Crate> = crates.into_iter().cloned().collect();
-    let github_but_no_ci = crates
-        .into_iter()
-        .filter(|w| on_github_but_no_ci(w))
-        .cloned()
-        .collect::<Vec<Crate>>();
-    let home_page_but_no_repo = crates
-        .into_iter()
-        .filter(|w| has_homepage_no_repo(w))
-        .cloned()
-        .collect::<Vec<Crate>>();
-    let no_homepage_no_repo_crates = crates
-        .into_iter()
-        .filter(|w| no_homepage_no_repo(w))
-        .cloned()
-        .collect::<Vec<Crate>>();
-
-    let crates_without_owner_name = crates
-        .into_iter()
-        .filter(|krate| krate.owner_name == "")
-        .cloned()
-        .collect::<Vec<Crate>>();
-
-    let crates_without_owner = crates
-        .into_iter()
-        .filter(|krate| krate.owner_name == "" && krate.owner_gh_login == "")
-        .cloned()
-        .collect::<Vec<Crate>>();
-
     let repos = collect_repos(&crates);
 
     render_list_crates_by_repo(&repos)?;
     render_list_of_repos(&repos);
 
+    let all_crates: Vec<Crate> = crates.into_iter().cloned().collect();
     render_list_page(
         &"_site/index.html".to_string(),
         &"Rust Digger".to_string(),
         &all_crates,
     )?;
 
+    let github_but_no_ci = crates
+        .into_iter()
+        .filter(|w| on_github_but_no_ci(w))
+        .cloned()
+        .collect::<Vec<Crate>>();
     render_list_page(
         &"_site/github-but-no-ci.html".to_string(),
         &"On GitHub but has no CI".to_string(),
         &github_but_no_ci,
     )?;
 
+    let home_page_but_no_repo = crates
+        .into_iter()
+        .filter(|w| has_homepage_no_repo(w))
+        .cloned()
+        .collect::<Vec<Crate>>();
     render_list_page(
         &"_site/has-homepage-but-no-repo.html".to_string(),
         &"Has homepage, but no repository".to_string(),
         &home_page_but_no_repo,
     )?;
 
+    let no_homepage_no_repo_crates = crates
+        .into_iter()
+        .filter(|w| no_homepage_no_repo(w))
+        .cloned()
+        .collect::<Vec<Crate>>();
     render_list_page(
         &"_site/no-homepage-no-repo.html".to_string(),
         &"No repository, no homepage".to_string(),
         &no_homepage_no_repo_crates,
     )?;
 
+    let crates_without_owner_name = crates
+        .into_iter()
+        .filter(|krate| krate.owner_name == "")
+        .cloned()
+        .collect::<Vec<Crate>>();
     render_list_page(
         &"_site/crates-without-owner-name.html".to_string(),
         &"Crates without owner name".to_string(),
         &crates_without_owner_name,
     )?;
+
+    let crates_without_owner = crates
+        .into_iter()
+        .filter(|krate| krate.owner_name == "" && krate.owner_gh_login == "")
+        .cloned()
+        .collect::<Vec<Crate>>();
 
     render_list_page(
         &"_site/crates-without-owner.html".to_string(),
