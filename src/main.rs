@@ -573,15 +573,18 @@ fn percentage(num: usize, total: usize) -> String {
     (t / 100.0).to_string()
 }
 
-fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
-    log::info!("generate_pages");
-
-    // Create a folder _site
+fn create_folders() {
     let _res = fs::create_dir_all("_site");
     let _res = fs::create_dir_all("_site/crates");
     let _res = fs::create_dir_all("_site/users");
     let _res = fs::create_dir_all("_site/news");
     let _res = fs::create_dir_all("_site/vcs");
+}
+
+fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_pages");
+
+    create_folders();
 
     fs::copy("digger.js", "_site/digger.js")?;
 
