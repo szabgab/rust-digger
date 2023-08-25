@@ -1,12 +1,14 @@
 use chrono::prelude::{DateTime, Utc};
 use std::collections::HashMap;
 use std::error::Error;
+use std::fs;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
+use crate::common::{get_owner_and_repo, percentage};
+use crate::{collect_repos, Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
 
 pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     log::info!("render_list_crates_by_repo start");
@@ -338,4 +340,171 @@ fn generate_list_of_users(users: &Vec<User>) {
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{}", html).unwrap();
     log::info!("generate_list_of_users end");
+}
+
+fn render_stats_page(
+    crates: &Vec<Crate>,
+    repos: Vec<Repo>,
+    home_page_but_no_repo: Vec<Crate>,
+    no_homepage_no_repo_crates: Vec<Crate>,
+    github_but_no_ci: Vec<Crate>,
+) {
+    log::info!("render_stats_page");
+    let partials = match load_templates() {
+        Ok(partials) => partials,
+        Err(error) => panic!("Error loading templates {}", error),
+    };
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/stats.html")
+        .unwrap();
+
+    let filename = "_site/stats.html";
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "Rust Digger Stats",
+        //"user":    user,
+        //"crate":   krate,
+        "total": crates.len(),
+        "repos": repos,
+        "home_page_but_no_repo": home_page_but_no_repo.len(),
+        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
+        "no_homepage_no_repo_crates": no_homepage_no_repo_crates.len(),
+        "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
+        "github_but_no_ci": github_but_no_ci.len(),
+        "github_but_no_ci_percentage": percentage(github_but_no_ci.len(), crates.len()),
+
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{}", html).unwrap();
+}
+
+fn create_folders() {
+    let _res = fs::create_dir_all("_site");
+    let _res = fs::create_dir_all("_site/crates");
+    let _res = fs::create_dir_all("_site/users");
+    let _res = fs::create_dir_all("_site/news");
+    let _res = fs::create_dir_all("_site/vcs");
+}
+
+pub fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_pages");
+
+    create_folders();
+
+    fs::copy("digger.js", "_site/digger.js")?;
+
+    let repos = collect_repos(&crates);
+
+    render_list_crates_by_repo(&repos)?;
+    render_list_of_repos(&repos);
+
+    let all_crates: Vec<Crate> = crates.into_iter().cloned().collect();
+    render_list_page(
+        &"_site/index.html".to_string(),
+        &"Rust Digger".to_string(),
+        &all_crates,
+    )?;
+
+    let github_but_no_ci = crates
+        .into_iter()
+        .filter(|w| on_github_but_no_ci(w))
+        .cloned()
+        .collect::<Vec<Crate>>();
+    render_list_page(
+        &"_site/github-but-no-ci.html".to_string(),
+        &"On GitHub but has no CI".to_string(),
+        &github_but_no_ci,
+    )?;
+
+    let home_page_but_no_repo = crates
+        .into_iter()
+        .filter(|w| has_homepage_no_repo(w))
+        .cloned()
+        .collect::<Vec<Crate>>();
+    render_list_page(
+        &"_site/has-homepage-but-no-repo.html".to_string(),
+        &"Has homepage, but no repository".to_string(),
+        &home_page_but_no_repo,
+    )?;
+
+    let no_homepage_no_repo_crates = crates
+        .into_iter()
+        .filter(|w| no_homepage_no_repo(w))
+        .cloned()
+        .collect::<Vec<Crate>>();
+    render_list_page(
+        &"_site/no-homepage-no-repo.html".to_string(),
+        &"No repository, no homepage".to_string(),
+        &no_homepage_no_repo_crates,
+    )?;
+
+    let crates_without_owner_name = crates
+        .into_iter()
+        .filter(|krate| krate.owner_name == "")
+        .cloned()
+        .collect::<Vec<Crate>>();
+    render_list_page(
+        &"_site/crates-without-owner-name.html".to_string(),
+        &"Crates without owner name".to_string(),
+        &crates_without_owner_name,
+    )?;
+
+    let crates_without_owner = crates
+        .into_iter()
+        .filter(|krate| krate.owner_name == "" && krate.owner_gh_login == "")
+        .cloned()
+        .collect::<Vec<Crate>>();
+
+    render_list_page(
+        &"_site/crates-without-owner.html".to_string(),
+        &"Crates without owner".to_string(),
+        &crates_without_owner,
+    )?;
+
+    //log::info!("repos: {:?}", repos);
+
+    render_stats_page(
+        crates,
+        repos,
+        home_page_but_no_repo,
+        no_homepage_no_repo_crates,
+        github_but_no_ci,
+    );
+
+    Ok(())
+}
+
+fn no_homepage_no_repo(w: &Crate) -> bool {
+    w.homepage == "" && w.repository == ""
+}
+
+fn has_homepage_no_repo(w: &Crate) -> bool {
+    w.homepage != "" && w.repository == ""
+}
+
+// fn has_repo(w: &Crate) -> bool {
+//     w.repository != ""
+// }
+fn on_github_but_no_ci(krate: &Crate) -> bool {
+    if krate.repository == "" {
+        return false;
+    }
+
+    let (_, owner, _) = get_owner_and_repo(&krate.repository);
+    if owner == "" {
+        return false;
+    }
+
+    if krate.details.has_github_action {
+        return false;
+    }
+
+    true
 }
