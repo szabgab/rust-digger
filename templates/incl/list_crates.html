@@ -5,6 +5,7 @@
        <th>update at</th>
        <th>owner</th>
        <th>repo</th>
+       <th>count</th>
        <th>CI</th>
       </tr>
       </thead>
@@ -26,6 +27,12 @@
           <td>NA</td>
         {% endif %}
 
+        {% if crate.details.commit_count == 0 %}
+          <td>NA</td>
+        {% else %}
+          <td>{{ crate.details.commit_count }}</td>
+        {% endif %}
+  
         {% if crate.details.has_github_action %}
            <td>GitHub Action</td>
         {% else %}

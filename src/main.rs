@@ -134,6 +134,7 @@ struct CrateOwner {
 struct Details {
     has_github_action: bool,
     has_gitlab_pipeline: bool,
+    commit_count: i32,
 }
 
 impl Details {
@@ -141,6 +142,7 @@ impl Details {
         Details {
             has_github_action: false,
             has_gitlab_pipeline: false,
+            commit_count: 0,
         }
     }
 }
@@ -195,6 +197,7 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
         let mut details = Details {
             has_github_action: false,
             has_gitlab_pipeline: false,
+            commit_count: 0,
         };
         log::info!(
             "process ({}/{}) repository '{}'",
@@ -231,6 +234,9 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
         if host == "gitlab" {
             let gitlab_ci_file = Path::new(".gitlab-ci.yml");
             details.has_gitlab_pipeline = gitlab_ci_file.exists();
+        }
+        if host != "" {
+            details.commit_count = git_get_count();
         }
         krate.details = details;
         env::set_current_dir(&current_dir).unwrap();
@@ -286,6 +292,24 @@ fn update_repositories(crates: &Vec<Crate>, pull: u32) {
 
         env::set_current_dir(current_dir).unwrap();
         count += 1;
+    }
+}
+
+fn git_get_count() -> i32 {
+    let result = Command::new("git")
+        .arg("rev-list")
+        .arg("HEAD")
+        .arg("--count")
+        .output()
+        .expect("Could not run");
+
+    if result.status.success() {
+        let stdout = std::str::from_utf8(&result.stdout).unwrap().trim_end();
+        //log::info!("'{}'", stdout);
+        let number: i32 = stdout.parse().unwrap();
+        number
+    } else {
+        0
     }
 }
 
