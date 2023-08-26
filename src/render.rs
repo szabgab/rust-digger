@@ -348,6 +348,7 @@ fn render_stats_page(
     home_page_but_no_repo: Vec<Crate>,
     no_homepage_no_repo_crates: Vec<Crate>,
     github_but_no_ci: Vec<Crate>,
+    gitlab_but_no_ci: Vec<Crate>,
 ) {
     log::info!("render_stats_page");
     let partials = match load_templates() {
@@ -378,6 +379,8 @@ fn render_stats_page(
         "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
         "github_but_no_ci": github_but_no_ci.len(),
         "github_but_no_ci_percentage": percentage(github_but_no_ci.len(), crates.len()),
+        "gitlab_but_no_ci": gitlab_but_no_ci.len(),
+        "gitlab_but_no_ci_percentage": percentage(gitlab_but_no_ci.len(), crates.len()),
 
     });
     let html = template.render(&globals).unwrap();
@@ -421,6 +424,17 @@ pub fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         &"_site/github-but-no-ci.html".to_string(),
         &"On GitHub but has no CI".to_string(),
         &github_but_no_ci,
+    )?;
+
+    let gitlab_but_no_ci = crates
+        .into_iter()
+        .filter(|w| on_gitlab_but_no_ci(w))
+        .cloned()
+        .collect::<Vec<Crate>>();
+    render_list_page(
+        &"_site/gitlab-but-no-ci.html".to_string(),
+        &"On GitLab but has no CI".to_string(),
+        &gitlab_but_no_ci,
     )?;
 
     let home_page_but_no_repo = crates
@@ -476,6 +490,7 @@ pub fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         home_page_but_no_repo,
         no_homepage_no_repo_crates,
         github_but_no_ci,
+        gitlab_but_no_ci,
     );
 
     Ok(())
@@ -497,12 +512,37 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    let (_, owner, _) = get_owner_and_repo(&krate.repository);
+    let (host, owner, _) = get_owner_and_repo(&krate.repository);
     if owner == "" {
         return false;
     }
 
+    if host != "github" {
+        return false;
+    }
+
     if krate.details.has_github_action {
+        return false;
+    }
+
+    true
+}
+
+fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
+    if krate.repository == "" {
+        return false;
+    }
+
+    let (host, owner, _) = get_owner_and_repo(&krate.repository);
+    if owner == "" {
+        return false;
+    }
+
+    if host != "gitlab" {
+        return false;
+    }
+
+    if krate.details.has_gitlab_pipeline {
         return false;
     }
 

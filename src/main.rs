@@ -133,12 +133,14 @@ struct CrateOwner {
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 struct Details {
     has_github_action: bool,
+    has_gitlab_pipeline: bool,
 }
 
 impl Details {
     pub fn new() -> Details {
         Details {
             has_github_action: false,
+            has_gitlab_pipeline: false,
         }
     }
 }
@@ -192,6 +194,7 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
         }
         let mut details = Details {
             has_github_action: false,
+            has_gitlab_pipeline: false,
         };
         log::info!(
             "process ({}/{}) repository '{}'",
@@ -214,14 +217,20 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
         let current_dir = env::current_dir().unwrap();
         env::set_current_dir(&repo_path).unwrap();
 
-        let workflows = Path::new(".github/workflows");
-        if workflows.exists() {
-            for entry in workflows.read_dir().expect("read_dir call failed") {
-                if let Ok(entry) = entry {
-                    log::info!("workflows: {:?}", entry.path());
-                    details.has_github_action = true;
+        if host == "github" {
+            let workflows = Path::new(".github/workflows");
+            if workflows.exists() {
+                for entry in workflows.read_dir().expect("read_dir call failed") {
+                    if let Ok(entry) = entry {
+                        log::info!("workflows: {:?}", entry.path());
+                        details.has_github_action = true;
+                    }
                 }
             }
+        }
+        if host == "gitlab" {
+            let gitlab_ci_file = Path::new(".gitlab-ci.yml");
+            details.has_gitlab_pipeline = gitlab_ci_file.exists();
         }
         krate.details = details;
         env::set_current_dir(&current_dir).unwrap();
@@ -524,7 +533,6 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
 
 #[cfg(test)]
 mod tests {
-    
 
     // #[test]
     // fn test_has_repo() {
