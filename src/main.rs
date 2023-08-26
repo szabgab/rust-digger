@@ -524,7 +524,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
 
     // #[test]
     // fn test_has_repo() {
