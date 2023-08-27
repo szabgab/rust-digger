@@ -135,6 +135,7 @@ struct Details {
     has_github_action: bool,
     has_gitlab_pipeline: bool,
     commit_count: i32,
+    cargo_toml_in_root: bool,
     cargo_fmt: String,
 }
 
@@ -144,6 +145,7 @@ impl Details {
             has_github_action: false,
             has_gitlab_pipeline: false,
             commit_count: 0,
+            cargo_toml_in_root: false,
             cargo_fmt: "".to_string(),
         }
     }
@@ -234,12 +236,17 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
             let gitlab_ci_file = Path::new(".gitlab-ci.yml");
             details.has_gitlab_pipeline = gitlab_ci_file.exists();
         }
+        details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
+
         if host != "" {
             details.commit_count = git_get_count();
         }
-        run_cargo_in_docker();
-        details.cargo_fmt = git_status();
-        git_checkout();
+
+        if details.cargo_toml_in_root {
+            run_cargo_in_docker();
+            details.cargo_fmt = git_status();
+            git_checkout();
+        }
 
         krate.details = details;
         env::set_current_dir(&current_dir).unwrap();
