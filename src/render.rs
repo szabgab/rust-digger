@@ -224,6 +224,8 @@ pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     for krate in crates {
         let filename = format!("_site/crates/{}.html", krate.name);
         let utc: DateTime<Utc> = Utc::now();
+        //log::info!("{:?}", krate);
+        //std::process::exit(1);
         let globals = liquid::object!({
             "version": format!("{VERSION}"),
             "utc":     format!("{}", utc),
