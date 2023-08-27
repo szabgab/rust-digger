@@ -197,12 +197,7 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
         if vcs <= count {
             break;
         }
-        let mut details = Details {
-            has_github_action: false,
-            has_gitlab_pipeline: false,
-            commit_count: 0,
-            cargo_fix: "".to_string(),
-        };
+        let mut details = Details::new();
         log::info!(
             "process ({}/{}) repository '{}'",
             count,
