@@ -135,7 +135,7 @@ struct Details {
     has_github_action: bool,
     has_gitlab_pipeline: bool,
     commit_count: i32,
-    cargo_fix: String,
+    cargo_fmt: String,
 }
 
 impl Details {
@@ -144,7 +144,7 @@ impl Details {
             has_github_action: false,
             has_gitlab_pipeline: false,
             commit_count: 0,
-            cargo_fix: "".to_string(),
+            cargo_fmt: "".to_string(),
         }
     }
 }
@@ -238,7 +238,7 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
             details.commit_count = git_get_count();
         }
         run_cargo_in_docker();
-        details.cargo_fix = git_status();
+        details.cargo_fmt = git_status();
         git_checkout();
 
         krate.details = details;
@@ -264,28 +264,28 @@ fn build_docker_image() {
     }
 }
 
-/// docker run --rm --workdir /opt -v$(pwd):/opt -it --user tester rust-test cargo fix
+/// docker run --rm --workdir /opt -v$(pwd):/opt -it --user tester rust-test cargo fmt
 fn run_cargo_in_docker() {
     log::info!("run_cargo_in_docker");
     let cwd = env::current_dir().unwrap();
+    log::info!("cwd: {}", cwd.display());
     let result = Command::new("docker")
         .arg("run")
         .arg("--rm")
         .arg("--workdir")
         .arg("/opt")
         .arg(format!("-v{}:/opt", cwd.display()))
-        //        .arg("-it")
         .arg("--user")
         .arg("tester")
         .arg("rust-test")
         .arg("cargo")
-        .arg("fix")
+        .arg("fmt")
         .output()
         .expect("Could not run");
     log::info!("run_cargo_in_docker {:?}", result.status.code());
     if result.status.code() != Some(0) {
-        log::warn!("{}", std::str::from_utf8(&result.stdout).unwrap());
-        log::warn!("{}", std::str::from_utf8(&result.stderr).unwrap());
+        log::warn!("stdout: {}", std::str::from_utf8(&result.stdout).unwrap());
+        log::warn!("stderr: {}", std::str::from_utf8(&result.stderr).unwrap());
     }
 }
 
