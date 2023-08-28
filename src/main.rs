@@ -193,7 +193,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
     log::info!("process VCS");
 
-    build_docker_image();
+    //build_docker_image();
     let mut count: u32 = 0;
     for krate in crates {
         if vcs <= count {
@@ -242,11 +242,11 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
             details.commit_count = git_get_count();
         }
 
-        if details.cargo_toml_in_root {
-            run_cargo_in_docker();
-            details.cargo_fmt = git_status();
-            git_checkout();
-        }
+        // if details.cargo_toml_in_root {
+        //     run_cargo_in_docker();
+        //     details.cargo_fmt = git_status();
+        //     git_checkout();
+        // }
 
         krate.details = details;
         env::set_current_dir(&current_dir).unwrap();
