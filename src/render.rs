@@ -464,7 +464,8 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
         &"Crates without owner name".to_string(),
         &crates,
         |krate| krate.owner_name == "",
-    )?;
+    )
+    .unwrap();
 
     render_filtered_crates(
         &"_site/crates-without-owner.html".to_string(),
@@ -492,14 +493,14 @@ fn render_filtered_crates(
     title: &String,
     crates: &Vec<Crate>,
     cond: fn(&&Crate) -> bool,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<usize, Box<dyn Error>> {
     let crates_without_owner = crates
         .into_iter()
         .filter(cond)
         .cloned()
         .collect::<Vec<Crate>>();
     render_list_page(filename, title, &crates_without_owner)?;
-    Ok(())
+    Ok(crates_without_owner.len())
 }
 
 fn no_homepage_no_repo(w: &Crate) -> bool {
