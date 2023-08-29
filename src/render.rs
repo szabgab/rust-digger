@@ -408,55 +408,38 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     render_list_crates_by_repo(&repos)?;
     render_list_of_repos(&repos);
 
-    let all_crates: Vec<Crate> = crates.into_iter().cloned().collect();
     render_list_page(
         &"_site/index.html".to_string(),
         &"Rust Digger".to_string(),
-        &all_crates,
+        &crates,
     )?;
 
-    let github_but_no_ci = crates
-        .into_iter()
-        .filter(|w| on_github_but_no_ci(w))
-        .cloned()
-        .collect::<Vec<Crate>>();
-    render_list_page(
+    let github_but_no_ci = render_filtered_crates(
         &"_site/github-but-no-ci.html".to_string(),
         &"On GitHub but has no CI".to_string(),
-        &github_but_no_ci,
+        &crates,
+        |krate| on_github_but_no_ci(krate),
     )?;
 
-    let gitlab_but_no_ci = crates
-        .into_iter()
-        .filter(|w| on_gitlab_but_no_ci(w))
-        .cloned()
-        .collect::<Vec<Crate>>();
-    render_list_page(
+    let gitlab_but_no_ci = render_filtered_crates(
         &"_site/gitlab-but-no-ci.html".to_string(),
         &"On GitLab but has no CI".to_string(),
-        &gitlab_but_no_ci,
+        &crates,
+        |krate| on_gitlab_but_no_ci(krate),
     )?;
 
-    let home_page_but_no_repo = crates
-        .into_iter()
-        .filter(|w| has_homepage_no_repo(w))
-        .cloned()
-        .collect::<Vec<Crate>>();
-    render_list_page(
+    let home_page_but_no_repo = render_filtered_crates(
         &"_site/has-homepage-but-no-repo.html".to_string(),
         &"Has homepage, but no repository".to_string(),
-        &home_page_but_no_repo,
+        &crates,
+        |krate| has_homepage_no_repo(krate),
     )?;
 
-    let no_homepage_no_repo_crates = crates
-        .into_iter()
-        .filter(|w| no_homepage_no_repo(w))
-        .cloned()
-        .collect::<Vec<Crate>>();
-    render_list_page(
+    let no_homepage_no_repo_crates = render_filtered_crates(
         &"_site/no-homepage-no-repo.html".to_string(),
         &"No repository, no homepage".to_string(),
-        &no_homepage_no_repo_crates,
+        &crates,
+        |krate| no_homepage_no_repo(krate),
     )?;
 
     render_filtered_crates(
@@ -479,10 +462,10 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     render_stats_page(
         crates.len(),
         repos,
-        home_page_but_no_repo.len(),
-        no_homepage_no_repo_crates.len(),
-        github_but_no_ci.len(),
-        gitlab_but_no_ci.len(),
+        home_page_but_no_repo,
+        no_homepage_no_repo_crates,
+        github_but_no_ci,
+        gitlab_but_no_ci,
     );
 
     Ok(())
