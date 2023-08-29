@@ -8,7 +8,7 @@ use std::io::Write;
 use std::path::Path;
 
 use crate::common::{get_owner_and_repo, percentage};
-use crate::{collect_repos, Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
+use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
 
 pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     log::info!("render_list_crates_by_repo start");
@@ -398,14 +398,12 @@ fn create_folders() {
     let _res = fs::create_dir_all("_site/vcs");
 }
 
-pub fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
+pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
     create_folders();
 
     fs::copy("digger.js", "_site/digger.js")?;
-
-    let repos = collect_repos(&crates);
 
     render_list_crates_by_repo(&repos)?;
     render_list_of_repos(&repos);

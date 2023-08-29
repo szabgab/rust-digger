@@ -177,8 +177,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     update_repositories(&crates, args.pull);
     collect_data_from_vcs(&mut crates, args.vcs);
 
+    let repos = collect_repos(&crates);
+
     if args.html {
-        generate_pages(&crates)?;
+        generate_pages(&crates, &repos)?;
         render_news_pages();
         render_static_pages()?;
         generate_crate_pages(&crates)?;
