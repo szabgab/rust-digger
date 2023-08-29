@@ -470,17 +470,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
         &crates_without_owner_name,
     )?;
 
-    let crates_without_owner = crates
-        .into_iter()
-        .filter(|krate| krate.owner_name == "" && krate.owner_gh_login == "")
-        .cloned()
-        .collect::<Vec<Crate>>();
-
-    render_list_page(
-        &"_site/crates-without-owner.html".to_string(),
-        &"Crates without owner".to_string(),
-        &crates_without_owner,
-    )?;
+    render_crates_without_owner(crates)?;
 
     //log::info!("repos: {:?}", repos);
 
@@ -493,6 +483,20 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
         gitlab_but_no_ci.len(),
     );
 
+    Ok(())
+}
+
+fn render_crates_without_owner(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
+    let crates_without_owner = crates
+        .into_iter()
+        .filter(|krate| krate.owner_name == "" && krate.owner_gh_login == "")
+        .cloned()
+        .collect::<Vec<Crate>>();
+    render_list_page(
+        &"_site/crates-without-owner.html".to_string(),
+        &"Crates without owner".to_string(),
+        &crates_without_owner,
+    )?;
     Ok(())
 }
 
