@@ -494,13 +494,13 @@ fn render_filtered_crates(
     crates: &Vec<Crate>,
     cond: fn(&&Crate) -> bool,
 ) -> Result<usize, Box<dyn Error>> {
-    let crates_without_owner = crates
+    let filtered_crates = crates
         .into_iter()
         .filter(cond)
         .cloned()
         .collect::<Vec<Crate>>();
-    render_list_page(filename, title, &crates_without_owner)?;
-    Ok(crates_without_owner.len())
+    render_list_page(filename, title, &filtered_crates)?;
+    Ok(filtered_crates.len())
 }
 
 fn no_homepage_no_repo(w: &Crate) -> bool {
