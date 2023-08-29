@@ -346,11 +346,11 @@ fn generate_list_of_users(users: &Vec<User>) {
 
 fn render_stats_page(
     crates: &Vec<Crate>,
-    repos: Vec<Repo>,
-    home_page_but_no_repo: Vec<Crate>,
-    no_homepage_no_repo_crates: Vec<Crate>,
-    github_but_no_ci: Vec<Crate>,
-    gitlab_but_no_ci: Vec<Crate>,
+    repos: &Vec<Repo>,
+    home_page_but_no_repo: usize,
+    no_homepage_no_repo_crates: usize,
+    github_but_no_ci: usize,
+    gitlab_but_no_ci: usize,
 ) {
     log::info!("render_stats_page");
     let partials = match load_templates() {
@@ -375,14 +375,14 @@ fn render_stats_page(
         //"crate":   krate,
         "total": crates.len(),
         "repos": repos,
-        "home_page_but_no_repo": home_page_but_no_repo.len(),
-        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo.len(), crates.len()),
-        "no_homepage_no_repo_crates": no_homepage_no_repo_crates.len(),
-        "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates.len(), crates.len()),
-        "github_but_no_ci": github_but_no_ci.len(),
-        "github_but_no_ci_percentage": percentage(github_but_no_ci.len(), crates.len()),
-        "gitlab_but_no_ci": gitlab_but_no_ci.len(),
-        "gitlab_but_no_ci_percentage": percentage(gitlab_but_no_ci.len(), crates.len()),
+        "home_page_but_no_repo": home_page_but_no_repo,
+        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo, crates.len()),
+        "no_homepage_no_repo_crates": no_homepage_no_repo_crates,
+        "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates, crates.len()),
+        "github_but_no_ci": github_but_no_ci,
+        "github_but_no_ci_percentage": percentage(github_but_no_ci, crates.len()),
+        "gitlab_but_no_ci": gitlab_but_no_ci,
+        "gitlab_but_no_ci_percentage": percentage(gitlab_but_no_ci, crates.len()),
 
     });
     let html = template.render(&globals).unwrap();
@@ -489,10 +489,10 @@ pub fn generate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     render_stats_page(
         crates,
         repos,
-        home_page_but_no_repo,
-        no_homepage_no_repo_crates,
-        github_but_no_ci,
-        gitlab_but_no_ci,
+        home_page_but_no_repo.len(),
+        no_homepage_no_repo_crates.len(),
+        github_but_no_ci.len(),
+        gitlab_but_no_ci.len(),
     );
 
     Ok(())
