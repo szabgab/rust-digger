@@ -470,7 +470,12 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
         &crates_without_owner_name,
     )?;
 
-    render_crates_without_owner(crates)?;
+    render_filtered_crates(
+        &"_site/crates-without-owner.html".to_string(),
+        &"Crates without owner".to_string(),
+        crates,
+        |krate| krate.owner_name == "" && krate.owner_gh_login == "",
+    )?;
 
     //log::info!("repos: {:?}", repos);
 
@@ -486,17 +491,18 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     Ok(())
 }
 
-fn render_crates_without_owner(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
+fn render_filtered_crates(
+    filename: &String,
+    title: &String,
+    crates: &Vec<Crate>,
+    cond: fn(&&Crate) -> bool,
+) -> Result<(), Box<dyn Error>> {
     let crates_without_owner = crates
         .into_iter()
-        .filter(|krate| krate.owner_name == "" && krate.owner_gh_login == "")
+        .filter(cond)
         .cloned()
         .collect::<Vec<Crate>>();
-    render_list_page(
-        &"_site/crates-without-owner.html".to_string(),
-        &"Crates without owner".to_string(),
-        &crates_without_owner,
-    )?;
+    render_list_page(filename, title, &crates_without_owner)?;
     Ok(())
 }
 
