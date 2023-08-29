@@ -345,7 +345,7 @@ fn generate_list_of_users(users: &Vec<User>) {
 }
 
 fn render_stats_page(
-    crates: &Vec<Crate>,
+    crates: usize,
     repos: &Vec<Repo>,
     home_page_but_no_repo: usize,
     no_homepage_no_repo_crates: usize,
@@ -373,16 +373,16 @@ fn render_stats_page(
         "title":   "Rust Digger Stats",
         //"user":    user,
         //"crate":   krate,
-        "total": crates.len(),
+        "total": crates,
         "repos": repos,
         "home_page_but_no_repo": home_page_but_no_repo,
-        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo, crates.len()),
+        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo, crates),
         "no_homepage_no_repo_crates": no_homepage_no_repo_crates,
-        "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates, crates.len()),
+        "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates, crates),
         "github_but_no_ci": github_but_no_ci,
-        "github_but_no_ci_percentage": percentage(github_but_no_ci, crates.len()),
+        "github_but_no_ci_percentage": percentage(github_but_no_ci, crates),
         "gitlab_but_no_ci": gitlab_but_no_ci,
-        "gitlab_but_no_ci_percentage": percentage(gitlab_but_no_ci, crates.len()),
+        "gitlab_but_no_ci_percentage": percentage(gitlab_but_no_ci, crates),
 
     });
     let html = template.render(&globals).unwrap();
@@ -485,7 +485,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     //log::info!("repos: {:?}", repos);
 
     render_stats_page(
-        crates,
+        crates.len(),
         repos,
         home_page_but_no_repo.len(),
         no_homepage_no_repo_crates.len(),
