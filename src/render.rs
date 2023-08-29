@@ -459,15 +459,11 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
         &no_homepage_no_repo_crates,
     )?;
 
-    let crates_without_owner_name = crates
-        .into_iter()
-        .filter(|krate| krate.owner_name == "")
-        .cloned()
-        .collect::<Vec<Crate>>();
-    render_list_page(
+    render_filtered_crates(
         &"_site/crates-without-owner-name.html".to_string(),
         &"Crates without owner name".to_string(),
-        &crates_without_owner_name,
+        &crates,
+        |krate| krate.owner_name == "",
     )?;
 
     render_filtered_crates(
