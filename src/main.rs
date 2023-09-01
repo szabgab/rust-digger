@@ -195,7 +195,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
     log::info!("process VCS");
 
-    //build_docker_image();
     let mut count: u32 = 0;
     for krate in crates {
         if vcs <= count {
@@ -244,88 +243,9 @@ fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
             details.commit_count = git_get_count();
         }
 
-        // if details.cargo_toml_in_root {
-        //     run_cargo_in_docker();
-        //     details.cargo_fmt = git_status();
-        //     git_checkout();
-        // }
-
         krate.details = details;
         env::set_current_dir(&current_dir).unwrap();
         count += 1;
-    }
-}
-
-/// docker build -t rust-test .
-fn build_docker_image() {
-    log::info!("build_docker_image");
-    let result = Command::new("docker")
-        .arg("build")
-        .arg("-t")
-        .arg("rust-test")
-        .arg(".")
-        .output()
-        .expect("Could not run");
-    log::info!("build_docker_image {:?}", result.status.code());
-    if result.status.code() != Some(0) {
-        log::warn!("{}", std::str::from_utf8(&result.stdout).unwrap());
-        log::warn!("{}", std::str::from_utf8(&result.stderr).unwrap());
-    }
-}
-
-/// docker run --rm --workdir /opt -v$(pwd):/opt -it --user tester rust-test cargo fmt
-fn run_cargo_in_docker() {
-    log::info!("run_cargo_in_docker");
-    let cwd = env::current_dir().unwrap();
-    log::info!("cwd: {}", cwd.display());
-    let result = Command::new("docker")
-        .arg("run")
-        .arg("--rm")
-        .arg("--workdir")
-        .arg("/opt")
-        .arg(format!("-v{}:/opt", cwd.display()))
-        .arg("--user")
-        .arg("tester")
-        .arg("rust-test")
-        .arg("cargo")
-        .arg("fmt")
-        .output()
-        .expect("Could not run");
-    log::info!("run_cargo_in_docker {:?}", result.status.code());
-    if result.status.code() != Some(0) {
-        log::warn!("stdout: {}", std::str::from_utf8(&result.stdout).unwrap());
-        log::warn!("stderr: {}", std::str::from_utf8(&result.stderr).unwrap());
-    }
-}
-
-//git status --porcelain
-fn git_status() -> String {
-    log::info!("git_status");
-    let result = Command::new("git")
-        .arg("status")
-        .arg("--porcelain")
-        .output()
-        .expect("Could not run");
-    log::info!("git_status {:?}", result.status.code());
-    if result.status.code() != Some(0) {
-        log::warn!("{}", std::str::from_utf8(&result.stdout).unwrap());
-        log::warn!("{}", std::str::from_utf8(&result.stderr).unwrap());
-    }
-    let stdout = std::str::from_utf8(&result.stdout).unwrap();
-    stdout.to_string()
-}
-
-fn git_checkout() {
-    log::info!("git_checkout");
-    let result = Command::new("git")
-        .arg("checkout")
-        .arg(".")
-        .output()
-        .expect("Could not run");
-    log::info!("git_checkout {:?}", result.status.code());
-    if result.status.code() != Some(0) {
-        log::warn!("{}", std::str::from_utf8(&result.stdout).unwrap());
-        log::warn!("{}", std::str::from_utf8(&result.stderr).unwrap());
     }
 }
 

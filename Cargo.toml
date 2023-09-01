@@ -16,3 +16,8 @@ liquid = "0.26.4"
 clap = { version = "4.3", features = ["derive"] }
 regex = "1.9.3"
 once_cell = "1.18.0"
+
+
+[[bin]]
+name = "fmt"
+path = "src/fmt.rs"

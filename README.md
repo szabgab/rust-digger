@@ -1,25 +1,10 @@
 # [Rust Digger](https://rust-digger.code-maven.com/)
 
-* Analyze Rust Crates
+* Analyze Rust Crates, help evaluation and suggest improvements
 
 * Fetch list of [Crates](https://crates.io/)
 * Process the data
 * Generate static HTML pages
-
-## Sites
-
-* https://crates.io/
-* https://docs.rs/
-* https://lib.rs/
-
-## Fetching data
-
-Discussed here: https://crates.io/data-access
-
-As of 2023.06.17
-
-1. The git repository https://github.com/rust-lang/crates.io-index does not contain the meta data, such as the github URL
-1. The https://static.crates.io/db-dump.tar.gz is 305 Mb It unzipped to a folder called `2023-06-16-020046` which is 1.1 Gb and contains CSV dumps of a Postgresql database
 
 
 ## Local development environment
@@ -27,7 +12,7 @@ As of 2023.06.17
 ```
 git clone https://github.com/szabgab/rust-digger.git
 cd rust-digger
-cargo run -- --limit 200
+cargo run --bin rust-digger -- --limit 10
 ```
 
 To run a local web server to serve the static files install [ruststatic](https://github.com/szabgab/rustatic) using:
@@ -52,11 +37,61 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 cargo run
 ```
 
-## cloning repositories
+There is a cron-job that runs the process once a day. (As long as we use the dumped data from Crates.io, there is no point in running more frequently.)
+
+## Processing steps
+
+### Fetching data from crates.io
+
+Discussed here: https://crates.io/data-access
+
+As of 2023.06.17
+
+1. The git repository https://github.com/rust-lang/crates.io-index does not contain the meta data, such as the github URL
+1. The https://static.crates.io/db-dump.tar.gz is 305 Mb It unzipped to a folder called `2023-06-16-020046` which is 1.1 Gb and contains CSV dumps of a Postgresql database.
+
+The fetching and unzipping is done by `download.sh`.
+
+
+### Cloning repositories
 
 * `git pull` takes 0.3 sec when it does not need to copy any files.
 * There are  123,216 crates
 * Assuming all of them will have git repositories and most of them won't change we'll need
   123,000 * 0.3 = 41,000 sec to update all the repos = that is 683 minues = 11.5 hours.
 
+For each repo maintain a file called analytics/github/repo-name.json in this repo we keep all the information we collected about the repository. When generating the HTML files we consult these files. These files are updated by the stand-alone processes listed below.
+
+If we fail to clone the repository we add this information to the analytics file of the repository.
+
+### Analyzing repositories
+
+* Some information is easy and fast to collect. (e.g. checking if there are YAML files in `.github/workflows` to check if GitHub Actions is configured)
+
+
+* TODO: if there are more than one crates in the repo, should we analyze and report the crates separately?
+
+### cargo fmt
+
+* Running `cargo fmt --check -- --color=never` and capturing the STDOUT and the exit code. We save them together with the current sha of the repository `git rev-parse HEAD` and the date of processing. (We might also want to save the version of rustfmt `cargo fmt --version` and the version of rustc `rustc --version`)
+
+```
+cargo run --bin fmt -- --limit 10
+```
+
+### cargo fix
+
+
+### cargo test
+
+
+### Collect test coverage report
+
+
+
+## Related Sites
+
+* https://crates.io/
+* https://docs.rs/
+* https://lib.rs/
 
