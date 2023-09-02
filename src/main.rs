@@ -178,7 +178,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     //update_repositories(&crates, args.pull);
     load_details(&mut crates);
-    
+
     let repos = collect_repos(&crates);
 
     if args.html {
@@ -198,7 +198,6 @@ fn load_details(crates: &mut Vec<Crate>) {
     log::info!("Load details started");
     log::info!("Load details ended");
 }
-
 
 // fn save_repo_details(crates: &Vec<Crate>) {
 //     log::info!("start saving details");
@@ -230,7 +229,7 @@ fn load_details(crates: &mut Vec<Crate>) {
 //             krate.repository
 //         );
 //         let owner_path = format!("repos/{host}/{owner}");
-//         let _res = fs::create_dir_all(&owner_path);    
+//         let _res = fs::create_dir_all(&owner_path);
 //     }
 // }
 

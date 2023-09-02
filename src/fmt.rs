@@ -16,7 +16,7 @@ struct Cli {
 }
 
 /// For each repo run cargo fmt
-/// 
+///
 /// For each repo load the details (if they already exist)
 ///    If we have not ran fmt on the given repo then
 ///          run fmt
@@ -32,7 +32,7 @@ fn run_cargo_fmt(limit: u32) {
     log::info!("start update repositories. limit {}.", limit);
 
     build_docker_image();
-    let mut count : u32 = 0;
+    let mut count: u32 = 0;
     let path = Path::new("repos/github");
     let root_dir = env::current_dir().unwrap();
     for user in path.read_dir().expect("read_dir call failed") {
@@ -40,13 +40,13 @@ fn run_cargo_fmt(limit: u32) {
             log::info!("user: {:?}", user.path());
             for repo in user.path().read_dir().expect("read_dir call failed") {
                 if limit > 0 && count >= limit {
-                    return
+                    return;
                 }
 
                 if let Ok(repo) = repo {
                     // TODO load details
 
-                    if ! repo.path().join("Cargo.toml").exists() {
+                    if !repo.path().join("Cargo.toml").exists() {
                         continue;
                     }
 
