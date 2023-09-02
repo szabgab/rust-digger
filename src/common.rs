@@ -1,4 +1,8 @@
 use std::collections::HashMap;
+use std::fs;
+//use std::path::Path;
+use std::fs::File;
+use std::io::Write;
 
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -187,4 +191,27 @@ mod tests {
         assert_eq!(percentage(1234, 10000), "12.34");
         assert_eq!(percentage(1234567, 10000000), "12.34");
     }
+}
+
+pub fn save_details(repository: &str, details: &Details) {
+    log::info!("save_details for '{}'", repository);
+
+    let _res = fs::create_dir_all("repo-details");
+    let _res = fs::create_dir_all("repo-details/github");
+    let _res = fs::create_dir_all("repo-details/gitlab");
+
+    let (host, owner, repo) = get_owner_and_repo(repository);
+    if owner == "" {
+        return; // this should never happen
+    }
+
+    let _res = fs::create_dir_all(format!("repo-details/{host}/{owner}"));
+    let details_path = format!("repo-details/{host}/{owner}/{repo}.json");
+    // if Path::new(&details_path).exists() {
+    //     match File::open(details_path.to_string()) {
+    // }
+
+    let content = serde_json::to_string(&details).unwrap();
+    let mut file = File::create(details_path).unwrap();
+    writeln!(&mut file, "{}", content).unwrap();
 }

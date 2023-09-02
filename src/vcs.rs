@@ -8,7 +8,7 @@ mod read;
 use read::read_crates;
 
 mod common;
-use common::{get_owner_and_repo, Crate, Details};
+use common::{get_owner_and_repo, save_details, Crate, Details};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -40,6 +40,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
 
     let mut count: u32 = 0;
     for krate in crates {
+        // TODO: avoid processing the same repo twice in the same run, or shall we update the info listing both crates?
         if 0 < limit && limit <= count {
             break;
         }
@@ -88,8 +89,9 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
             details.commit_count = git_get_count();
         }
 
-        // TODO save details
         env::set_current_dir(&current_dir).unwrap();
+        save_details(&krate.repository, &details);
+
         count += 1;
     }
 }

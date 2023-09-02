@@ -54,10 +54,6 @@ fn main() {
 fn update_repositories(crates: &Vec<Crate>, limit: u32) {
     log::info!("start update repositories");
 
-    let _res = fs::create_dir_all("repo-details");
-    let _res = fs::create_dir_all("repos-details/github");
-    let _res = fs::create_dir_all("repos-details/gitlab");
-
     let mut repo_reuse: HashMap<String, i32> = HashMap::new();
 
     let mut count: u32 = 0;
