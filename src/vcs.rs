@@ -1,6 +1,22 @@
-fn main() {
-
-}
+/// for each crate
+///     get the url and type of the VCS
+///     load the details of vcs
+///
+///     if there is no clone yet:
+///         if we have evidence that the cloning has already failed then got to next
+///         else try to clone
+///             if failed
+///                 save in the details
+///             else
+///                 collect data from repo and save that in the details
+///
+///     if there is already a clone
+///         if the crate was released recently then run git pull
+///             if there are new commits
+///                  collect data from repo and save that in the details
+///
+///     (if the data collection takes too long we might need to separate it from the cloning)
+fn main() {}
 
 //collect_data_from_vcs(&mut crates, args.vcs);
 
@@ -60,4 +76,3 @@ fn main() {
 //         count += 1;
 //     }
 // }
-
