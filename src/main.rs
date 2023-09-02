@@ -27,7 +27,7 @@ struct Cli {
         default_value_t = 0,
         help = "Limit the number of items we process."
     )]
-    limit: i32,
+    limit: u32,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]

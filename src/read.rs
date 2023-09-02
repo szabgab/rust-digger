@@ -3,7 +3,7 @@ use std::fs::File;
 
 use crate::{Crate, CrateOwner, CratesByOwner, Owners, Team, User};
 
-pub fn read_teams(users: &mut Vec<User>, limit: i32) {
+pub fn read_teams(users: &mut Vec<User>, limit: u32) {
     let filepath = "data/data/teams.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
@@ -39,7 +39,7 @@ pub fn read_teams(users: &mut Vec<User>, limit: i32) {
     log::info!("Finished reading {filepath}");
 }
 
-pub fn read_users(limit: i32) -> Vec<User> {
+pub fn read_users(limit: u32) -> Vec<User> {
     let mut users: Vec<User> = vec![];
     let filepath = "data/data/users.csv";
     log::info!("Start reading {}", filepath);
@@ -67,7 +67,7 @@ pub fn read_users(limit: i32) -> Vec<User> {
     users
 }
 
-pub fn read_crate_owners(limit: i32) -> (Owners, CratesByOwner) {
+pub fn read_crate_owners(limit: u32) -> (Owners, CratesByOwner) {
     //crate_id,created_at,created_by,owner_id,owner_kind
     let mut owner_by_crate_id: Owners = HashMap::new();
     let mut crates_by_owner: CratesByOwner = HashMap::new();
@@ -106,7 +106,7 @@ pub fn read_crate_owners(limit: i32) -> (Owners, CratesByOwner) {
     (owner_by_crate_id, crates_by_owner)
 }
 
-pub fn read_crates(limit: i32) -> Vec<Crate> {
+pub fn read_crates(limit: u32) -> Vec<Crate> {
     let filepath = "data/data/crates.csv";
     log::info!("Start reading {}", filepath);
     let mut crates: Vec<Crate> = vec![];
