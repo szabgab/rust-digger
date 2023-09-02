@@ -10,7 +10,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
 mod common;
-use common::percentage;
+use common::{percentage, Crate, CratesByOwner, Owners, Repo, User};
 mod read;
 use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
@@ -29,112 +29,6 @@ struct Cli {
     )]
     limit: u32,
 }
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct Repo {
-    display: String,
-    name: String,
-    url: String,
-    count: usize,
-    percentage: String,
-    crates: Vec<Crate>,
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
-pub struct Crate {
-    created_at: String,
-    description: String,
-    documentation: String,
-    downloads: String,
-    homepage: String,
-    id: String,
-    max_upload_size: String,
-    name: String,
-    readme: String,
-    repository: String,
-    updated_at: String,
-
-    #[serde(default = "empty_string")]
-    owner_gh_login: String,
-
-    #[serde(default = "empty_string")]
-    owner_name: String,
-
-    #[serde(default = "empty_string")]
-    owner_gh_avatar: String,
-
-    #[serde(default = "empty_details")]
-    details: Details,
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct User {
-    gh_avatar: String,
-    gh_id: String,
-    gh_login: String,
-    id: String,
-    name: String,
-
-    #[serde(default = "get_zero")]
-    count: u16,
-}
-
-fn empty_details() -> Details {
-    Details::new()
-}
-
-fn empty_string() -> String {
-    "".to_string()
-}
-
-fn get_zero() -> u16 {
-    0
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct Team {
-    avatar: String,
-    github_id: String,
-    login: String,
-    id: String,
-    name: String,
-    org_id: String,
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct CrateOwner {
-    crate_id: String,
-    created_at: String,
-    created_by: String,
-    owner_id: String,
-    owner_kind: String,
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
-struct Details {
-    has_github_action: bool,
-    has_gitlab_pipeline: bool,
-    commit_count: i32,
-    cargo_toml_in_root: bool,
-    cargo_fmt: String,
-}
-
-impl Details {
-    pub fn new() -> Details {
-        Details {
-            has_github_action: false,
-            has_gitlab_pipeline: false,
-            commit_count: 0,
-            cargo_toml_in_root: false,
-            cargo_fmt: "".to_string(),
-        }
-    }
-}
-
-//type RepoPercentage<'a> = HashMap<&'a str, String>;
-type Owners = HashMap<String, String>;
-type CratesByOwner = HashMap<String, Vec<String>>;
-// type Users = HashMap<String, User>;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();

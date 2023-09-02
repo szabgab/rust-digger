@@ -1,5 +1,113 @@
+use std::collections::HashMap;
+
 use once_cell::sync::Lazy;
 use regex::Regex;
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+pub struct Details {
+    pub has_github_action: bool,
+    pub has_gitlab_pipeline: bool,
+    pub commit_count: i32,
+    pub cargo_toml_in_root: bool,
+    pub cargo_fmt: String,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Repo {
+    pub display: String,
+    pub name: String,
+    pub url: String,
+    pub count: usize,
+    pub percentage: String,
+    pub crates: Vec<Crate>,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+pub struct Crate {
+    pub created_at: String,
+    pub description: String,
+    pub documentation: String,
+    pub downloads: String,
+    pub homepage: String,
+    pub id: String,
+    pub max_upload_size: String,
+    pub name: String,
+    pub readme: String,
+    pub repository: String,
+    pub updated_at: String,
+
+    #[serde(default = "empty_string")]
+    pub owner_gh_login: String,
+
+    #[serde(default = "empty_string")]
+    pub owner_name: String,
+
+    #[serde(default = "empty_string")]
+    pub owner_gh_avatar: String,
+
+    #[serde(default = "empty_details")]
+    pub details: Details,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct User {
+    pub gh_avatar: String,
+    pub gh_id: String,
+    pub gh_login: String,
+    pub id: String,
+    pub name: String,
+
+    #[serde(default = "get_zero")]
+    pub count: u16,
+}
+
+fn empty_details() -> Details {
+    Details::new()
+}
+
+fn empty_string() -> String {
+    "".to_string()
+}
+
+fn get_zero() -> u16 {
+    0
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Team {
+    pub avatar: String,
+    pub github_id: String,
+    pub login: String,
+    pub id: String,
+    pub name: String,
+    pub org_id: String,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct CrateOwner {
+    pub crate_id: String,
+    pub created_at: String,
+    pub created_by: String,
+    pub owner_id: String,
+    pub owner_kind: String,
+}
+
+impl Details {
+    pub fn new() -> Details {
+        Details {
+            has_github_action: false,
+            has_gitlab_pipeline: false,
+            commit_count: 0,
+            cargo_toml_in_root: false,
+            cargo_fmt: "".to_string(),
+        }
+    }
+}
+
+//type RepoPercentage<'a> = HashMap<&'a str, String>;
+pub type Owners = HashMap<String, String>;
+pub type CratesByOwner = HashMap<String, Vec<String>>;
+// type Users = HashMap<String, User>;
 
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
     static RE: Lazy<Regex> =

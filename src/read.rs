@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
 
-use crate::{Crate, CrateOwner, CratesByOwner, Owners, Team, User};
+use crate::common::{Crate, CrateOwner, CratesByOwner, Owners, Team, User};
 
 pub fn read_teams(users: &mut Vec<User>, limit: u32) {
     let filepath = "data/data/teams.csv";
