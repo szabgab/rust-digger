@@ -159,12 +159,13 @@ type CratesByOwner = HashMap<String, Vec<String>>;
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
+
     let start_time = std::time::Instant::now();
     log::info!("Starting the Rust Digger");
     log::info!("{VERSION}");
+    //log::info!("Limit {args.limit}");
 
-    //    log::info!("Limit {args.limit}");
-
+    // load crates information from CSV files
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) =
         read_crate_owners(args.limit);
     let mut users = read_users(args.limit);
@@ -173,10 +174,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     //dbg!(&crates_by_owner);
 
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
+    //save_repo_details(&crates);
 
-    update_repositories(&crates, args.pull);
-    collect_data_from_vcs(&mut crates, args.vcs);
-
+    //update_repositories(&crates, args.pull);
+    load_details(&mut crates);
+    
     let repos = collect_repos(&crates);
 
     if args.html {
@@ -192,69 +194,53 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
-    log::info!("process VCS");
-
-    let mut count: u32 = 0;
-    for krate in crates {
-        if vcs <= count {
-            break;
-        }
-        let mut details = Details::new();
-        log::info!(
-            "process ({}/{}) repository '{}'",
-            count,
-            vcs,
-            &krate.repository
-        );
-        if krate.repository == "" {
-            continue;
-        }
-        let (host, owner, repo) = get_owner_and_repo(&krate.repository);
-        if owner == "" {
-            continue;
-        }
-        let repo_path = format!("repos/{host}/{owner}/{repo}");
-        if !Path::new(&repo_path).exists() {
-            log::warn!("Cloned path does not exist for {}", &krate.repository);
-            continue;
-        }
-        let current_dir = env::current_dir().unwrap();
-        env::set_current_dir(&repo_path).unwrap();
-
-        if host == "github" {
-            let workflows = Path::new(".github/workflows");
-            if workflows.exists() {
-                for entry in workflows.read_dir().expect("read_dir call failed") {
-                    if let Ok(entry) = entry {
-                        log::info!("workflows: {:?}", entry.path());
-                        details.has_github_action = true;
-                    }
-                }
-            }
-        }
-        if host == "gitlab" {
-            let gitlab_ci_file = Path::new(".gitlab-ci.yml");
-            details.has_gitlab_pipeline = gitlab_ci_file.exists();
-        }
-        details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
-
-        if host != "" {
-            details.commit_count = git_get_count();
-        }
-
-        krate.details = details;
-        env::set_current_dir(&current_dir).unwrap();
-        count += 1;
-    }
+fn load_details(crates: &mut Vec<Crate>) {
+    log::info!("Load details started");
+    log::info!("Load details ended");
 }
+
+
+// fn save_repo_details(crates: &Vec<Crate>) {
+//     log::info!("start saving details");
+
+//     let _res = fs::create_dir_all("repos");
+//     let _res = fs::create_dir_all("repos/github");
+//     let _res = fs::create_dir_all("repos/gitlab");
+
+//     for krate in crates {
+//         if krate.repository == "" {
+//             continue;
+//         }
+
+//         let repository = krate.repository.to_lowercase();
+//         *repo_reuse.entry(repository.clone()).or_insert(0) += 1;
+//         if *repo_reuse.get(&repository as &str).unwrap() > 1 {
+//             continue;
+//         }
+
+//         let (host, owner, repo) = get_owner_and_repo(&repository);
+//         if owner == "" {
+//             continue;
+//         }
+
+//         log::info!(
+//             "update ({}/{}) repository '{}'",
+//             count,
+//             pull,
+//             krate.repository
+//         );
+//         let owner_path = format!("repos/{host}/{owner}");
+//         let _res = fs::create_dir_all(&owner_path);    
+//     }
+// }
 
 fn update_repositories(crates: &Vec<Crate>, pull: u32) {
     log::info!("start update repositories");
 
-    let _res = fs::create_dir_all("repos");
-    let _res = fs::create_dir_all("repos/github");
-    let _res = fs::create_dir_all("repos/gitlab");
+    let _res = fs::create_dir_all("repo-details");
+    let _res = fs::create_dir_all("repos-details/github");
+    let _res = fs::create_dir_all("repos-details/gitlab");
+
     let mut repo_reuse: HashMap<String, i32> = HashMap::new();
 
     let mut count: u32 = 0;
