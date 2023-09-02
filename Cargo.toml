@@ -25,3 +25,7 @@ path = "src/fmt.rs"
 [[bin]]
 name = "vcs"
 path = "src/vcs.rs"
+
+[[bin]]
+name = "clone"
+path = "src/clone.rs"
