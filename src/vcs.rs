@@ -4,6 +4,12 @@ use std::process::Command;
 
 use clap::Parser;
 
+mod read;
+use read::read_crates;
+
+mod common;
+use common::Crate;
+
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
@@ -36,6 +42,8 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
+
+    let mut crates: Vec<Crate> = crate::read::read_crates(args.limit);
 
     log::info!("Starting the VCS processor {}", args.limit);
 }
