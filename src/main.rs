@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 use std::env;
 use std::error::Error;
-use std::fs;
-use std::path::Path;
-use std::process::Command;
 
 use clap::Parser;
 
@@ -13,7 +10,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
 mod common;
-use common::{get_owner_and_repo, percentage};
+use common::percentage;
 mod read;
 use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
@@ -31,23 +28,6 @@ struct Cli {
         help = "Limit the number of items we process."
     )]
     limit: i32,
-
-    #[arg(
-        long,
-        default_value_t = 0,
-        help = "Number of git repositories to try to clone or pull."
-    )]
-    pull: u32,
-
-    #[arg(
-        long,
-        default_value_t = 0,
-        help = "Number of git repositories to process."
-    )]
-    vcs: u32,
-
-    #[arg(long, default_value_t = false, help = "Generate HTML pages")]
-    html: bool,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -176,28 +156,25 @@ fn main() -> Result<(), Box<dyn Error>> {
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
     //save_repo_details(&crates);
 
-    //update_repositories(&crates, args.pull);
-    load_details(&mut crates);
+    //load_details(&mut crates);
 
     let repos = collect_repos(&crates);
 
-    if args.html {
-        generate_pages(&crates, &repos)?;
-        render_news_pages();
-        render_static_pages()?;
-        generate_crate_pages(&crates)?;
-        generate_user_pages(&crates, users, &crates_by_owner)?;
-    }
+    generate_pages(&crates, &repos)?;
+    render_news_pages();
+    render_static_pages()?;
+    generate_crate_pages(&crates)?;
+    generate_user_pages(&crates, users, &crates_by_owner)?;
 
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the Rust Digger");
     Ok(())
 }
 
-fn load_details(crates: &mut Vec<Crate>) {
-    log::info!("Load details started");
-    log::info!("Load details ended");
-}
+// fn load_details(crates: &mut Vec<Crate>) {
+//     log::info!("Load details started");
+//     log::info!("Load details ended");
+// }
 
 // fn save_repo_details(crates: &Vec<Crate>) {
 //     log::info!("start saving details");
@@ -232,104 +209,6 @@ fn load_details(crates: &mut Vec<Crate>) {
 //         let _res = fs::create_dir_all(&owner_path);
 //     }
 // }
-
-fn update_repositories(crates: &Vec<Crate>, pull: u32) {
-    log::info!("start update repositories");
-
-    let _res = fs::create_dir_all("repo-details");
-    let _res = fs::create_dir_all("repos-details/github");
-    let _res = fs::create_dir_all("repos-details/gitlab");
-
-    let mut repo_reuse: HashMap<String, i32> = HashMap::new();
-
-    let mut count: u32 = 0;
-    for krate in crates {
-        if pull <= count {
-            break;
-        }
-        if krate.repository == "" {
-            continue;
-        }
-
-        let repository = krate.repository.to_lowercase();
-        *repo_reuse.entry(repository.clone()).or_insert(0) += 1;
-        if *repo_reuse.get(&repository as &str).unwrap() > 1 {
-            continue;
-        }
-
-        let (host, owner, repo) = get_owner_and_repo(&repository);
-        if owner == "" {
-            continue;
-        }
-
-        log::info!(
-            "update ({}/{}) repository '{}'",
-            count,
-            pull,
-            krate.repository
-        );
-        let owner_path = format!("repos/{host}/{owner}");
-        let _res = fs::create_dir_all(&owner_path);
-        let repo_path = format!("{owner_path}/{repo}");
-        let current_dir = env::current_dir().unwrap();
-        if Path::new(&repo_path).exists() {
-            env::set_current_dir(&repo_path).unwrap();
-            git_pull();
-        } else {
-            env::set_current_dir(owner_path).unwrap();
-            git_clone(&krate.repository, &repo);
-        }
-
-        env::set_current_dir(current_dir).unwrap();
-        count += 1;
-    }
-}
-
-fn git_get_count() -> i32 {
-    let result = Command::new("git")
-        .arg("rev-list")
-        .arg("HEAD")
-        .arg("--count")
-        .output()
-        .expect("Could not run");
-
-    if result.status.success() {
-        let stdout = std::str::from_utf8(&result.stdout).unwrap().trim_end();
-        //log::info!("'{}'", stdout);
-        let number: i32 = stdout.parse().unwrap();
-        number
-    } else {
-        0
-    }
-}
-
-fn git_clone(url: &str, path: &str) {
-    log::info!("git clone {} {}", url, path);
-    let result = Command::new("git")
-        .arg("clone")
-        .arg(url)
-        .arg(path)
-        .output()
-        .expect("Could not run");
-    if result.status.success() {
-        log::info!("git_clone exit code {}", result.status);
-    } else {
-        log::warn!("git_clone exit code {}", result.status);
-    }
-}
-
-fn git_pull() {
-    log::info!("git pull");
-    let result = Command::new("git")
-        .arg("pull")
-        .output()
-        .expect("Could not run");
-    if result.status.success() {
-        log::info!("git_pull exit code {}", result.status);
-    } else {
-        log::warn!("git_pull exit code {}", result.status);
-    }
-}
 
 fn add_owners_to_crates(crates: &mut Vec<Crate>, users: &Vec<User>, owner_by_crate_id: &Owners) {
     let mut mapping: HashMap<String, &User> = HashMap::new();
