@@ -52,6 +52,10 @@ As of 2023.06.17
 
 The fetching and unzipping is done by `download.sh`.
 
+For each crate (or for each new crate if we start working incrementally) check if it refers to a repo.
+For each repo maintain a file called repo-details/github/repo-name.json in this repo we keep all the information we collected about the repository. When generating the HTML files we consult these files. These files are also updated by the stand-alone processes listed below.
+The files are mapped with the Details struct.
+
 
 ### Cloning repositories
 
@@ -60,9 +64,8 @@ The fetching and unzipping is done by `download.sh`.
 * Assuming all of them will have git repositories and most of them won't change we'll need
   123,000 * 0.3 = 41,000 sec to update all the repos = that is 683 minues = 11.5 hours.
 
-For each repo maintain a file called analytics/github/repo-name.json in this repo we keep all the information we collected about the repository. When generating the HTML files we consult these files. These files are updated by the stand-alone processes listed below.
 
-If we fail to clone the repository we add this information to the analytics file of the repository.
+If we fail to clone the repository we add this information to the repo-details file of the repository.
 
 ### Analyzing repositories
 
