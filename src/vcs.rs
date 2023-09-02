@@ -1,4 +1,5 @@
-use std::fs;
+//use std::fs;
+use std::env;
 use std::path::Path;
 use std::process::Command;
 
@@ -8,7 +9,7 @@ mod read;
 use read::read_crates;
 
 mod common;
-use common::Crate;
+use common::{get_owner_and_repo, Crate, Details};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -43,69 +44,74 @@ fn main() {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
 
-    let mut crates: Vec<Crate> = crate::read::read_crates(args.limit);
+    let crates: Vec<Crate> = read_crates(0);
+    collect_data_from_vcs(&crates, args.limit);
 
     log::info!("Starting the VCS processor {}", args.limit);
 }
 
-//collect_data_from_vcs(&mut crates, args.vcs);
+fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
+    log::info!("process collect_data_from_vcs start");
+    log::info!("Total number of crates: {}", crates.len());
+    if 0 < limit {
+        log::info!("We are going to process only {} crates", limit);
+    }
 
-// fn collect_data_from_vcs(crates: &mut Vec<Crate>, vcs: u32) {
-//     log::info!("process VCS");
+    let mut count: u32 = 0;
+    for krate in crates {
+        if 0 < limit && limit <= count {
+            break;
+        }
+        let mut details = Details::new();
+        // TODO load details of already exist
 
-//     let mut count: u32 = 0;
-//     for krate in crates {
-//         if vcs <= count {
-//             break;
-//         }
-//         let mut details = Details::new();
-//         log::info!(
-//             "process ({}/{}) repository '{}'",
-//             count,
-//             vcs,
-//             &krate.repository
-//         );
-//         if krate.repository == "" {
-//             continue;
-//         }
-//         let (host, owner, repo) = get_owner_and_repo(&krate.repository);
-//         if owner == "" {
-//             continue;
-//         }
-//         let repo_path = format!("repos/{host}/{owner}/{repo}");
-//         if !Path::new(&repo_path).exists() {
-//             log::warn!("Cloned path does not exist for {}", &krate.repository);
-//             continue;
-//         }
-//         let current_dir = env::current_dir().unwrap();
-//         env::set_current_dir(&repo_path).unwrap();
+        log::info!(
+            "process ({}/{}) repository '{}'",
+            count,
+            limit,
+            &krate.repository
+        );
+        if krate.repository == "" {
+            continue;
+        }
+        let (host, owner, repo) = get_owner_and_repo(&krate.repository);
+        if owner == "" {
+            continue;
+        }
+        let repo_path = format!("repos/{host}/{owner}/{repo}");
+        if !Path::new(&repo_path).exists() {
+            log::warn!("Cloned path does not exist for {}", &krate.repository);
+            continue;
+        }
+        let current_dir = env::current_dir().unwrap();
+        env::set_current_dir(&repo_path).unwrap();
 
-//         if host == "github" {
-//             let workflows = Path::new(".github/workflows");
-//             if workflows.exists() {
-//                 for entry in workflows.read_dir().expect("read_dir call failed") {
-//                     if let Ok(entry) = entry {
-//                         log::info!("workflows: {:?}", entry.path());
-//                         details.has_github_action = true;
-//                     }
-//                 }
-//             }
-//         }
-//         if host == "gitlab" {
-//             let gitlab_ci_file = Path::new(".gitlab-ci.yml");
-//             details.has_gitlab_pipeline = gitlab_ci_file.exists();
-//         }
-//         details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
+        if host == "github" {
+            let workflows = Path::new(".github/workflows");
+            if workflows.exists() {
+                for entry in workflows.read_dir().expect("read_dir call failed") {
+                    if let Ok(entry) = entry {
+                        log::info!("workflows: {:?}", entry.path());
+                        details.has_github_action = true;
+                    }
+                }
+            }
+        }
+        if host == "gitlab" {
+            let gitlab_ci_file = Path::new(".gitlab-ci.yml");
+            details.has_gitlab_pipeline = gitlab_ci_file.exists();
+        }
+        details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
 
-//         if host != "" {
-//             details.commit_count = git_get_count();
-//         }
+        if host != "" {
+            details.commit_count = git_get_count();
+        }
 
-//         krate.details = details;
-//         env::set_current_dir(&current_dir).unwrap();
-//         count += 1;
-//     }
-// }
+        // TODO save details
+        env::set_current_dir(&current_dir).unwrap();
+        count += 1;
+    }
+}
 
 // fn update_repositories(crates: &Vec<Crate>, pull: u32) {
 //     log::info!("start update repositories");
@@ -159,23 +165,23 @@ fn main() {
 //     }
 // }
 
-// fn git_get_count() -> i32 {
-//     let result = Command::new("git")
-//         .arg("rev-list")
-//         .arg("HEAD")
-//         .arg("--count")
-//         .output()
-//         .expect("Could not run");
+fn git_get_count() -> i32 {
+    let result = Command::new("git")
+        .arg("rev-list")
+        .arg("HEAD")
+        .arg("--count")
+        .output()
+        .expect("Could not run");
 
-//     if result.status.success() {
-//         let stdout = std::str::from_utf8(&result.stdout).unwrap().trim_end();
-//         //log::info!("'{}'", stdout);
-//         let number: i32 = stdout.parse().unwrap();
-//         number
-//     } else {
-//         0
-//     }
-// }
+    if result.status.success() {
+        let stdout = std::str::from_utf8(&result.stdout).unwrap().trim_end();
+        //log::info!("'{}'", stdout);
+        let number: i32 = stdout.parse().unwrap();
+        number
+    } else {
+        0
+    }
+}
 
 // fn git_clone(url: &str, path: &str) {
 //     log::info!("git clone {} {}", url, path);
