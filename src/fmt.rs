@@ -15,6 +15,12 @@ struct Cli {
     limit: u32,
 }
 
+/// For each repo run cargo fmt
+/// 
+/// For each repo load the details (if they already exist)
+///    If we have not ran fmt on the given repo then
+///          run fmt
+///          save the results back to the details
 fn main() {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -26,24 +32,33 @@ fn run_cargo_fmt(limit: u32) {
     log::info!("start update repositories. limit {}.", limit);
 
     build_docker_image();
+    let mut count : u32 = 0;
     let path = Path::new("repos/github");
     let root_dir = env::current_dir().unwrap();
     for user in path.read_dir().expect("read_dir call failed") {
         if let Ok(user) = user {
             log::info!("user: {:?}", user.path());
             for repo in user.path().read_dir().expect("read_dir call failed") {
-                if let Ok(repo) = repo {
-                    log::info!("repo: {:?}", repo.path());
-                    // TODO load details from analytics
-                    // if details.cargo_toml_in_root {
-                    env::set_current_dir(repo.path()).unwrap();
-                    let stdout = run_cargo_in_docker();
-                    log::info!("stdout: {}", stdout);
+                if limit > 0 && count >= limit {
+                    return
                 }
 
-                //     details.cargo_fmt = git_status();
-                //     git_checkout();
-                // }
+                if let Ok(repo) = repo {
+                    // TODO load details
+
+                    if ! repo.path().join("Cargo.toml").exists() {
+                        continue;
+                    }
+
+                    count += 1;
+                    log::info!("repo {}: {:?}", count, repo.path());
+
+                    env::set_current_dir(repo.path()).unwrap();
+                    // TODO measure elapsed time
+                    let stdout = run_cargo_in_docker();
+                    log::info!("stdout: {}", stdout);
+                    // TODO save to details
+                }
             }
 
             env::set_current_dir(&root_dir).unwrap();
