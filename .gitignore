@@ -3,6 +3,7 @@
 /_site/
 /repos/
 /repos
+/repo-details/
 /logs/
 *.bak
 db-dump.tar.gz
