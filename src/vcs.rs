@@ -27,11 +27,12 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
+    log::info!("Starting the VCS processor {}", args.limit);
 
     let crates: Vec<Crate> = read_crates(0);
     collect_data_from_vcs(&crates, args.limit);
 
-    log::info!("Starting the VCS processor {}", args.limit);
+    log::info!("Ending the VCS processor");
 }
 
 fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {

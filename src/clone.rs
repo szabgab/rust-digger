@@ -44,11 +44,11 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
+    log::info!("Starting the clone process {}", args.limit);
 
     let crates: Vec<Crate> = read_crates(0);
     update_repositories(&crates, args.limit);
-
-    log::info!("Starting the VCS processor {}", args.limit);
+    log::info!("Ending the clone process");
 }
 
 fn update_repositories(crates: &Vec<Crate>, limit: u32) {
