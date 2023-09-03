@@ -36,8 +36,19 @@
         </div>
         <div class="navbar-end">
           <div class="navbar-item">
-          <a class="navbar-item" href="/about">About</a>
+          
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">About</a>
+
+            <div class="navbar-dropdown">
+              <a href="/about" class="navbar-item">Rust Digger</a>
+              <hr class="navbar-divider">
+              <a href="/about-repository" class="navbar-item">repository</a>
+              <a href="/about-ci" class="navbar-item">CI</a>
+              <a href="/about-fmt" class="navbar-item">format</a>
+            </div>
           </div>
+        </div>
         </div>
       </div>
     </nav>
