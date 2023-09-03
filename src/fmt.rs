@@ -46,21 +46,27 @@ fn run_cargo_fmt(limit: u32) {
                     let root_dir = env::current_dir().unwrap();
                     env::set_current_dir(repo.path()).unwrap();
 
-                    // TODO load details
-                    if Path::new("Cargo.toml").exists() {
+                    if run_fmt_on(repo.path().to_str().unwrap()) {
                         count += 1;
-                        log::info!("repo {}: {:?}", count, repo.path());
-
-                        // TODO measure elapsed time
-                        let stdout = run_cargo_in_docker();
-                        log::info!("stdout: {}", stdout);
-                        // TODO save to details
                     }
+                    log::info!("repo {}: {:?}", count, repo.path());
                     env::set_current_dir(&root_dir).unwrap();
                 }
             }
         }
     }
+}
+
+fn run_fmt_on(repo_path: &str) -> bool {
+    // TODO load details
+    if Path::new("Cargo.toml").exists() {
+        // TODO measure elapsed time
+        let stdout = run_cargo_in_docker();
+        log::info!("stdout: {}", stdout);
+        // TODO save to details
+        return true;
+    }
+    false
 }
 
 /// docker build -t rust-test .
