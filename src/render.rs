@@ -85,6 +85,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
     log::info!("render_static_pages start");
 
     let pages = vec![
+        ("about-ci", "About Continuous Integration for Rust"),
         ("about", "About Rust Digger"),
         ("support", "Support Rust Digger"),
         ("training", "Training courses"),

@@ -1,0 +1,40 @@
+{% include 'templates/incl/header.html' %}
+
+
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">About CI</h2>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">NA for CI</h2>
+    <p>
+      <b>It works on my computer</b> is a common phrase we hear from programmers when QA or the user finds an issue. Continuous Integration (CI) helps preventing that even if there is only one developer.
+    </p>
+    <p>
+      If there are more than one developers or if sometime we receive contributions in forms of a Pull-Request we need a way to give prompt feedback and to verify that the changes made by different people don't have negative impact on each other. CI can help doing that.
+    </p>
+    <p>
+      There are several hosted systems out that that can be used as platform to run Continuous Integration. GitHub provides <b>GitHub Actions</b>, GitLab has <b>GitLab Pipelines</b>. (TODO: list others here)
+      If you see <b>NA</b> in the <b>CI</b> column this means that we either could not access your repository or that we could not identify any CI system in it.
+      For projects on GitHub we check for YAML files in the <b>.github/workflows/</b> folder. For projects on GitLab we check for the existence of the <b>.gitlab-ci.yml</b> file.
+    </p>
+    <p>
+      In order to make any CI useful, first you need to have some tests, but that's a separate issue. For now we assume the crate already have some tests.
+    </p>
+    <p>
+      If you are the author of the crate and you already have CI in other crates, then you probably already know what to do, right?
+    </p>
+    <p>
+      If you are the author, but you don't have any projects with CI yet or if you are not the author and just wants to help then
+      in order to add CI first look at other crates what they do and try to implement that.
+      TODO: Analyze what are the common patterns for CI in Rust and recommend them here.
+    </p>
+  </div>
+</section>
+
+
+{% include 'templates/incl/footer.html' %}
