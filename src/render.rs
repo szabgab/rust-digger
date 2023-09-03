@@ -90,6 +90,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
             "about-repository",
             "About Public Version Control for Rust projects",
         ),
+        ("about-fmt", "About cargo fmt"),
         ("about", "About Rust Digger"),
         ("support", "Support Rust Digger"),
         ("training", "Training courses"),

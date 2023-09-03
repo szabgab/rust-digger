@@ -1,0 +1,35 @@
+{% include 'templates/incl/header.html' %}
+
+
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">About cargo fmt</h2>
+    We have only partially implemented the format checking, but you can checjk your project with `cargo fmt --check`.
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">fmt</h2>
+    <p>
+        <a href="https://github.com/rust-lang/rustfmt">rustfmt</a> is the de-facto standard to format Rust code. 
+        You can install it by running the following command: `rustup component add rustfmt`. 
+        The you can run it on your source code with `cargo fmt`. 
+    </p>
+    <p>
+        We are going to run `cargo fmt --check` on every Rust crate an display the report here.
+    </p>
+    <p>
+        We will provide suggestions how to configure the formatter either in the rustfmt.toml or .rustfmt.toml file.
+    </p>
+    <p>
+        We will have recommendations on how to set up Continuous integration to verify that the code is well formatted.
+    </p>
+    <p>
+        We will have recommendations on how to add a pre-commit hook to ensure the files are always formatted according to the rules of the project.
+    </p>
+  </div>
+</section>
+
+
+{% include 'templates/incl/footer.html' %}
