@@ -10,7 +10,7 @@ mod read;
 use read::read_crates;
 
 mod common;
-use common::{get_owner_and_repo, Crate, Details};
+use common::{get_owner_and_repo, Crate};
 
 #[derive(Parser, Debug)]
 #[command(version)]

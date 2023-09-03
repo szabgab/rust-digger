@@ -9,7 +9,7 @@ mod read;
 use read::read_crates;
 
 mod common;
-use common::{get_owner_and_repo, save_details, Crate, Details};
+use common::{get_owner_and_repo, save_details, Crate};
 
 use crate::common::load_details;
 
@@ -44,7 +44,6 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
     let mut seen: HashSet<String> = HashSet::new();
     let mut count: u32 = 0;
     for krate in crates {
-        // TODO: avoid processing the same repo twice in the same run, or shall we update the info listing both crates?
         if 0 < limit && limit <= count {
             break;
         }
