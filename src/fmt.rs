@@ -33,24 +33,32 @@ fn run_cargo_fmt(limit: u32) {
 
     build_docker_image();
     let mut count: u32 = 0;
-    let path = Path::new("repos/github");
-    for user in path.read_dir().expect("read_dir call failed") {
-        if let Ok(user) = user {
-            log::info!("user: {:?}", user.path());
-            for repo in user.path().read_dir().expect("read_dir call failed") {
-                if 0 < limit && limit <= count {
-                    return;
-                }
+    let path = Path::new("repos");
+    for host in path.read_dir().expect("read_dir call failed") {
+        if let Ok(host) = host {
+            log::info!("host: {:?}", host.path());
+            for user in host.path().read_dir().expect("read_dir call failed") {
+                if let Ok(user) = user {
+                    log::info!("user: {:?}", user.path());
+                    for repo in user.path().read_dir().expect("read_dir call failed") {
+                        if 0 < limit && limit <= count {
+                            return;
+                        }
 
-                if let Ok(repo) = repo {
-                    let root_dir = env::current_dir().unwrap();
-                    env::set_current_dir(repo.path()).unwrap();
+                        if let Ok(repo) = repo {
+                            count += 1;
+                            log::info!("repo {}: {:?}", count, repo.path());
 
-                    if run_fmt_on(repo.path().to_str().unwrap()) {
-                        count += 1;
+                            let root_dir = env::current_dir().unwrap();
+                            env::set_current_dir(repo.path()).unwrap();
+
+                            if !run_fmt_on(repo.path().to_str().unwrap()) {
+                                count -= 1;
+                            }
+
+                            env::set_current_dir(&root_dir).unwrap();
+                        }
                     }
-                    log::info!("repo {}: {:?}", count, repo.path());
-                    env::set_current_dir(&root_dir).unwrap();
                 }
             }
         }
