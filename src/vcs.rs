@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::env;
 use std::path::Path;
 use std::process::Command;
@@ -9,6 +10,8 @@ use read::read_crates;
 
 mod common;
 use common::{get_owner_and_repo, save_details, Crate, Details};
+
+use crate::common::load_details;
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -38,15 +41,13 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         log::info!("We are going to process only {} crates", limit);
     }
 
+    let mut seen: HashSet<String> = HashSet::new();
     let mut count: u32 = 0;
     for krate in crates {
         // TODO: avoid processing the same repo twice in the same run, or shall we update the info listing both crates?
         if 0 < limit && limit <= count {
             break;
         }
-        let mut details = Details::new();
-        // TODO load details of already exist
-
         log::info!(
             "process ({}/{}) repository '{}'",
             count,
@@ -56,10 +57,19 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         if krate.repository == "" {
             continue;
         }
+
         let (host, owner, repo) = get_owner_and_repo(&krate.repository);
         if owner == "" {
             continue;
         }
+
+        if seen.contains(&krate.repository) {
+            continue;
+        }
+        seen.insert(krate.repository.clone());
+
+        let mut details = load_details(&krate.repository);
+
         let repo_path = format!("repos/{host}/{owner}/{repo}");
         if !Path::new(&repo_path).exists() {
             log::warn!("Cloned path does not exist for {}", &krate.repository);
@@ -69,6 +79,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         env::set_current_dir(&repo_path).unwrap();
 
         if host == "github" {
+            details.has_github_action = false;
             let workflows = Path::new(".github/workflows");
             if workflows.exists() {
                 for entry in workflows.read_dir().expect("read_dir call failed") {
