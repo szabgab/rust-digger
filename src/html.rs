@@ -11,7 +11,7 @@ const PAGE_SIZE: usize = 100;
 
 mod common;
 use common::{
-    get_owner_and_repo, load_details, percentage, Crate, CratesByOwner, Details, Owners, Repo, User,
+    load_details, percentage, Crate, CratesByOwner, Owners, Repo, User,
 };
 mod read;
 use read::{read_crate_owners, read_crates, read_teams, read_users};

@@ -65,7 +65,7 @@ fn run_cargo_fmt(limit: u32) {
     }
 }
 
-fn run_fmt_on(repo_path: &str) -> bool {
+fn run_fmt_on(_repo_path: &str) -> bool {
     // TODO load details
     if Path::new("Cargo.toml").exists() {
         // TODO measure elapsed time
