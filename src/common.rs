@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::fs;
-//use std::path::Path;
 use std::fs::File;
 use std::io::Write;
+use std::path::Path;
 
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -191,6 +191,41 @@ mod tests {
         assert_eq!(percentage(1234, 10000), "12.34");
         assert_eq!(percentage(1234567, 10000000), "12.34");
     }
+}
+
+pub fn load_details(repository: &str) -> Details {
+    log::info!("Load details started");
+
+    let (host, owner, repo) = get_owner_and_repo(&repository);
+    if host == "" {
+        return Details::new();
+    }
+
+    let details_path = format!("repo-details/{host}/{owner}/{repo}.json");
+    let details_path = Path::new(&details_path);
+    if !details_path.exists() {
+        return Details::new();
+    }
+
+    match File::open(&details_path) {
+        Ok(file) => {
+            match serde_json::from_reader(file) {
+                Ok(details) => return details,
+                Err(err) => {
+                    log::error!(
+                        "Error reading details from '{}' {}",
+                        details_path.display(),
+                        err
+                    );
+                    return Details::new();
+                }
+            };
+        }
+        Err(error) => {
+            println!("Error opening file {}: {}", details_path.display(), error);
+        }
+    }
+    Details::new()
 }
 
 pub fn save_details(repository: &str, details: &Details) {

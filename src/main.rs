@@ -10,7 +10,9 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
 mod common;
-use common::{percentage, Crate, CratesByOwner, Owners, Repo, User};
+use common::{
+    get_owner_and_repo, load_details, percentage, Crate, CratesByOwner, Details, Owners, Repo, User,
+};
 mod read;
 use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
@@ -48,9 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //dbg!(&crates_by_owner);
 
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
-    //save_repo_details(&crates);
-
-    //load_details(&mut crates);
+    load_details_for_all_the_crates(&mut crates);
 
     let repos = collect_repos(&crates);
 
@@ -64,11 +64,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     log::info!("Ending the Rust Digger");
     Ok(())
 }
-
-// fn load_details(crates: &mut Vec<Crate>) {
-//     log::info!("Load details started");
-//     log::info!("Load details ended");
-// }
 
 // fn save_repo_details(crates: &Vec<Crate>) {
 //     log::info!("start saving details");
@@ -103,6 +98,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 //         let _res = fs::create_dir_all(&owner_path);
 //     }
 // }
+
+fn load_details_for_all_the_crates(crates: &mut Vec<Crate>) {
+    for krate in crates.into_iter() {
+        krate.details = load_details(&krate.repository);
+    }
+}
 
 fn add_owners_to_crates(crates: &mut Vec<Crate>, users: &Vec<User>, owner_by_crate_id: &Owners) {
     let mut mapping: HashMap<String, &User> = HashMap::new();
