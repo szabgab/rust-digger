@@ -63,10 +63,10 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
             continue;
         }
 
-        if seen.contains(&krate.repository) {
+        if seen.contains(&krate.repository.to_lowercase()) {
             continue;
         }
-        seen.insert(krate.repository.clone());
+        seen.insert(krate.repository.to_lowercase());
 
         let mut details = load_details(&krate.repository);
 
