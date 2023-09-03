@@ -1,5 +1,6 @@
 use chrono::prelude::{DateTime, Utc};
 use std::collections::HashMap;
+use std::env;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
@@ -9,6 +10,8 @@ use std::path::Path;
 
 use crate::common::{get_owner_and_repo, percentage};
 use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
+
+const URL: &str = "https://rust-digger.code-maven.com";
 
 pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     log::info!("render_list_crates_by_repo start");
@@ -404,6 +407,54 @@ fn create_folders() {
     let _res = fs::create_dir_all("_site/vcs");
 }
 
+fn collect_pathes(root: &Path) -> Vec<String> {
+    let mut pathes: Vec<String> = vec![];
+    for entry in root.read_dir().expect("failed") {
+        //log::info!("{}", &format!("{}", entry.unwrap().path().display())[5..])
+        //pathes.push(format!("{}", entry.unwrap().path().display())[5..].to_string().clone());
+        let path = entry.as_ref().unwrap().path();
+        if path.is_file() && path.extension().unwrap() == "html" {
+            let url_path =
+                format!("{}", path.display())[5..path.display().to_string().len() - 5].to_string();
+            if url_path.ends_with("/index") {
+                pathes.push(url_path[0..url_path.len() - 5].to_string());
+            } else {
+                pathes.push(url_path);
+            }
+        }
+        if path.is_dir() {
+            pathes.extend(collect_pathes(path.as_path()));
+        }
+    }
+    pathes
+}
+pub fn generate_sitemap() {
+    log::info!("generate_sitemap");
+    let pathes = collect_pathes(Path::new("_site"));
+    //log::info!("{:?}", pathes);
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .build()
+        .unwrap()
+        .parse_file("templates/sitemap.xml")
+        .unwrap();
+
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "url": URL,
+        "timestamp":  utc.format("%Y-%m-%d").to_string(),
+        "pages":    pathes,
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create("_site/sitemap.xml").unwrap();
+    writeln!(&mut file, "{}", html).unwrap();
+}
+
+pub fn generate_robots_txt() {
+    let text = format!("Sitemap: {}/sitemap.xml\n\nUser-agent: *\n", URL);
+    let mut file = File::create("_site/robots.txt").unwrap();
+    writeln!(&mut file, "{}", text).unwrap();
+}
 pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 

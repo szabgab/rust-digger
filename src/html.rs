@@ -15,8 +15,8 @@ mod read;
 use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;
 use render::{
-    generate_crate_pages, generate_pages, generate_user_pages, render_news_pages,
-    render_static_pages,
+    generate_crate_pages, generate_pages, generate_robots_txt, generate_sitemap,
+    generate_user_pages, render_news_pages, render_static_pages,
 };
 
 #[derive(Parser, Debug)]
@@ -57,6 +57,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     render_static_pages()?;
     generate_crate_pages(&crates)?;
     generate_user_pages(&crates, users, &crates_by_owner)?;
+    generate_sitemap();
+    generate_robots_txt();
 
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the Rust Digger");
