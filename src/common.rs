@@ -108,6 +108,30 @@ impl Details {
     }
 }
 
+impl Crate {
+    pub fn new() -> Crate {
+        Crate {
+            created_at: "".to_string(),
+            description: "".to_string(),
+            documentation: "".to_string(),
+            downloads: "".to_string(),
+            homepage: "".to_string(),
+            id: "".to_string(),
+            max_upload_size: "".to_string(),
+            name: "".to_string(),
+            readme: "".to_string(),
+            repository: "".to_string(),
+            updated_at: "".to_string(),
+
+            owner_gh_avatar: "".to_string(),
+            owner_gh_login: "".to_string(),
+            owner_name: "".to_string(),
+
+            details: Details::new(),
+        }
+    }
+}
+
 //type RepoPercentage<'a> = HashMap<&'a str, String>;
 pub type Owners = HashMap<String, String>;
 pub type CratesByOwner = HashMap<String, Vec<String>>;
