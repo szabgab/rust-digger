@@ -4,10 +4,17 @@
 <section class="section">
   <div class="container">
     <h2 class="title is-4">About Repository</h2>
+      Each crate has a file called <b>Cargo.toml</b> in which there must be a section called <b>[package]</b> in which there can be a key called <b>repository</b>.
+      For example the <a href="https://github.com/szabgab/rustatic">rustatic</a> project has something like this:
 
+      <pre><code class="language-rust">
+      [package]
+      repository = "https://github.com/szabgab/rustatic"
+      </code></pre>
+
+      Having this entry allows <a href="https://crates.io/">Crates.io</a> to link to the repository and it makes it easy for everyone to find the public version control of the crate.
   </div>
 </section>
-
 <section class="section" id="no-repository">
   <div class="container">
     <h2 class="title is-4">NA for repository</h2>
@@ -30,7 +37,7 @@
         <li>If you found the repository then edit the Cargo.toml file and add the <b>repository</b> entry to it. Then send it as a Pull-Request.</li>
         <li>Alternatively, you might take a look at the other crates of the owner to see where is their repository. According to our <a href="/stats">stats</a>, about 5% of the crates are hosted in some system that is not GitHub.</li>
         <li>If you can't find the repository then you could, politely(!) contact the owner and ask if the crates is indeed theirs and if they have a public VCS somewhere.
-          Keep in mind that some people don't make their VCS public and some don't even use one. I am not happy about it, but I would not want to make them uncomfortable.  
+          Keep in mind that some people don't make their VCS public and some don't even use one. I am not happy about it, but I would not want to make them uncomfortable.
         </li>
       </ul>
     </p>
@@ -41,29 +48,21 @@
     <div class="container">
       <h2 class="title is-4">http vs https</h2>
       <p>
-        Most git hosting companies (e.g. GitHub, GitLab) will accept an inbound link using `http`
+      Most git hosting companies (e.g. GitHub, GitLab) will accept an inbound link using `http`. Some people have included a link in their <b>Cargo.toml</b> file using the http link.
+      We have a report of all the <a href="/vcs/repo-with-http">repository links using http</a>. It is not a super critical thing to fix, but also not a huge effort.
       </p>
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-      <h2 class="title is-4">Repository</h2>
-      Each crate has a file called <b>Cargo.toml</b> in which there must be a section called <b>[package]</b> in which there can be a key called <b>repository</b>. e.g
-      <code>
-      [package]
-      repository = "https://github.com/szabgab/rustatic"
-      </code>
-    </div>
-</section>
-  
 <section class="section" id="no-commit-count">
     <div class="container">
       <h2 class="title is-4">NA for commit count</h2>
+      The <b>commit count</b> column shows the number of commits in the repository. In itself it does not have a lot of meaning. It is just one indicator for the level of activit in that crate.
       If you see <b>NA</b> in the commit count column it can mean that either the crate does not have a <b>repository</b> entry, we could not access it, or the Rust Digger just have not got around to process it yet.
+      If you feel it is a problem in the Rust Digger, please <a href="https://github.com/szabgab/rust-digger">open an issue</a> reporting it.
     </div>
 </section>
-  
-  
+
+
 {% include 'templates/incl/footer.html' %}
 
