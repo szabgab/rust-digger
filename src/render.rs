@@ -423,6 +423,11 @@ fn collect_pathes(root: &Path) -> Vec<String> {
             }
         }
         if path.is_dir() {
+            let basename = path.file_name().unwrap();
+            if basename == "crates" || basename == "users" {
+                continue;
+            }
+            println!("extend {:?}", basename);
             pathes.extend(collect_pathes(path.as_path()));
         }
     }
