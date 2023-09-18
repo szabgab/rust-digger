@@ -62,7 +62,7 @@ pub fn read_file(filename: &str) -> String {
             file.read_to_string(&mut content).unwrap();
         }
         Err(error) => {
-            println!("Error opening file {}: {}", filename, error);
+            log::error!("Error opening file {}: {}", filename, error);
         }
     }
     content
@@ -166,7 +166,7 @@ pub fn render_list_page(
     writeln!(&mut file, "{}", html).unwrap();
     //match res {
     //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
-    //    Err(error) => println!("{}", error)
+    //    Err(error) => log:error!("{}", error)
     //}
     Ok(())
 }
@@ -210,7 +210,7 @@ pub fn render_news_pages() {
 
     //            },
     //            Err(error) => {
-    //                println!("Error opening file {:?}: {}", file.as_os_str(), error);
+    //                log:error!("Error opening file {:?}: {}", file.as_os_str(), error);
     //            },
     //        }
     //    }
@@ -408,6 +408,8 @@ fn create_folders() {
 }
 
 fn collect_pathes(root: &Path) -> Vec<String> {
+    log::info!("collect_pathes  from {:?}", root);
+
     let mut pathes: Vec<String> = vec![];
     for entry in root.read_dir().expect("failed") {
         //log::info!("{}", &format!("{}", entry.unwrap().path().display())[5..])
@@ -427,7 +429,6 @@ fn collect_pathes(root: &Path) -> Vec<String> {
             if basename == "crates" || basename == "users" {
                 continue;
             }
-            println!("extend {:?}", basename);
             pathes.extend(collect_pathes(path.as_path()));
         }
     }
