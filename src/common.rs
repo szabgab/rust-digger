@@ -218,7 +218,7 @@ mod tests {
 }
 
 pub fn load_details(repository: &str) -> Details {
-    log::info!("Load details started");
+    log::info!("Load details started for {}", repository);
 
     let (host, owner, repo) = get_owner_and_repo(&repository);
     if host == "" {
