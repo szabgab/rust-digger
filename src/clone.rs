@@ -103,7 +103,7 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
             }
         }
 
-        if krate.repository == "" {
+        if krate.repository.is_empty() {
             continue;
         }
 
@@ -114,12 +114,12 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
         }
 
         let (host, owner, repo) = get_owner_and_repo(&repository);
-        if owner == "" {
+        if owner.is_empty() {
             continue;
         }
 
         let details = load_details(&repository);
-        if details.git_clone_error != "" && !force {
+        if !details.git_clone_error.is_empty() && !force {
             continue;
         }
 

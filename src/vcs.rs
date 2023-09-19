@@ -48,12 +48,12 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
             limit,
             &krate.repository
         );
-        if krate.repository == "" {
+        if krate.repository.is_empty() {
             continue;
         }
 
         let (host, owner, repo) = get_owner_and_repo(&krate.repository);
-        if owner == "" {
+        if owner.is_empty() {
             continue;
         }
 
@@ -90,7 +90,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         }
         details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
 
-        if host != "" {
+        if !host.is_empty() {
             details.commit_count = git_get_count();
         }
 
