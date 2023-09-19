@@ -508,7 +508,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
         &"_site/crates-without-owner-name.html".to_string(),
         &"Crates without owner name".to_string(),
         &crates,
-        |krate| krate.owner_name == "",
+        |krate| krate.owner_name.is_empty(),
     )
     .unwrap();
 
@@ -516,7 +516,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
         &"_site/crates-without-owner.html".to_string(),
         &"Crates without owner".to_string(),
         crates,
-        |krate| krate.owner_name == "" && krate.owner_gh_login == "",
+        |krate| krate.owner_name.is_empty() && krate.owner_gh_login.is_empty(),
     )?;
 
     //log::info!("repos: {:?}", repos);
@@ -549,23 +549,23 @@ fn render_filtered_crates(
 }
 
 fn no_homepage_no_repo(w: &Crate) -> bool {
-    w.homepage == "" && w.repository == ""
+    w.homepage.is_empty() && w.repository.is_empty()
 }
 
 fn has_homepage_no_repo(w: &Crate) -> bool {
-    w.homepage != "" && w.repository == ""
+    !w.homepage.is_empty() && w.repository.is_empty()
 }
 
 // fn has_repo(w: &Crate) -> bool {
 //     w.repository != ""
 // }
 fn on_github_but_no_ci(krate: &Crate) -> bool {
-    if krate.repository == "" {
+    if krate.repository.is_empty() {
         return false;
     }
 
     let (host, owner, _) = get_owner_and_repo(&krate.repository);
-    if owner == "" {
+    if owner.is_empty() {
         return false;
     }
 
@@ -581,12 +581,12 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
 }
 
 fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
-    if krate.repository == "" {
+    if krate.repository.is_empty() {
         return false;
     }
 
     let (host, owner, _) = get_owner_and_repo(&krate.repository);
-    if owner == "" {
+    if owner.is_empty() {
         return false;
     }
 

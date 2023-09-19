@@ -268,7 +268,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
     let mut other_repo: Vec<Crate> = vec![];
 
     for krate in crates {
-        if krate.repository == "" {
+        if krate.repository.is_empty() {
             no_repo.push(krate.clone());
             continue;
         }
