@@ -140,6 +140,12 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
             env::set_current_dir(&repo_path).unwrap();
             git_pull();
         } else {
+            let status = check_url(&krate.repository);
+            if status != 200 {
+                log::error!("Error accessing the repository {}", status);
+                continue;
+            }
+
             env::set_current_dir(owner_path).unwrap();
             git_clone(&krate.repository, &repo);
         }
@@ -162,6 +168,20 @@ fn git_clone(url: &str, path: &str) {
     } else {
         log::warn!("git_clone exit code {}", result.status);
     }
+}
+
+fn check_url(url: &str) -> reqwest::StatusCode {
+    log::info!("Checking url {}", url);
+
+    let res = match reqwest::blocking::get(url) {
+        Ok(res) => res,
+        Err(err) => {
+            log::error!("Could not get '{}': {}", url, err);
+            return reqwest::StatusCode::INTERNAL_SERVER_ERROR;
+        }
+    };
+    log::info!("Status: {}", res.status());
+    res.status()
 }
 
 fn git_pull() {
