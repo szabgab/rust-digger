@@ -14,6 +14,23 @@ pub struct Details {
     pub commit_count: i32,
     pub cargo_toml_in_root: bool,
     pub cargo_fmt: String,
+
+    #[serde(default = "empty_string")]
+    pub git_clone_error: String,
+}
+
+impl Details {
+    pub fn new() -> Details {
+        Details {
+            has_github_action: false,
+            has_gitlab_pipeline: false,
+            commit_count: 0,
+            cargo_toml_in_root: false,
+            cargo_fmt: "".to_string(),
+
+            git_clone_error: "".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -94,18 +111,6 @@ pub struct CrateOwner {
     pub created_by: String,
     pub owner_id: String,
     pub owner_kind: String,
-}
-
-impl Details {
-    pub fn new() -> Details {
-        Details {
-            has_github_action: false,
-            has_gitlab_pipeline: false,
-            commit_count: 0,
-            cargo_toml_in_root: false,
-            cargo_fmt: "".to_string(),
-        }
-    }
 }
 
 impl Crate {

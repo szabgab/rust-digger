@@ -6,11 +6,16 @@ use std::process::Command;
 
 use clap::Parser;
 
+use chrono::{DateTime, Duration, NaiveDateTime, Utc};
+
 mod read;
 use read::read_crates;
 
 mod common;
 use common::{get_owner_and_repo, Crate};
+
+use crate::common::load_details;
+use crate::common::Details;
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -21,6 +26,20 @@ struct Cli {
         help = "Limit the number of repos we process."
     )]
     limit: u32,
+
+    #[arg(
+        long,
+        default_value_t = 0,
+        help = "Attempt to clone only repos of crates that were released in the last `recent` days."
+    )]
+    recent: u32,
+
+    #[arg(
+        long,
+        default_value_t = false,
+        help = "Try to clone even if it already failed once."
+    )]
+    force: bool,
 }
 
 /// for each crate
@@ -47,20 +66,46 @@ fn main() {
     log::info!("Starting the clone process {}", args.limit);
 
     let crates: Vec<Crate> = read_crates(0);
-    update_repositories(&crates, args.limit);
+    update_repositories(&crates, args.limit, args.recent, args.force);
     log::info!("Ending the clone process");
 }
 
-fn update_repositories(crates: &Vec<Crate>, limit: u32) {
+fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool) {
     log::info!("start update repositories");
 
     let mut repo_reuse: HashMap<String, i32> = HashMap::new();
+    let now: DateTime<Utc> = Utc::now();
+    let before: DateTime<Utc> = now - Duration::days(recent as i64);
+    log::info!("before: {}", before);
 
     let mut count: u32 = 0;
     for krate in crates {
         if 0 < limit && limit <= count {
             break;
         }
+        //log::info!("update_at {}", krate.updated_at); // 2023-09-18 01:44:10.299066
+        log::info!("Crate updated_at: {}", krate.updated_at);
+        if 0 < recent {
+            let updated_at =
+                match NaiveDateTime::parse_from_str(&krate.updated_at, "%Y-%m-%d %H:%M:%S.%f") {
+                    Ok(ts) => ts,
+                    Err(err) => {
+                        // TODO there are some crates, eg. one called cargo-script where the
+                        // updated_at field has no microseconds and it looks like this: 2023-09-18 01:44:10
+                        log::error!(
+                            "Error parsing timestamp '{}' of {}",
+                            &krate.updated_at,
+                            &krate.name
+                        );
+                        //std::process::exit(1);
+                        continue;
+                    }
+                };
+            if updated_at < before.naive_utc() {
+                continue;
+            }
+        }
+
         if krate.repository == "" {
             continue;
         }
@@ -73,6 +118,11 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32) {
 
         let (host, owner, repo) = get_owner_and_repo(&repository);
         if owner == "" {
+            continue;
+        }
+
+        let details = load_details(&repository);
+        if details.git_clone_error != "" && !force {
             continue;
         }
 
