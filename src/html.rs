@@ -61,7 +61,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     generate_robots_txt();
 
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
-    log::info!("Ending the Rust Digger");
+    log::info!("Ending the Rust Digger generating html pages");
     Ok(())
 }
 

@@ -63,10 +63,13 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
+    let start_time = std::time::Instant::now();
+
     log::info!("Starting the clone process {}", args.limit);
 
     let crates: Vec<Crate> = read_crates(0);
     update_repositories(&crates, args.limit, args.recent, args.force);
+    log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the clone process");
 }
 
