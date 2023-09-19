@@ -279,3 +279,32 @@ pub fn save_details(repository: &str, details: &Details) {
     let mut file = File::create(details_path).unwrap();
     writeln!(&mut file, "{}", content).unwrap();
 }
+
+pub fn read_crates(limit: u32) -> Vec<Crate> {
+    let filepath = "data/data/crates.csv";
+    log::info!("Start reading {}", filepath);
+    let mut crates: Vec<Crate> = vec![];
+    let mut count = 0;
+    match File::open(filepath.to_string()) {
+        Ok(file) => {
+            let mut rdr = csv::Reader::from_reader(file);
+            for result in rdr.deserialize() {
+                count += 1;
+                if limit > 0 && count >= limit {
+                    log::info!("Limit of {limit} reached");
+                    break;
+                }
+                let record: Crate = match result {
+                    Ok(value) => value,
+                    Err(error) => panic!("error: {}", error),
+                };
+                crates.push(record);
+            }
+            crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+        }
+        Err(error) => panic!("Error opening file {}: {}", filepath, error),
+    }
+
+    log::info!("Finished reading {filepath}");
+    crates
+}

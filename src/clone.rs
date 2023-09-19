@@ -8,10 +8,7 @@ use clap::Parser;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
-mod read;
-use read::read_crates;
-
-use rust_digger::{get_owner_and_repo, load_details, Crate};
+use rust_digger::{get_owner_and_repo, load_details, read_crates, Crate};
 
 #[derive(Parser, Debug)]
 #[command(version)]

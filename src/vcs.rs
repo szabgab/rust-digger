@@ -5,10 +5,7 @@ use std::process::Command;
 
 use clap::Parser;
 
-mod read;
-use read::read_crates;
-
-use rust_digger::{get_owner_and_repo, load_details, save_details, Crate};
+use rust_digger::{get_owner_and_repo, load_details, read_crates, save_details, Crate};
 
 #[derive(Parser, Debug)]
 #[command(version)]
