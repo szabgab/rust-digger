@@ -42,7 +42,7 @@ jobs:
       - name: Create pages
         if: ${{ github.event_name != 'pull_request' }}
         run: |
-            cargo run --bin html
+            cargo run --bin rust-digger-html
 
 #      - name: Show results
 #        if: ${{ github.event_name != 'pull_request' }}
