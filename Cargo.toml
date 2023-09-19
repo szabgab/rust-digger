@@ -1,5 +1,5 @@
 [package]
-name = "rust-digger"
+name = "rust_digger"
 version = "0.1.0"
 edition = "2021"
 
