@@ -1,6 +1,5 @@
 use chrono::prelude::{DateTime, Utc};
 use std::collections::HashMap;
-use std::env;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
@@ -8,8 +7,8 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-use crate::common::{get_owner_and_repo, percentage};
 use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
+use rust_digger::{get_owner_and_repo, percentage};
 
 const URL: &str = "https://rust-digger.code-maven.com";
 

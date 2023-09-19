@@ -9,8 +9,7 @@ pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySo
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
-mod common;
-use common::{load_details, percentage, Crate, CratesByOwner, Owners, Repo, User};
+use rust_digger::{load_details, percentage, Crate, CratesByOwner, Owners, Repo, User};
 mod read;
 use read::{read_crate_owners, read_crates, read_teams, read_users};
 mod render;

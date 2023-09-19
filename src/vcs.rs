@@ -8,10 +8,7 @@ use clap::Parser;
 mod read;
 use read::read_crates;
 
-mod common;
-use common::{get_owner_and_repo, save_details, Crate};
-
-use crate::common::load_details;
+use rust_digger::{get_owner_and_repo, load_details, save_details, Crate};
 
 #[derive(Parser, Debug)]
 #[command(version)]

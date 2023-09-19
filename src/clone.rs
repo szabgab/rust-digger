@@ -11,11 +11,7 @@ use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 mod read;
 use read::read_crates;
 
-mod common;
-use common::{get_owner_and_repo, Crate};
-
-use crate::common::load_details;
-use crate::common::Details;
+use rust_digger::{get_owner_and_repo, load_details, Crate};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -96,9 +92,10 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
                         // TODO there are some crates, eg. one called cargo-script where the
                         // updated_at field has no microseconds and it looks like this: 2023-09-18 01:44:10
                         log::error!(
-                            "Error parsing timestamp '{}' of {}",
+                            "Error parsing timestamp '{}' of {} ({})",
                             &krate.updated_at,
-                            &krate.name
+                            &krate.name,
+                            err
                         );
                         //std::process::exit(1);
                         continue;
