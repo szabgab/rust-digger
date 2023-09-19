@@ -19,18 +19,18 @@ serde_json = "1.0"
 simple_logger = "4.2"
 
 [[bin]]
-name = "html"
+name = "rust-digger-html"
 path = "src/html.rs"
 
 
 [[bin]]
-name = "fmt"
+name = "rust-digger-fmt"
 path = "src/fmt.rs"
 
 [[bin]]
-name = "vcs"
+name = "rust-digger-vcs"
 path = "src/vcs.rs"
 
 [[bin]]
-name = "clone"
+name = "rust-digger-clone"
 path = "src/clone.rs"

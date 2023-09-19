@@ -3,5 +3,6 @@ set -e -u
 cd /home/gabor/work/rust-digger
 ./download.sh;
 /home/gabor/.cargo/bin/cargo build --release > /tmp/rust-digger-build.log 2> /tmp/rust-digger-build.err
-./target/release/vcs > /tmp/rust-digger-vcs.log 2> /tmp/rust-digger-vcs.err
-./target/release/html > /tmp/rust-digger-html.log 2> /tmp/rust-digger-html.err
+./target/release/rust-digger-clone --recent 10 > /tmp/rust-digger-clone.log 2> /tmp/rust-digger-clone.err
+./target/release/rust-digger-vcs > /tmp/rust-digger-vcs.log 2> /tmp/rust-digger-vcs.err
+./target/release/rust-digger-html > /tmp/rust-digger-html.log 2> /tmp/rust-digger-html.err

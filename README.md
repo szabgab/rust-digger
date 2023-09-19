@@ -38,7 +38,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 cargo build --release
 ```
 
-There is a cron-job that runs the process once a day. (As long as we use the dumped data from Crates.io, there is no point in running more frequently.)
+There is a cron-job that runs `all.sh` once a day. (As long as we use the dumped data from Crates.io, there is no point in running more frequently.)
 
 ## Processing steps
 
