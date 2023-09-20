@@ -76,11 +76,13 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
             details.has_github_action = false;
             let workflows = Path::new(".github/workflows");
             if workflows.exists() {
-                for entry in workflows.read_dir().expect("read_dir call failed") {
-                    if let Ok(entry) = entry {
-                        log::info!("workflows: {:?}", entry.path());
-                        details.has_github_action = true;
-                    }
+                for entry in workflows
+                    .read_dir()
+                    .expect("read_dir call failed")
+                    .flatten()
+                {
+                    log::info!("workflows: {:?}", entry.path());
+                    details.has_github_action = true;
                 }
             }
         }
