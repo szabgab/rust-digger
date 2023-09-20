@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -231,6 +231,34 @@ mod tests {
         assert_eq!(percentage(1234, 10000), "12.34");
         assert_eq!(percentage(1234567, 10000000), "12.34");
     }
+
+    #[test]
+    fn test_get_details_path() {
+        assert_eq!(
+            get_details_path("https://github.com/foo/bar")
+                .expect("X")
+                .as_path(),
+            Path::new("repo-details/github/foo/bar.json")
+        );
+        assert_eq!(
+            get_details_path("https://github.com/foo/bar/baz")
+                .expect("X")
+                .as_path(),
+            Path::new("repo-details/github/foo/bar.json")
+        ); // TODO this should not work I think
+        assert_eq!(get_details_path("https://zorg.com/foo/bar"), None);
+    }
+}
+
+pub fn get_details_path(repository: &str) -> Option<PathBuf> {
+    let (host, owner, repo) = get_owner_and_repo(repository);
+    if repo.is_empty() {
+        return None;
+    }
+
+    let mut details_path = PathBuf::new();
+    details_path.push(format!("repo-details/{host}/{owner}/{repo}.json"));
+    Some(details_path)
 }
 
 pub fn load_details(repository: &str) -> Details {
