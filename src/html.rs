@@ -100,19 +100,19 @@ fn main() -> Result<(), Box<dyn Error>> {
 //     }
 // }
 
-fn load_details_for_all_the_crates(crates: &mut Vec<Crate>) {
-    for krate in crates.into_iter() {
+fn load_details_for_all_the_crates(crates: &mut [Crate]) {
+    for krate in crates.iter_mut() {
         krate.details = load_details(&krate.repository);
     }
 }
 
-fn add_owners_to_crates(crates: &mut Vec<Crate>, users: &Vec<User>, owner_by_crate_id: &Owners) {
+fn add_owners_to_crates(crates: &mut [Crate], users: &Vec<User>, owner_by_crate_id: &Owners) {
     let mut mapping: HashMap<String, &User> = HashMap::new();
     for user in users {
         mapping.insert(user.id.clone(), user);
     }
 
-    for krate in crates.into_iter() {
+    for krate in crates.iter_mut() {
         let crate_id = &krate.id;
         match owner_by_crate_id.get(crate_id) {
             Some(owner_id) => {

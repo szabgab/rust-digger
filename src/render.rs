@@ -536,14 +536,10 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
 fn render_filtered_crates(
     filename: &String,
     title: &String,
-    crates: &Vec<Crate>,
+    crates: &[Crate],
     cond: fn(&&Crate) -> bool,
 ) -> Result<usize, Box<dyn Error>> {
-    let filtered_crates = crates
-        .into_iter()
-        .filter(cond)
-        .cloned()
-        .collect::<Vec<Crate>>();
+    let filtered_crates = crates.iter().filter(cond).cloned().collect::<Vec<Crate>>();
     render_list_page(filename, title, &filtered_crates)?;
     Ok(filtered_crates.len())
 }
