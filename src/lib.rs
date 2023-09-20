@@ -225,7 +225,7 @@ mod tests {
 pub fn load_details(repository: &str) -> Details {
     log::info!("Load details started for {}", repository);
 
-    let (host, owner, repo) = get_owner_and_repo(&repository);
+    let (host, owner, repo) = get_owner_and_repo(repository);
     if host == "" {
         return Details::new();
     }
@@ -236,7 +236,7 @@ pub fn load_details(repository: &str) -> Details {
         return Details::new();
     }
 
-    match File::open(&details_path) {
+    match File::open(details_path) {
         Ok(file) => {
             match serde_json::from_reader(file) {
                 Ok(details) => return details,
@@ -285,7 +285,7 @@ pub fn read_crates(limit: u32) -> Vec<Crate> {
     log::info!("Start reading {}", filepath);
     let mut crates: Vec<Crate> = vec![];
     let mut count = 0;
-    match File::open(filepath.to_string()) {
+    match File::open(filepath) {
         Ok(file) => {
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {

@@ -7,7 +7,7 @@ pub fn read_teams(users: &mut Vec<User>, limit: u32) {
     let filepath = "data/data/teams.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
-    match File::open(filepath.to_string()) {
+    match File::open(filepath) {
         Ok(file) => {
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {
@@ -44,7 +44,7 @@ pub fn read_users(limit: u32) -> Vec<User> {
     let filepath = "data/data/users.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
-    match File::open(filepath.to_string()) {
+    match File::open(filepath) {
         Ok(file) => {
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {
