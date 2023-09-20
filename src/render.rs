@@ -150,7 +150,7 @@ pub fn render_list_page(
         "utc":     format!("{}", utc),
         "title":   title,
         "total":   crates.len(),
-        "crates":  (&crates[0..page_size]).to_vec(),
+        "crates":  (crates[0..page_size]).to_vec(),
     });
 
     let template = liquid::ParserBuilder::with_stdlib()
@@ -285,7 +285,7 @@ pub fn generate_user_pages(
                         //dbg!(&crate_id);
                         //dbg!(&crate_by_id[crate_id.as_str()]);
                         //dbg!(&crate_by_id.get(&crate_id.clone()));
-                        selected_crates.push(&crate_by_id[crate_id.as_str()]);
+                        selected_crates.push(crate_by_id[crate_id.as_str()]);
                     }
                     user.count = selected_crates.len() as u16;
                     //users_with_crates.push(user);
@@ -467,47 +467,47 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
 
     fs::copy("digger.js", "_site/digger.js")?;
 
-    render_list_crates_by_repo(&repos)?;
-    render_list_of_repos(&repos);
+    render_list_crates_by_repo(repos)?;
+    render_list_of_repos(repos);
 
     render_list_page(
         &"_site/index.html".to_string(),
         &"Rust Digger".to_string(),
-        &crates,
+        crates,
     )?;
 
     let github_but_no_ci = render_filtered_crates(
         &"_site/github-but-no-ci.html".to_string(),
         &"On GitHub but has no CI".to_string(),
-        &crates,
+        crates,
         |krate| on_github_but_no_ci(krate),
     )?;
 
     let gitlab_but_no_ci = render_filtered_crates(
         &"_site/gitlab-but-no-ci.html".to_string(),
         &"On GitLab but has no CI".to_string(),
-        &crates,
+        crates,
         |krate| on_gitlab_but_no_ci(krate),
     )?;
 
     let home_page_but_no_repo = render_filtered_crates(
         &"_site/has-homepage-but-no-repo.html".to_string(),
         &"Has homepage, but no repository".to_string(),
-        &crates,
+        crates,
         |krate| has_homepage_no_repo(krate),
     )?;
 
     let no_homepage_no_repo_crates = render_filtered_crates(
         &"_site/no-homepage-no-repo.html".to_string(),
         &"No repository, no homepage".to_string(),
-        &crates,
+        crates,
         |krate| no_homepage_no_repo(krate),
     )?;
 
     render_filtered_crates(
         &"_site/crates-without-owner-name.html".to_string(),
         &"Crates without owner name".to_string(),
-        &crates,
+        crates,
         |krate| krate.owner_name.is_empty(),
     )
     .unwrap();
