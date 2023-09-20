@@ -33,6 +33,12 @@ impl Details {
     }
 }
 
+impl Default for Details {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Repo {
     pub display: String,
@@ -136,6 +142,11 @@ impl Crate {
         }
     }
 }
+impl Default for Crate {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 //type RepoPercentage<'a> = HashMap<&'a str, String>;
 pub type Owners = HashMap<String, String>;
@@ -145,7 +156,7 @@ pub type CratesByOwner = HashMap<String, Vec<String>>;
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
     static RE: Lazy<Regex> =
         Lazy::new(|| Regex::new(r"^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());
-    let repo_url = match RE.captures(&repository) {
+    let repo_url = match RE.captures(repository) {
         Some(value) => value,
         None => {
             log::warn!("No match for repo in {}", &repository);
@@ -226,7 +237,7 @@ pub fn load_details(repository: &str) -> Details {
     log::info!("Load details started for {}", repository);
 
     let (host, owner, repo) = get_owner_and_repo(repository);
-    if host == "" {
+    if host.is_empty() {
         return Details::new();
     }
 
@@ -265,7 +276,7 @@ pub fn save_details(repository: &str, details: &Details) {
     let _res = fs::create_dir_all("repo-details/gitlab");
 
     let (host, owner, repo) = get_owner_and_repo(repository);
-    if owner == "" {
+    if owner.is_empty() {
         return; // this should never happen
     }
 

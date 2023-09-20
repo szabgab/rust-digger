@@ -74,7 +74,7 @@ pub fn read_crate_owners(limit: u32) -> (Owners, CratesByOwner) {
     let filepath = "data/data/crate_owners.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
-    match File::open(filepath.to_string()) {
+    match File::open(filepath) {
         Ok(file) => {
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {
