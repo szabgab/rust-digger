@@ -1,0 +1,36 @@
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+    <div class="content">
+    <h1 class="title is-3">Welcome to the Rust Digger</h1>
+     We are collecting data about <a href="https://crates.io/">Rust Crates</a> and trying to improve the Rust ecosystem.
+     <h3>Crate authors</h3>
+     <p>
+        If you are a <b>crate author</b> you can go to the <a href="/users/">list of users</a> and find the page listing all of your crates and the information we collected about them.
+     </p>
+
+     <h3>Contributors</h3>
+     <p>
+        If you are looking for some ideas how to contribute to a Rust project, we have some "low-hanging fruits" listed here.
+        <div class="list">
+            <li class="list-item">Use https in the repository URL. See the <a href="/vcs/repo-with-http">list of crates</a> and the <a href="/about-repository#https">explanation</a></li>
+            <li class="list-item">Remove the www from the repository URL. See the <a href="/vcs/github-with-www">list of crates</a> and the <a href="/about-repository#www">explanation</a></li>
+            <li class="list-item">Add the repository URL. See the <a href="/no-homepage-no-repo">list of crates</a> that have not included a link to their repository and the <a href="/about-repository#no-repository">explanation</a></li>
+        </div>
+
+        We also have some ideas for a more involved contribution.
+        <div class="list">
+            <li class="list-item">Add GitHub Actions for Continuous Integration. See the <a href="/github-but-no-ci">list of crates</a> and the <a href="/about-ci">explanation</a></li>
+            <li class="list-item">cargo fmt</li>
+            <li class="list-item">cargo clippy</li>
+        </div>
+    </p>
+    </div>
+  </div>
+</section>
+
+
+
+
+{% include 'templates/incl/footer.html' %}

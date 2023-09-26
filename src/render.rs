@@ -87,6 +87,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
     log::info!("render_static_pages start");
 
     let pages = vec![
+        ("index", "Rust Digger"),
         ("about-ci", "About Continuous Integration for Rust"),
         (
             "about-repository",
@@ -469,7 +470,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     render_list_of_repos(repos);
 
     render_list_page(
-        &"_site/index.html".to_string(),
+        &"_site/all.html".to_string(),
         &"Rust Digger".to_string(),
         crates,
     )?;
