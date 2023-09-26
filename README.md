@@ -14,7 +14,7 @@ git clone https://github.com/szabgab/rust-digger.git
 cd rust-digger
 ```
 
-Download the data from crates: (I think this is the only code that assumes some non-Rust tools) See issue #1 and #2
+Download the data from crates: (I think this is the only code that assumes some non-Rust tools) See issues [#1](https://github.com/szabgab/rust-digger/issues/1) and [#2](https://github.com/szabgab/rust-digger/issues/2)
 
 ```
 ./download.sh
