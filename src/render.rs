@@ -19,6 +19,7 @@ pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error
         render_list_page(
             &format!("_site/vcs/{}.html", repo.name),
             &format!("Crates in {}", repo.display),
+            &repo.name,
             &repo.crates,
         )?;
     }
@@ -130,6 +131,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
 pub fn render_list_page(
     filename: &String,
     title: &String,
+    preface: &String,
     crates: &Vec<Crate>,
 ) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
@@ -150,6 +152,7 @@ pub fn render_list_page(
         "version": format!("{VERSION}"),
         "utc":     format!("{}", utc),
         "title":   title,
+        "preface": preface,
         "total":   crates.len(),
         "crates":  (crates[0..page_size]).to_vec(),
     });
@@ -472,12 +475,14 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     render_list_page(
         &"_site/all.html".to_string(),
         &"Rust Digger".to_string(),
+        &"all".to_string(),
         crates,
     )?;
 
     let github_but_no_ci = render_filtered_crates(
         &"_site/github-but-no-ci.html".to_string(),
         &"On GitHub but has no CI".to_string(),
+        &"github-but-no-ci".to_string(),
         crates,
         |krate| on_github_but_no_ci(krate),
     )?;
@@ -485,6 +490,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     let gitlab_but_no_ci = render_filtered_crates(
         &"_site/gitlab-but-no-ci.html".to_string(),
         &"On GitLab but has no CI".to_string(),
+        &"gitlab-but-no-ci".to_string(),
         crates,
         |krate| on_gitlab_but_no_ci(krate),
     )?;
@@ -492,6 +498,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     let home_page_but_no_repo = render_filtered_crates(
         &"_site/has-homepage-but-no-repo.html".to_string(),
         &"Has homepage, but no repository".to_string(),
+        &"has-homepage-but-no-repo".to_string(),
         crates,
         |krate| has_homepage_no_repo(krate),
     )?;
@@ -499,6 +506,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     let no_homepage_no_repo_crates = render_filtered_crates(
         &"_site/no-homepage-no-repo.html".to_string(),
         &"No repository, no homepage".to_string(),
+        &"no-homepage-no-repo".to_string(),
         crates,
         |krate| no_homepage_no_repo(krate),
     )?;
@@ -506,6 +514,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     render_filtered_crates(
         &"_site/crates-without-owner-name.html".to_string(),
         &"Crates without owner name".to_string(),
+        &"crates-without-owner-name".to_string(),
         crates,
         |krate| krate.owner_name.is_empty(),
     )
@@ -514,6 +523,7 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
     render_filtered_crates(
         &"_site/crates-without-owner.html".to_string(),
         &"Crates without owner".to_string(),
+        &"crates-without-owner".to_string(),
         crates,
         |krate| krate.owner_name.is_empty() && krate.owner_gh_login.is_empty(),
     )?;
@@ -535,11 +545,12 @@ pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<
 fn render_filtered_crates(
     filename: &String,
     title: &String,
+    preface: &String,
     crates: &[Crate],
     cond: fn(&&Crate) -> bool,
 ) -> Result<usize, Box<dyn Error>> {
     let filtered_crates = crates.iter().filter(cond).cloned().collect::<Vec<Crate>>();
-    render_list_page(filename, title, &filtered_crates)?;
+    render_list_page(filename, title, preface, &filtered_crates)?;
     Ok(filtered_crates.len())
 }
 

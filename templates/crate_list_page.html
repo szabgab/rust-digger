@@ -4,7 +4,29 @@
 <section class="section">
   <div class="container">
     <h1 class="title">{{title}}</h1>
-    Total:  {{total}}
+    <p>
+      {% if preface == "all" %}
+      Listing all the crates starting from the most recently released ones.
+      {% elsif preface == "no-repo" %}
+        The list of all the crates that have no "reposiotry" entry in their Cargo.toml file. Some of them might have a link to their repositry
+        in some other field (e.g. the <a href="/has-homepage-but-no-repo">homepage field</a>) other have no such link
+        <a href="/no-homepage-no-repo">neither in the homepage nor the repository field</a>. 
+        You can find <a href="/about-repository">futher explanation</a> and a way to fix this.
+      {% elsif preface == "has-homepage-but-no-repo" %}
+       Some crates have a <b>homepage</b> field in their <b>Cargo.toml</b> file, but no <b>repository</b> field.
+       It would be probably better if all the crates had their repository listed in the <b>repository</b> field, but 
+       it is probably even more importan that the crates the have
+       <a href="/no-homepage-no-repo">neither homepage nor repository field</a> would get the <b>repository</b> field.
+       You can find <a href="/about-repository">futher explanation</a>.
+      {% else %}
+      {{preface}}
+      {% endif %}
+  
+    </p>
+    <p>
+      <b>Total:  {{total}}</b>
+    </p>
+    
     {% include 'templates/incl/list_crates.html' %}
 
   </div>
