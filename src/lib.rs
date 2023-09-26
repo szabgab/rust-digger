@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -264,18 +264,16 @@ pub fn get_details_path(repository: &str) -> Option<PathBuf> {
 pub fn load_details(repository: &str) -> Details {
     log::info!("Load details started for {}", repository);
 
-    let (host, owner, repo) = get_owner_and_repo(repository);
-    if host.is_empty() {
-        return Details::new();
-    }
+    let details_path = match get_details_path(repository) {
+        Some(val) => val,
+        None => return Details::new(),
+    };
 
-    let details_path = format!("repo-details/{host}/{owner}/{repo}.json");
-    let details_path = Path::new(&details_path);
     if !details_path.exists() {
         return Details::new();
     }
 
-    match File::open(details_path) {
+    match File::open(&details_path) {
         Ok(file) => {
             match serde_json::from_reader(file) {
                 Ok(details) => return details,
