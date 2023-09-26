@@ -12,7 +12,30 @@
 ```
 git clone https://github.com/szabgab/rust-digger.git
 cd rust-digger
-cargo run --bin rust-digger -- --limit 10
+```
+
+Download the data from crates: (I think this is the only code that assumes some non-Rust tools) See issue #1 and #2
+
+```
+./download.sh
+```
+
+Clone 15 repositories of the crates that were release in the last 10 days:
+
+```
+cargo run --bin rust-digger-clone -- --recent 10 --limit 15
+```
+
+Collect data from 15 repositories (VCSs) we cloned. (You can use any number there)
+
+```
+cargo run --bin rust-digger-vcs -- --limit 10
+```
+
+Generate the static html pages for 10 crates.
+
+```
+cargo run --bin rust-digger-html -- --limit 10
 ```
 
 To run a local web server to serve the static files install [ruststatic](https://github.com/szabgab/rustatic) using:
