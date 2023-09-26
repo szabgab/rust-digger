@@ -177,6 +177,7 @@ pub fn percentage(num: usize, total: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::Path;
 
     #[test]
     fn test_get_owner_and_repo() {
