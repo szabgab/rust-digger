@@ -174,83 +174,6 @@ pub fn percentage(num: usize, total: usize) -> String {
     (t / 100.0).to_string()
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::path::Path;
-
-    #[test]
-    fn test_get_owner_and_repo() {
-        assert_eq!(
-            get_owner_and_repo("https://github.com/szabgab/rust-digger"),
-            (
-                "github".to_string(),
-                "szabgab".to_string(),
-                "rust-digger".to_string()
-            )
-        );
-        assert_eq!(
-            get_owner_and_repo("https://github.com/szabgab/rust-digger/"),
-            (
-                "github".to_string(),
-                "szabgab".to_string(),
-                "rust-digger".to_string()
-            )
-        );
-        assert_eq!(
-            get_owner_and_repo(
-                "https://github.com/crypto-crawler/crypto-crawler-rs/tree/main/crypto-market-type"
-            ),
-            (
-                "github".to_string(),
-                "crypto-crawler".to_string(),
-                "crypto-crawler-rs".to_string()
-            )
-        );
-        assert_eq!(
-            get_owner_and_repo("https://gitlab.com/szabgab/rust-digger"),
-            (
-                "gitlab".to_string(),
-                "szabgab".to_string(),
-                "rust-digger".to_string()
-            )
-        );
-        assert_eq!(
-            get_owner_and_repo("https://gitlab.com/Szabgab/Rust-digger/"),
-            (
-                "gitlab".to_string(),
-                "szabgab".to_string(),
-                "rust-digger".to_string()
-            )
-        );
-    }
-
-    #[test]
-    fn test_percentage() {
-        assert_eq!(percentage(20, 100), "20");
-        assert_eq!(percentage(5, 20), "25");
-        assert_eq!(percentage(1234, 10000), "12.34");
-        assert_eq!(percentage(1234567, 10000000), "12.34");
-    }
-
-    #[test]
-    fn test_get_details_path() {
-        assert_eq!(
-            get_details_path("https://github.com/foo/bar")
-                .expect("X")
-                .as_path(),
-            Path::new("repo-details/github/foo/bar.json")
-        );
-        assert_eq!(
-            get_details_path("https://github.com/foo/bar/baz")
-                .expect("X")
-                .as_path(),
-            Path::new("repo-details/github/foo/bar.json")
-        ); // TODO this should not work I think
-        assert_eq!(get_details_path("https://zorg.com/foo/bar"), None);
-    }
-}
-
 pub fn get_details_path(repository: &str) -> Option<PathBuf> {
     let (host, owner, repo) = get_owner_and_repo(repository);
     if repo.is_empty() {
@@ -345,4 +268,81 @@ pub fn read_crates(limit: u32) -> Vec<Crate> {
 
     log::info!("Finished reading {filepath}");
     crates
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::Path;
+
+    #[test]
+    fn test_get_owner_and_repo() {
+        assert_eq!(
+            get_owner_and_repo("https://github.com/szabgab/rust-digger"),
+            (
+                "github".to_string(),
+                "szabgab".to_string(),
+                "rust-digger".to_string()
+            )
+        );
+        assert_eq!(
+            get_owner_and_repo("https://github.com/szabgab/rust-digger/"),
+            (
+                "github".to_string(),
+                "szabgab".to_string(),
+                "rust-digger".to_string()
+            )
+        );
+        assert_eq!(
+            get_owner_and_repo(
+                "https://github.com/crypto-crawler/crypto-crawler-rs/tree/main/crypto-market-type"
+            ),
+            (
+                "github".to_string(),
+                "crypto-crawler".to_string(),
+                "crypto-crawler-rs".to_string()
+            )
+        );
+        assert_eq!(
+            get_owner_and_repo("https://gitlab.com/szabgab/rust-digger"),
+            (
+                "gitlab".to_string(),
+                "szabgab".to_string(),
+                "rust-digger".to_string()
+            )
+        );
+        assert_eq!(
+            get_owner_and_repo("https://gitlab.com/Szabgab/Rust-digger/"),
+            (
+                "gitlab".to_string(),
+                "szabgab".to_string(),
+                "rust-digger".to_string()
+            )
+        );
+    }
+
+    #[test]
+    fn test_percentage() {
+        assert_eq!(percentage(20, 100), "20");
+        assert_eq!(percentage(5, 20), "25");
+        assert_eq!(percentage(1234, 10000), "12.34");
+        assert_eq!(percentage(1234567, 10000000), "12.34");
+    }
+
+    #[test]
+    fn test_get_details_path() {
+        assert_eq!(
+            get_details_path("https://github.com/foo/bar")
+                .expect("X")
+                .as_path(),
+            Path::new("repo-details/github/foo/bar.json")
+        );
+        assert_eq!(
+            get_details_path("https://github.com/foo/bar/baz")
+                .expect("X")
+                .as_path(),
+            Path::new("repo-details/github/foo/bar.json")
+        ); // TODO this should not work I think
+        assert_eq!(get_details_path("https://zorg.com/foo/bar"), None);
+    }
 }
