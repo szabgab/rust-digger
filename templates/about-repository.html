@@ -3,7 +3,8 @@
 
 <section class="section">
   <div class="container">
-    <h2 class="title is-4">About Repository</h2>
+    <div class="content">
+    <h2>About Repository</h2>
       Each crate has a file called <b>Cargo.toml</b> in which there must be a section called <b>[package]</b> in which there can be a key called <b>repository</b>.
       For example the <a href="https://github.com/szabgab/rustatic">rustatic</a> project has something like this:
 
@@ -13,64 +14,51 @@
       </code></pre>
 
       Having this entry allows <a href="https://crates.io/">Crates.io</a> to link to the repository and it makes it easy for everyone to find the public version control of the crate.
-  </div>
-</section>
-<section class="section" id="no-repository">
-  <div class="container">
-    <h2 class="title is-4">NA for repository</h2>
-    <p>
-      Each Crate can have a field in the <b>Cargo.toml</b> called <b>repository</b> with the URL of their public Version Control System (VCS). Usually on some git-hosting services.
-      For example the <a href="https://crates.io/crates/rustatic">rustatic</a> crate has <b>repository = "https://github.com/szabgab/rustatic/"</b> in its <a href="https://github.com/szabgab/rustatic/blob/main/Cargo.toml">Cargo.toml</a>. 
-    </p>
-    <p>
-      Having that link in the Cargo.toml file means that users can easily find the source code of the crate. It is listed on <a href="https://crates.io/">Crates.io</a>, <a href="https://lib.rs/">lib.rs</a>, the <a href="/">Rust Digger</a>, etc.
-    </p>
-    <p>
-      If you are the author of the crate then it is easy to add the entry. You do have a public repository for the project, don't you?
-    </p>
-    <p>
-      If you are not the author, then it is a bit tricky as first you need to find the repository.
-      <ul>
-        <li>Each crate on the Rust Digger should have a link to its owner. (If not, that's a <a href="https://github.com/szabgab/rust-digger/issues/41">problem</a>)</li>
-        <li>Each owner has a link to his/her GitHub user. After all the username on crates.io is the same as the username on GitHub.</li>
-        <li>Following that link you can list all the repositories of the person and you <b>might</b> find the one corresponding to this crate.</li>
-        <li>If you found the repository then edit the Cargo.toml file and add the <b>repository</b> entry to it. Then send it as a Pull-Request.</li>
-        <li>Alternatively, you might take a look at the other crates of the owner to see where is their repository. According to our <a href="/stats">stats</a>, about 5% of the crates are hosted in some system that is not GitHub.</li>
-        <li>If you can't find the repository then you could, politely(!) contact the owner and ask if the crates is indeed theirs and if they have a public VCS somewhere.
-          Keep in mind that some people don't make their VCS public and some don't even use one. I am not happy about it, but I would not want to make them uncomfortable.
-        </li>
-      </ul>
-    </p>
-  </div>
-</section>
 
-<section class="section" id="https">
-    <div class="container">
-      <h2 class="title is-4">http vs https</h2>
+      <h2 id="no-repository">NA for repository</h2>
+      <p>
+        Each Crate can have a field in the <b>Cargo.toml</b> called <b>repository</b> with the URL of their public Version Control System (VCS). Usually on some git-hosting services.
+        For example the <a href="https://crates.io/crates/rustatic">rustatic</a> crate has <b>repository = "https://github.com/szabgab/rustatic/"</b> in its <a href="https://github.com/szabgab/rustatic/blob/main/Cargo.toml">Cargo.toml</a>. 
+      </p>
+      <p>
+        Having that link in the Cargo.toml file means that users can easily find the source code of the crate. It is listed on <a href="https://crates.io/">Crates.io</a>, <a href="https://lib.rs/">lib.rs</a>, the <a href="/">Rust Digger</a>, etc.
+      </p>
+      <p>
+        If you are the author of the crate then it is easy to add the entry. You do have a public repository for the project, don't you?
+      </p>
+      <p>
+        If you are not the author, then it is a bit tricky as first you need to find the repository.
+        <ul>
+          <li>Each crate on the Rust Digger should have a link to its owner. (If not, that's a <a href="https://github.com/szabgab/rust-digger/issues/41">problem</a>)</li>
+          <li>Each owner has a link to his/her GitHub user. After all the username on crates.io is the same as the username on GitHub.</li>
+          <li>Following that link you can list all the repositories of the person and you <b>might</b> find the one corresponding to this crate.</li>
+          <li>If you found the repository then edit the Cargo.toml file and add the <b>repository</b> entry to it. Then send it as a Pull-Request.</li>
+          <li>Alternatively, you might take a look at the other crates of the owner to see where is their repository. According to our <a href="/stats">stats</a>, about 5% of the crates are hosted in some system that is not GitHub.</li>
+          <li>If you can't find the repository then you could, politely(!) contact the owner and ask if the crates is indeed theirs and if they have a public VCS somewhere.
+            Keep in mind that some people don't make their VCS public and some don't even use one. I am not happy about it, but I would not want to make them uncomfortable.
+          </li>
+        </ul>
+      </p>
+
+      <h2 id="https">http vs https</h2>
       <p>
       Most git hosting companies (e.g. GitHub, GitLab) will accept an inbound link using `http`. Some people have included a link in their <b>Cargo.toml</b> file using the http link.
       We have a report of all the <a href="/vcs/repo-with-http">repository links using http</a>. It is not a super critical thing to fix, but also not a huge effort.
       </p>
-    </div>
-</section>
 
-<section class="section" id="www">
-  <div class="container">
-    <h2 class="title is-4">Github with www</h2>
-    <p>
-      Some people include a repository URL to GitHub using the www hostname as in <b>https://www.github.com/...</b>. GitHub automatically redirects that page to <b>https://github.com/...</b> (a URL without the www hostname).
-      It is really just a cosmetic issue, but it is also a very simple change. We <a href="/vcs/github-with-www">list the crates with www in their gitHub repository url</a>.
-    </p>
-  </div>
-</section>
+      <h2 id="www">Github with www</h2>
+      <p>
+        Some people include a repository URL to GitHub using the www hostname as in <b>https://www.github.com/...</b>. GitHub automatically redirects that page to <b>https://github.com/...</b> (a URL without the www hostname).
+        It is really just a cosmetic issue, but it is also a very simple change. We <a href="/vcs/github-with-www">list the crates with www in their gitHub repository url</a>.
+      </p>
 
-<section class="section" id="no-commit-count">
-    <div class="container">
-      <h2 class="title is-4">NA for commit count</h2>
+      <h2  id="no-commit-count">NA for commit count</h2>
       The <b>commit count</b> column shows the number of commits in the repository. In itself it does not have a lot of meaning. It is just one indicator for the level of activit in that crate.
       If you see <b>NA</b> in the commit count column it can mean that either the crate does not have a <b>repository</b> entry, we could not access it, or the Rust Digger just have not got around to process it yet.
       If you feel it is a problem in the Rust Digger, please <a href="https://github.com/szabgab/rust-digger">open an issue</a> reporting it.
+      
     </div>
+  </div>
 </section>
 
 
