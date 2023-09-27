@@ -174,6 +174,10 @@ pub fn percentage(num: usize, total: usize) -> String {
     (t / 100.0).to_string()
 }
 
+pub fn repo_details_root() -> String {
+    "repo-details".to_string()
+}
+
 pub fn get_details_path(repository: &str) -> Option<PathBuf> {
     let (host, owner, repo) = get_owner_and_repo(repository);
     if repo.is_empty() {
@@ -181,7 +185,10 @@ pub fn get_details_path(repository: &str) -> Option<PathBuf> {
     }
 
     let mut details_path = PathBuf::new();
-    details_path.push(format!("repo-details/{host}/{owner}/{repo}.json"));
+    details_path.push(format!(
+        "{}/{host}/{owner}/{repo}.json",
+        repo_details_root()
+    ));
     Some(details_path)
 }
 
@@ -221,17 +228,17 @@ pub fn load_details(repository: &str) -> Details {
 pub fn save_details(repository: &str, details: &Details) {
     log::info!("save_details for '{}'", repository);
 
-    let _res = fs::create_dir_all("repo-details");
-    let _res = fs::create_dir_all("repo-details/github");
-    let _res = fs::create_dir_all("repo-details/gitlab");
+    let _res = fs::create_dir_all(repo_details_root());
+    let _res = fs::create_dir_all(format!("{}/github", repo_details_root()));
+    let _res = fs::create_dir_all(format!("{}/gitlab", repo_details_root()));
 
     let (host, owner, repo) = get_owner_and_repo(repository);
     if owner.is_empty() {
         return; // this should never happen
     }
 
-    let _res = fs::create_dir_all(format!("repo-details/{host}/{owner}"));
-    let details_path = format!("repo-details/{host}/{owner}/{repo}.json");
+    let _res = fs::create_dir_all(format!("{}/{host}/{owner}", repo_details_root()));
+    let details_path = format!("{}/{host}/{owner}/{repo}.json", repo_details_root());
     // if Path::new(&details_path).exists() {
     //     match File::open(details_path.to_string()) {
     // }
@@ -274,6 +281,7 @@ pub fn read_crates(limit: u32) -> Vec<Crate> {
 mod tests {
     use super::*;
     use std::path::Path;
+    //use crate::repo_details_root;
 
     #[test]
     fn test_get_owner_and_repo() {
@@ -335,13 +343,13 @@ mod tests {
             get_details_path("https://github.com/foo/bar")
                 .expect("X")
                 .as_path(),
-            Path::new("repo-details/github/foo/bar.json")
+            Path::new(&format!("{}/github/foo/bar.json", repo_details_root()))
         );
         assert_eq!(
             get_details_path("https://github.com/foo/bar/baz")
                 .expect("X")
                 .as_path(),
-            Path::new("repo-details/github/foo/bar.json")
+            Path::new(&format!("{}/github/foo/bar.json", &repo_details_root()))
         ); // TODO this should not work I think
         assert_eq!(get_details_path("https://zorg.com/foo/bar"), None);
     }
