@@ -34,6 +34,9 @@ jobs:
             cargo build
             cargo test
 
+      - name: Run cargo fmt --check
+        run: cargo fmt --check
+
       - name: Download data
         if: ${{ github.event_name != 'pull_request' }}
         run: |
