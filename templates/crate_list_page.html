@@ -63,6 +63,15 @@
 
           Get <a href="/about-ci">more explanation</a> and some instructions on how to add GitHub Actions to a crate.
 
+        {% when "gitlab-but-no-ci" %}
+
+          Having some cloud-based <b>Continuous Integration (CI)</b> system configured is an excellent way to get quick feedback on changes one mades to the code both for
+          maintainers of a crate and for people who might want to send a pull-request. Therefore for crates that we already have the repository link we are checking
+          if they have any Continuous Integration system configured.
+
+          For projects hosted in <b>GitLab</b> we are checking if they have <b>GitLab pipeline</b> configured. At this point we only check the existence of a file called <b>.gitlab-ci.yml</b>.
+
+          Get <a href="/about-ci">more explanation</a> and some instructions on how to add GitHub Actions to a crate.
 
         {% else %}
         {{preface}}
