@@ -139,7 +139,11 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
         } else {
             let status = check_url(&krate.repository);
             if status != 200 {
-                log::error!("Error accessing the repository {}. status: {}", &krate.repository, status);
+                log::error!(
+                    "Error accessing the repository {}. status: {}",
+                    &krate.repository,
+                    status
+                );
                 continue;
             }
 
