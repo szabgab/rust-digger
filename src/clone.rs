@@ -69,7 +69,7 @@ fn main() {
 fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool) {
     log::info!("start update repositories");
 
-    let mut repo_reuse: HashMap<String, i32> = HashMap::new();
+    let mut repo_reuse: HashMap<String, i32> = HashMap::new(); // number of times each repository is used for crates (monorepo)
     let now: DateTime<Utc> = Utc::now();
     let before: DateTime<Utc> = now - Duration::days(recent as i64);
     log::info!("before: {}", before);
@@ -80,7 +80,7 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
             break;
         }
         //log::info!("update_at {}", krate.updated_at); // 2023-09-18 01:44:10.299066
-        log::info!("Crate updated_at: {}", krate.updated_at);
+        log::info!("Crate {} updated_at: {}", krate.name, krate.updated_at);
         if 0 < recent {
             let updated_at =
                 match NaiveDateTime::parse_from_str(&krate.updated_at, "%Y-%m-%d %H:%M:%S.%f") {
@@ -139,7 +139,7 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
         } else {
             let status = check_url(&krate.repository);
             if status != 200 {
-                log::error!("Error accessing the repository {}", status);
+                log::error!("Error accessing the repository {}. status: {}", &krate.repository, status);
                 continue;
             }
 
