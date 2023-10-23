@@ -98,6 +98,11 @@ If we fail to clone the repository we add this information to the repo-details f
 
 * TODO: if there are more than one crates in the repo, should we analyze and report the crates separately?
 
+### Docker
+
+docker build -t rust-test .
+docker run --rm -it -v$(pwd):/crate --workdir /crate  --user tester rust-test
+
 ### cargo fmt
 
 * Running `cargo fmt --check -- --color=never` and capturing the STDOUT and the exit code. We save them together with the current sha of the repository `git rev-parse HEAD` and the date of processing. (We might also want to save the version of rustfmt `cargo fmt --version` and the version of rustc `rustc --version`)
