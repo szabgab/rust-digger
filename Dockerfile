@@ -1,4 +1,4 @@
-FROM rust:1.73-buster
+FROM rust:1.73-bullseye
 RUN useradd tester
 RUN rustup component add rustfmt
 RUN mkdir /crate
