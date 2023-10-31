@@ -120,6 +120,22 @@ cargo run --bin fmt -- --limit 10
 ### Collect test coverage report
 
 
+```
+rustup toolchain install nightly
+rustup default nightly
+
+cargo install rustfilt
+cargo clean
+
+RUSTFLAGS="-C instrument-coverage" cargo build
+RUSTFLAGS="-C instrument-coverage" cargo test --tests
+llvm-profdata merge -sparse *.profraw -o x.profdata
+
+
+cargo install cargo-tarpaulin
+cargo tarpaulin --workspace --out html --out json
+```
+
 
 ## Related Sites
 
