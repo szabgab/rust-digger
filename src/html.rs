@@ -53,10 +53,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let repos = collect_repos(&crates);
 
-    generate_pages(&crates, &repos)?;
-    render_news_pages();
-
     std::thread::scope(|s| {
+        s.spawn(|| generate_pages(&crates, &repos).unwrap());
+        s.spawn(render_news_pages);
         s.spawn(|| render_static_pages().unwrap());
         s.spawn(|| generate_crate_pages(&crates.clone()).unwrap());
         s.spawn(|| generate_user_pages(&crates.clone(), users, &crates_by_owner).unwrap());
