@@ -88,9 +88,7 @@ pub fn read_crate_owners(limit: u32) -> (Owners, CratesByOwner) {
                     Err(error) => panic!("Error {}", error),
                 };
                 owner_by_crate_id.insert(record.crate_id.clone(), record.owner_id.clone());
-                crates_by_owner
-                    .entry(record.owner_id.clone())
-                    .or_default();
+                crates_by_owner.entry(record.owner_id.clone()).or_default();
                 let _ = &crates_by_owner
                     .get_mut(&record.owner_id)
                     .unwrap()
