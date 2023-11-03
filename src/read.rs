@@ -90,7 +90,7 @@ pub fn read_crate_owners(limit: u32) -> (Owners, CratesByOwner) {
                 owner_by_crate_id.insert(record.crate_id.clone(), record.owner_id.clone());
                 crates_by_owner
                     .entry(record.owner_id.clone())
-                    .or_insert(vec![]);
+                    .or_default();
                 let _ = &crates_by_owner
                     .get_mut(&record.owner_id)
                     .unwrap()
