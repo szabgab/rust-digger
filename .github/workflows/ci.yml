@@ -37,6 +37,9 @@ jobs:
       - name: Run cargo fmt --check
         run: cargo fmt --check
 
+      - name: Run clippy
+        run: cargo clippy -- --deny warnings
+
       - name: Download data
         if: ${{ github.event_name != 'pull_request' }}
         run: |
