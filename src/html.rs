@@ -55,9 +55,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     generate_pages(&crates, &repos)?;
     render_news_pages();
-    render_static_pages()?;
-    generate_crate_pages(&crates)?;
-    generate_user_pages(&crates, users, &crates_by_owner)?;
+
+    std::thread::scope(|s| {
+        s.spawn(|| render_static_pages().unwrap());
+        s.spawn(|| generate_crate_pages(&crates.clone()).unwrap());
+        s.spawn(|| generate_user_pages(&crates.clone(), users, &crates_by_owner).unwrap());
+    });
+
     generate_sitemap();
     generate_robots_txt();
 
