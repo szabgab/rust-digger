@@ -1,6 +1,1 @@
-rm -f db-dump.tar.gz
-rm -frd data/
-time wget --quiet https://static.crates.io/db-dump.tar.gz
-time tar xzf db-dump.tar.gz
-DIR=$(ls -d1 2023-* | head -n 1 | cut -d'/' -f1)
-mv "$DIR" "data"
+cargo run --bin rust-digger-download > /tmp/rust-digger-download.log 2> /tmp/rust-digger-download.err
