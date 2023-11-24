@@ -14,6 +14,8 @@ git clone https://github.com/szabgab/rust-digger.git
 cd rust-digger
 ```
 
+Optionally install [pre-commit](https://pre-commit.com/) and then run `pre-commit install` to configure it on this project.
+
 Download the data from crates: (I think this is the only code that assumes some non-Rust tools) See issues [#1](https://github.com/szabgab/rust-digger/issues/1) and [#2](https://github.com/szabgab/rust-digger/issues/2)
 
 ```
@@ -86,7 +88,7 @@ The files are mapped with the Details struct.
 * `git pull` takes 0.3 sec when it does not need to copy any files.
 * There are  123,216 crates
 * Assuming all of them will have git repositories and most of them won't change we'll need
-  123,000 * 0.3 = 41,000 sec to update all the repos = that is 683 minues = 11.5 hours.
+  123,000 * 0.3 = 41,000 sec to update all the repos = that is 683 minutes = 11.5 hours.
 
 
 If we fail to clone the repository we add this information to the repo-details file of the repository.

@@ -1,0 +1,50 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    - id: check-yaml
+      stages: [commit]
+    - id: check-json
+      stages: [commit]
+    - id: check-toml
+      stages: [commit]
+    - id: check-merge-conflict
+      stages: [commit]
+    - id: check-case-conflict
+      stages: [commit]
+    - id: detect-private-key
+      stages: [commit]
+  - repo: https://github.com/crate-ci/typos
+    rev: typos-dict-v0.11.3
+    hooks:
+    - id: typos
+      stages: [commit]
+  - repo: https://github.com/crate-ci/committed
+    rev: v1.0.20
+    hooks:
+    - id: committed
+      stages: [commit-msg]
+  - repo: local
+    hooks:
+    - id: cargo-check
+      name: cargo check
+      language: system
+      entry: cargo check
+      always_run: true
+      pass_filenames: false
+      files: \.rs$
+    - id: cargo-fmt
+      name: cargo fmt
+      language: system
+      entry: cargo fmt
+      always_run: true
+      pass_filenames: false
+      files: \.rs$
+    - id: cargo-clippy
+      name: cargo clippy
+      language: system
+      entry: cargo clippy -- --deny warnings
+      always_run: true
+      pass_filenames: false
+      files: \.rs$
+
