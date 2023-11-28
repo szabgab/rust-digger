@@ -16,10 +16,10 @@ cd rust-digger
 
 Optionally install [pre-commit](https://pre-commit.com/) and then run `pre-commit install` to configure it on this project.
 
-Download the data from crates: (I think this is the only code that assumes some non-Rust tools) See issues [#1](https://github.com/szabgab/rust-digger/issues/1) and [#2](https://github.com/szabgab/rust-digger/issues/2)
+Download the data from static.crates.io
 
 ```
-./download.sh
+cargo run --bin rust-digger-download
 ```
 
 Clone 15 repositories of the crates that were release in the last 10 days:
@@ -74,7 +74,7 @@ Discussed here: https://crates.io/data-access
 As of 2023.06.17
 
 1. The git repository https://github.com/rust-lang/crates.io-index does not contain the meta data, such as the github URL
-1. The https://static.crates.io/db-dump.tar.gz is 305 Mb It unzipped to a folder called `2023-06-16-020046` which is 1.1 Gb and contains CSV dumps of a Postgresql database.
+1. The https://static.crates.io/db-dump.tar.gz is 305 Mb It unzipped to a timestamped folder called `YYYY-MM-DD-020046` which is 1.1 Gb and contains CSV dumps of a Postgresql database.
 
 The fetching and unzipping is done by `download.sh`.
 

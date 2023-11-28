@@ -280,37 +280,30 @@ pub fn generate_user_pages(
         .into_iter()
         .map(|mut user| {
             let mut selected_crates: Vec<&Crate> = vec![];
-            match crates_by_owner.get(&user.id) {
-                Some(crate_ids) => {
-                    //dbg!(crate_ids);
-                    for crate_id in crate_ids {
-                        //dbg!(&crate_id);
-                        //dbg!(&crate_by_id[crate_id.as_str()]);
-                        //dbg!(&crate_by_id.get(&crate_id.clone()));
-                        selected_crates.push(crate_by_id[crate_id.as_str()]);
-                    }
-                    user.count = selected_crates.len() as u16;
-                    //users_with_crates.push(user);
+            if let Some(crate_ids) = crates_by_owner.get(&user.id) {
+                //dbg!(crate_ids);
+                for crate_id in crate_ids {
+                    //dbg!(&crate_id);
+                    //dbg!(&crate_by_id[crate_id.as_str()]);
+                    //dbg!(&crate_by_id.get(&crate_id.clone()));
+                    selected_crates.push(crate_by_id[crate_id.as_str()]);
+                }
+                user.count = selected_crates.len() as u16;
+                //users_with_crates.push(user);
 
-                    selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
-                    let filename =
-                        format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
-                    let utc: DateTime<Utc> = Utc::now();
-                    let globals = liquid::object!({
-                        "version": format!("{VERSION}"),
-                        "utc":     format!("{}", utc),
-                        "title":   &user.name,
-                        "user":    user,
-                        "crates":  selected_crates,
-                    });
-                    let html = template.render(&globals).unwrap();
-                    let mut file = File::create(filename).unwrap();
-                    writeln!(&mut file, "{}", html).unwrap();
-                }
-                None => {
-                    // We do not create a page for people who don't have crates.
-                    //log::warn!("user {uid} does not have crates");
-                }
+                selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+                let filename = format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
+                let utc: DateTime<Utc> = Utc::now();
+                let globals = liquid::object!({
+                    "version": format!("{VERSION}"),
+                    "utc":     format!("{}", utc),
+                    "title":   &user.name,
+                    "user":    user,
+                    "crates":  selected_crates,
+                });
+                let html = template.render(&globals).unwrap();
+                let mut file = File::create(filename).unwrap();
+                writeln!(&mut file, "{}", html).unwrap();
             }
             user
         })
@@ -408,21 +401,21 @@ fn create_folders() {
     let _res = fs::create_dir_all("_site/vcs");
 }
 
-fn collect_pathes(root: &Path) -> Vec<String> {
-    log::info!("collect_pathes  from {:?}", root);
+fn collect_paths(root: &Path) -> Vec<String> {
+    log::info!("collect_paths  from {:?}", root);
 
-    let mut pathes: Vec<String> = vec![];
+    let mut paths: Vec<String> = vec![];
     for entry in root.read_dir().expect("failed") {
         //log::info!("{}", &format!("{}", entry.unwrap().path().display())[5..])
-        //pathes.push(format!("{}", entry.unwrap().path().display())[5..].to_string().clone());
+        //paths.push(format!("{}", entry.unwrap().path().display())[5..].to_string().clone());
         let path = entry.as_ref().unwrap().path();
         if path.is_file() && path.extension().unwrap() == "html" {
             let url_path =
                 format!("{}", path.display())[5..path.display().to_string().len() - 5].to_string();
             if url_path.ends_with("/index") {
-                pathes.push(url_path[0..url_path.len() - 5].to_string());
+                paths.push(url_path[0..url_path.len() - 5].to_string());
             } else {
-                pathes.push(url_path);
+                paths.push(url_path);
             }
         }
         if path.is_dir() {
@@ -430,15 +423,15 @@ fn collect_pathes(root: &Path) -> Vec<String> {
             if basename == "crates" || basename == "users" {
                 continue;
             }
-            pathes.extend(collect_pathes(path.as_path()));
+            paths.extend(collect_paths(path.as_path()));
         }
     }
-    pathes
+    paths
 }
 pub fn generate_sitemap() {
     log::info!("generate_sitemap");
-    let pathes = collect_pathes(Path::new("_site"));
-    //log::info!("{:?}", pathes);
+    let paths = collect_paths(Path::new("_site"));
+    //log::info!("{:?}", paths);
 
     let template = liquid::ParserBuilder::with_stdlib()
         .build()
@@ -450,7 +443,7 @@ pub fn generate_sitemap() {
     let globals = liquid::object!({
         "url": URL,
         "timestamp":  utc.format("%Y-%m-%d").to_string(),
-        "pages":    pathes,
+        "pages":    paths,
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create("_site/sitemap.xml").unwrap();
