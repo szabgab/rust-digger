@@ -284,10 +284,14 @@ pub fn generate_user_pages(
                 Some(crate_ids) => {
                     //dbg!(crate_ids);
                     for crate_id in crate_ids {
-                        //dbg!(&crate_id);
+                        log::info!("crated_id: {}", &crate_id);
+                        //log::info!("crate_by_id: {:#?}", crate_by_id);
+                        //log::info!("crate_by_id: {:#?}", crate_by_id.keys());
                         //dbg!(&crate_by_id[crate_id.as_str()]);
                         //dbg!(&crate_by_id.get(&crate_id.clone()));
-                        selected_crates.push(crate_by_id[crate_id.as_str()]);
+                        if crate_by_id.contains_key(crate_id.as_str()) {
+                            selected_crates.push(crate_by_id[crate_id.as_str()]);
+                        }
                     }
                     user.count = selected_crates.len() as u16;
                     //users_with_crates.push(user);
