@@ -37,12 +37,6 @@
 - display: Gnome (GitLab)
   name: gnome
   url: https://gitlab.gnome.org/
-- display: Repo with http
-  name: repo-with-http
-  url: http://
-- display: GitHub with www
-  name: github-with-www
-  url: https://www.github.com/
 - display: Bitbucket
   name: bitbucket
   url: https://bitbucket.org/
@@ -61,3 +55,10 @@
 - display: in2p3.fr (GitLab)
   name: in2p3
   url: https://gitlab.in2p3.fr/
+
+- display: Repo with http
+  name: repo-with-http
+  url: http://
+- display: GitHub with www
+  name: github-with-www
+  url: https://www.github.com/
