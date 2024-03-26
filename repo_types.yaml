@@ -55,6 +55,19 @@
 - display: in2p3.fr (GitLab)
   name: in2p3
   url: https://gitlab.in2p3.fr/
+- display: Midefos (Gitea)
+  name: midefos
+  url: https://git.midefos.com/
+- display: Open Logistics Foundation (GitLab)
+  name: openlogisticsfoundation
+  url: https://git.openlogisticsfoundation.org
+- display: Qrnch tech
+  name: qrnch_tech
+  url: https://repos.qrnch.tech/
+- display: LCR Code (GitLab)
+  name: lcr
+  url: https://lab.lcr.gr/
+
 
 - display: Repo with http
   name: repo-with-http
