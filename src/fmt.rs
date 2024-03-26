@@ -25,7 +25,7 @@ fn main() {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
     log::info!("start updating git repositories");
-    run_cargo_fmt(args.limit)
+    run_cargo_fmt(args.limit);
 }
 
 fn run_cargo_fmt(limit: u32) {
