@@ -34,3 +34,63 @@ path = "src/vcs.rs"
 [[bin]]
 name = "rust-digger-clone"
 path = "src/clone.rs"
+
+
+[lints.clippy]
+cargo        = { priority = -1, level = "deny" }
+complexity   = { priority = -1, level = "deny" }
+correctness  = { priority = -1, level = "deny" }
+nursery      = { priority = -1, level = "deny" }
+pedantic     = { priority = -1, level = "deny" }
+perf         = { priority = -1, level = "deny" }
+restriction  = { priority = -1, level = "deny" }
+style        = { priority = -1, level = "deny" }
+suspicious   = { priority = -1, level = "deny" }
+
+arithmetic_side_effects = "allow"
+as_conversions = "allow"
+blanket_clippy_restriction_lints = "allow"
+cargo_common_metadata = "allow"
+cast_precision_loss = "allow"
+exhaustive_structs = "allow"
+float_arithmetic = "allow"
+implicit_return = "allow"
+indexing_slicing = "allow"
+integer_division = "allow"
+manual_string_new = "allow"
+min_ident_chars = "allow"
+missing_const_for_fn = "allow"
+missing_docs_in_private_items = "allow"
+missing_inline_in_public_items = "allow"
+missing_panics_doc = "allow"
+multiple_crate_versions = "allow"
+must_use_candidate = "allow"
+needless_raw_strings = "allow"
+panic = "allow"
+print_stdout = "allow"
+shadow_unrelated = "allow"
+single_match_else = "allow"
+str_to_string = "allow"
+uninlined_format_args = "allow"
+unwrap_used = "allow"
+use_self = "allow"
+absolute_paths = "allow"
+cast_lossless = "allow"
+cast_possible_truncation = "allow"
+default_numeric_fallback = "allow"
+expect_used = "allow"
+get_unwrap = "allow"
+ignored_unit_patterns = "allow"
+let_underscore_untyped = "allow"
+module_name_repetitions = "allow"
+panic_in_result_fn = "allow"
+question_mark_used = "allow"
+semicolon_if_nothing_returned = "allow"
+shadow_reuse = "allow"
+single_call_fn = "allow"
+std_instead_of_core = "allow"
+string_slice = "allow"
+too_many_lines = "allow"
+unnecessary_wraps = "allow"
+verbose_file_reads = "allow"
+manual_let_else = "allow"
