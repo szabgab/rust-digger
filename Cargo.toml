@@ -61,13 +61,13 @@ suspicious   = { priority = -1, level = "deny" }
 
 blanket_clippy_restriction_lints = "allow" # We use Extreme Clippy so yes, we wanted to enable everything.
 multiple_crate_versions = "allow" # I am not sure if we can fix this given that they are all brought in by dependencies
+implicit_return = "allow"         # We want to encourage implicit return in this project
 
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
 cast_precision_loss = "allow"
 exhaustive_structs = "allow"
 float_arithmetic = "allow"
-implicit_return = "allow"
 indexing_slicing = "allow"
 missing_const_for_fn = "allow"
 missing_docs_in_private_items = "allow"
