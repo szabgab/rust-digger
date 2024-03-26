@@ -67,6 +67,40 @@
 - display: LCR Code (GitLab)
   name: lcr
   url: https://lab.lcr.gr/
+- display: Apple Bear (Gitea)
+  name: apple_bear
+  url: https://apple-bear.com/gitea/
+- display: scd31 (GitLab)
+  name: scd31
+  url: https://gitlab.scd31.com/
+- display: Disroot (Forgejo)
+  name: disroot
+  url: https://git.disroot.org/
+- display: Asonix (Forgejo)
+  name: asonix
+  url: https://git.asonix.dog/
+- display: University Stuttgart (Gitea)
+  name: uni-stuttgart
+  url: https://egit.irs.uni-stuttgart.de/
+- display: Jeffa (Gitea)
+  name: jeffa
+  url: https://git.jeffa.io/
+- display: Dubzland (GitLab)
+  name: dubzland
+  url: https://git.dubzland.com/
+- display: Bitcoin Ninja
+  name: bitcoin_ninja
+  url: https://git.bitcoin.ninja/
+- display: vwolfe (Forgejo)
+  name: vwolfe
+  url: https://git.vwolfe.io/
+- display: skreutz (cgit)
+  name: skreutz
+  url: https://git.skreutz.com/
+- display: deuxfleurs (Forgejo)
+  name: deuxfleurs
+  url: https://git.deuxfleurs.fr/
+
 
 
 - display: Repo with http
