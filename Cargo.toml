@@ -60,7 +60,7 @@ style        = { priority = -1, level = "deny" }
 suspicious   = { priority = -1, level = "deny" }
 
 blanket_clippy_restriction_lints = "allow" # We use Extreme Clippy so yes, we wanted to enable everything.
-
+multiple_crate_versions = "allow" # I am not sure if we can fix this given that they are all brought in by dependencies
 
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
@@ -73,7 +73,6 @@ missing_const_for_fn = "allow"
 missing_docs_in_private_items = "allow"
 missing_inline_in_public_items = "allow"
 missing_panics_doc = "allow"
-multiple_crate_versions = "allow"
 must_use_candidate = "allow"
 needless_raw_strings = "allow"
 panic = "allow"
