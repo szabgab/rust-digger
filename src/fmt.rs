@@ -90,8 +90,8 @@ fn build_docker_image() {
         .expect("Could not run");
     log::info!("build_docker_image {:?}", result.status.code());
     if result.status.code() != Some(0) {
-        log::warn!("{}", std::str::from_utf8(&result.stdout).unwrap());
-        log::warn!("{}", std::str::from_utf8(&result.stderr).unwrap());
+        log::warn!("{}", core::str::from_utf8(&result.stdout).unwrap());
+        log::warn!("{}", core::str::from_utf8(&result.stderr).unwrap());
     }
 }
 
@@ -120,11 +120,11 @@ fn run_cargo_in_docker() -> String {
         .expect("Could not run");
     log::info!("run_cargo_in_docker {:?}", result.status.code());
     if result.status.code() != Some(0) {
-        log::warn!("stdout: {}", std::str::from_utf8(&result.stdout).unwrap());
-        log::warn!("stderr: {}", std::str::from_utf8(&result.stderr).unwrap());
+        log::warn!("stdout: {}", core::str::from_utf8(&result.stdout).unwrap());
+        log::warn!("stderr: {}", core::str::from_utf8(&result.stderr).unwrap());
     }
 
-    std::str::from_utf8(&result.stdout).unwrap().to_string()
+    core::str::from_utf8(&result.stdout).unwrap().to_string()
 }
 
 //git status --porcelain

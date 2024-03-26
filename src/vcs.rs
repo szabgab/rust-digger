@@ -112,7 +112,7 @@ fn git_get_count() -> i32 {
         .expect("Could not run");
 
     if result.status.success() {
-        let stdout = std::str::from_utf8(&result.stdout).unwrap().trim_end();
+        let stdout = core::str::from_utf8(&result.stdout).unwrap().trim_end();
         //log::info!("'{}'", stdout);
         let number: i32 = stdout.parse().unwrap();
         number
