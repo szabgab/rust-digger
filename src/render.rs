@@ -132,7 +132,7 @@ pub fn render_list_page(
     filename: &String,
     title: &String,
     preface: &String,
-    crates: &Vec<Crate>,
+    crates: &[Crate],
 ) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
 
@@ -283,10 +283,15 @@ pub fn generate_user_pages(
             if let Some(crate_ids) = crates_by_owner.get(&user.id) {
                 //dbg!(crate_ids);
                 for crate_id in crate_ids {
+                    log::info!("crated_id: {}", &crate_id);
+                    //log::info!("crate_by_id: {:#?}", crate_by_id);
+                    //log::info!("crate_by_id: {:#?}", crate_by_id.keys());
                     //dbg!(&crate_id);
                     //dbg!(&crate_by_id[crate_id.as_str()]);
                     //dbg!(&crate_by_id.get(&crate_id.clone()));
-                    selected_crates.push(crate_by_id[crate_id.as_str()]);
+                    if crate_by_id.contains_key(crate_id.as_str()) {
+                        selected_crates.push(crate_by_id[crate_id.as_str()]);
+                    }
                 }
                 user.count = selected_crates.len() as u16;
                 //users_with_crates.push(user);
@@ -455,7 +460,7 @@ pub fn generate_robots_txt() {
     let mut file = File::create("_site/robots.txt").unwrap();
     writeln!(&mut file, "{}", text).unwrap();
 }
-pub fn generate_pages(crates: &Vec<Crate>, repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
+pub fn generate_pages(crates: &[Crate], repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
     create_folders();
