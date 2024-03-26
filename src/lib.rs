@@ -20,8 +20,8 @@ pub struct Details {
 }
 
 impl Details {
-    pub fn new() -> Details {
-        Details {
+    pub fn new() -> Self {
+        Self {
             has_github_action: false,
             has_gitlab_pipeline: false,
             commit_count: 0,
@@ -120,8 +120,8 @@ pub struct CrateOwner {
 }
 
 impl Crate {
-    pub fn new() -> Crate {
-        Crate {
+    pub fn new() -> Self {
+        Self {
             created_at: String::new(),
             description: String::new(),
             documentation: String::new(),
