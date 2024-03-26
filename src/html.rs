@@ -53,12 +53,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let repos = collect_repos(&crates);
 
-    std::thread::scope(|s| {
-        s.spawn(|| generate_pages(&crates, &repos).unwrap());
-        s.spawn(render_news_pages);
-        s.spawn(|| render_static_pages().unwrap());
-        s.spawn(|| generate_crate_pages(&crates).unwrap());
-        s.spawn(|| generate_user_pages(&crates, users, &crates_by_owner).unwrap());
+    std::thread::scope(|scope| {
+        scope.spawn(|| generate_pages(&crates, &repos).unwrap());
+        scope.spawn(render_news_pages);
+        scope.spawn(|| render_static_pages().unwrap());
+        scope.spawn(|| generate_crate_pages(&crates).unwrap());
+        scope.spawn(|| generate_user_pages(&crates, users, &crates_by_owner).unwrap());
     });
 
     generate_sitemap();

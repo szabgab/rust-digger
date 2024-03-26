@@ -296,6 +296,7 @@ pub fn generate_user_pages(
                 user.count = selected_crates.len() as u16;
                 //users_with_crates.push(user);
 
+                #[allow(clippy::min_ident_chars)]
                 selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
                 let filename = format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
                 let utc: DateTime<Utc> = Utc::now();
@@ -315,6 +316,7 @@ pub fn generate_user_pages(
         .filter(|user| user.count > 0)
         .collect();
 
+    #[allow(clippy::min_ident_chars)]
     users_with_crates.sort_by(|a, b| a.name.cmp(&b.name));
 
     generate_list_of_users(&users_with_crates);

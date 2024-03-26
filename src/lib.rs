@@ -170,8 +170,8 @@ pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
 }
 
 pub fn percentage(num: usize, total: usize) -> String {
-    let t = (10000 * num / total) as f32;
-    (t / 100.0).to_string()
+    let total = (10000 * num / total) as f32;
+    (total / 100.0).to_string()
 }
 
 pub fn repo_details_root() -> String {
@@ -268,6 +268,7 @@ pub fn read_crates(limit: u32) -> Vec<Crate> {
                 };
                 crates.push(record);
             }
+            #[allow(clippy::min_ident_chars)]
             crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
         }
         Err(error) => panic!("Error opening file {}: {}", filepath, error),
