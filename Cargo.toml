@@ -2,6 +2,13 @@
 name = "rust_digger"
 version = "0.1.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Collecting information about Rust Crates"
+keywords = ["cli", "web"]
+categories = ["web-programming::http-server"]
+readme = "README.md"
+repository = "https://github.com/szabgab/rust-digger"
+homepage = "https://rust-digger.code-maven.com/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -57,7 +64,6 @@ blanket_clippy_restriction_lints = "allow" # We use Extreme Clippy so yes, we wa
 
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
-cargo_common_metadata = "allow"
 cast_precision_loss = "allow"
 exhaustive_structs = "allow"
 float_arithmetic = "allow"
