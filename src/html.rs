@@ -296,7 +296,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
     repos.push(Repo {
         display: "Has no repository".to_string(),
         name: "no-repo".to_string(),
-        url: "".to_string(),
+        url: String::new(),
         count: no_repo.len(),
         percentage: "0".to_string(),
         crates: no_repo,
@@ -305,7 +305,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
     repos.push(Repo {
         display: "Other repositories we don't recognize".to_string(),
         name: "other-repos".to_string(),
-        url: "".to_string(),
+        url: String::new(),
         count: other_repo.len(),
         percentage: "0".to_string(),
         crates: other_repo,

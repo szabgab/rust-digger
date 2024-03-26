@@ -26,9 +26,9 @@ impl Details {
             has_gitlab_pipeline: false,
             commit_count: 0,
             cargo_toml_in_root: false,
-            cargo_fmt: "".to_string(),
+            cargo_fmt: String::new(),
 
-            git_clone_error: "".to_string(),
+            git_clone_error: String::new(),
         }
     }
 }
@@ -93,7 +93,7 @@ fn empty_details() -> Details {
 }
 
 fn empty_string() -> String {
-    "".to_string()
+    String::new()
 }
 
 fn get_zero() -> u16 {
@@ -122,21 +122,21 @@ pub struct CrateOwner {
 impl Crate {
     pub fn new() -> Crate {
         Crate {
-            created_at: "".to_string(),
-            description: "".to_string(),
-            documentation: "".to_string(),
-            downloads: "".to_string(),
-            homepage: "".to_string(),
-            id: "".to_string(),
-            max_upload_size: "".to_string(),
-            name: "".to_string(),
-            readme: "".to_string(),
-            repository: "".to_string(),
-            updated_at: "".to_string(),
+            created_at: String::new(),
+            description: String::new(),
+            documentation: String::new(),
+            downloads: String::new(),
+            homepage: String::new(),
+            id: String::new(),
+            max_upload_size: String::new(),
+            name: String::new(),
+            readme: String::new(),
+            repository: String::new(),
+            updated_at: String::new(),
 
-            owner_gh_avatar: "".to_string(),
-            owner_gh_login: "".to_string(),
-            owner_name: "".to_string(),
+            owner_gh_avatar: String::new(),
+            owner_gh_login: String::new(),
+            owner_name: String::new(),
 
             details: Details::new(),
         }
@@ -160,7 +160,7 @@ pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
         Some(value) => value,
         None => {
             log::warn!("No match for repo in {}", &repository);
-            return ("".to_string(), "".to_string(), "".to_string());
+            return (String::new(), String::new(), String::new());
         }
     };
     let host = repo_url[1].to_lowercase();
@@ -334,7 +334,7 @@ mod tests {
         assert_eq!(percentage(20, 100), "20");
         assert_eq!(percentage(5, 20), "25");
         assert_eq!(percentage(1234, 10000), "12.34");
-        assert_eq!(percentage(1234567, 10000000), "12.34");
+        assert_eq!(percentage(1_234_567, 10_000_000), "12.34");
     }
 
     #[test]
