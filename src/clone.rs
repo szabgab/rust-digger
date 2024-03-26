@@ -71,7 +71,7 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
 
     let mut repo_reuse: HashMap<String, i32> = HashMap::new(); // number of times each repository is used for crates (monorepo)
     let now: DateTime<Utc> = Utc::now();
-    let before: DateTime<Utc> = now - Duration::days(recent as i64);
+    let before: DateTime<Utc> = now - Duration::try_days(recent as i64).unwrap();
     log::info!("before: {}", before);
 
     let mut count: u32 = 0;

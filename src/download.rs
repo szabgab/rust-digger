@@ -4,7 +4,7 @@ use tar::Archive;
 
 fn year_of_yesterday() -> String {
     let now = chrono::Local::now();
-    let yesterday = now - chrono::Duration::days(1);
+    let yesterday = now - chrono::Duration::try_days(1).unwrap();
     yesterday.format("%Y").to_string()
 }
 
