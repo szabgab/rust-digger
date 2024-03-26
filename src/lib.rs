@@ -248,7 +248,11 @@ pub fn save_details(repository: &str, details: &Details) {
     writeln!(&mut file, "{}", content).unwrap();
 }
 
-pub fn read_crates(limit: u32) -> Vec<Crate> {
+/// # Errors
+///
+/// Will return `Err` if can't open `crates.csv` or if it is not a
+/// proper CSV file.
+pub fn read_crates(limit: u32) -> Result<Vec<Crate>, String> {
     let filepath = "data/data/crates.csv";
     log::info!("Start reading {}", filepath);
     let mut crates: Vec<Crate> = vec![];
@@ -264,18 +268,18 @@ pub fn read_crates(limit: u32) -> Vec<Crate> {
                 }
                 let record: Crate = match result {
                     Ok(value) => value,
-                    Err(error) => panic!("error: {}", error),
+                    Err(error) => return Err(format!("error: {error}")),
                 };
                 crates.push(record);
             }
             #[allow(clippy::min_ident_chars)]
             crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
         }
-        Err(error) => panic!("Error opening file {}: {}", filepath, error),
+        Err(error) => return Err(format!("Error opening file {filepath}: {error}")),
     }
 
     log::info!("Finished reading {filepath}");
-    crates
+    Ok(crates)
 }
 
 #[cfg(test)]

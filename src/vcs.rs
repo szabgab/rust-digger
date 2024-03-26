@@ -7,6 +7,9 @@ use clap::Parser;
 
 use rust_digger::{get_owner_and_repo, load_details, read_crates, save_details, Crate};
 
+mod macros;
+use macros::return_or_exit;
+
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
@@ -23,7 +26,7 @@ fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
     log::info!("Starting the VCS processor {}", args.limit);
 
-    let crates: Vec<Crate> = read_crates(0);
+    let crates: Vec<Crate> = return_or_exit!(read_crates(0), 3);
     collect_data_from_vcs(&crates, args.limit);
 
     log::info!("Ending the VCS processor");
