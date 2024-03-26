@@ -155,7 +155,7 @@ pub type CratesByOwner = HashMap<String, Vec<String>>;
 
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
     static RE: Lazy<Regex> =
-        Lazy::new(|| Regex::new(r"^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());
+        Lazy::new(|| Regex::new("^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());
     let repo_url = match RE.captures(repository) {
         Some(value) => value,
         None => {
