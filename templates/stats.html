@@ -15,34 +15,34 @@
     <tbody>
       <tr>
           <td><a href="/all">total</a></td>
-          <td>{{total}}</td>
+          <td>{{total | commafy}}</td>
           <td>100%</td>
       </tr>
       {% for repo in repos %}
         <tr>
             <td>{{repo.display}}</td>
-            <td>{{repo.count}}</td>
+            <td>{{repo.count | commafy}}</td>
             <td>{{repo.percentage}}%</td>
         </tr>
       {% endfor %}
       <tr>
           <td><a href="/has-homepage-but-no-repo">Has homepage but no repository</a></td>
-          <td>{{home_page_but_no_repo}}</td>
+          <td>{{home_page_but_no_repo | commafy}}</td>
           <td>{{home_page_but_no_repo_percentage}}%</td>
       </tr>
       <tr>
           <td><a href="/no-homepage-no-repo">No homepage and no repository</a></td>
-          <td>{{no_homepage_no_repo_crates}}</td>
+          <td>{{no_homepage_no_repo_crates | commafy}}</td>
           <td>{{no_homepage_no_repo_crates_percentage}}%</td>
       </tr>
       <tr>
         <td><a href="/github-but-no-ci">On GitHub but no CI</a></td>
-        <td>{{github_but_no_ci}}</td>
+        <td>{{github_but_no_ci | commafy}}</td>
         <td>{{github_but_no_ci_percentage}}%</td>
       </tr>
       <tr>
         <td><a href="/gitlab-but-no-ci">On GitLab but no CI</a></td>
-        <td>{{gitlab_but_no_ci}}</td>
+        <td>{{gitlab_but_no_ci | commafy}}</td>
         <td>{{gitlab_but_no_ci_percentage}}%</td>
       </tr>
      </tbody>

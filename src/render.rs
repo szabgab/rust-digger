@@ -1,4 +1,5 @@
 use chrono::prelude::{DateTime, Utc};
+use liquid_filter_commafy::Commafy;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
@@ -35,6 +36,7 @@ pub fn render_list_of_repos(repos: &Vec<Repo>) {
     };
 
     let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
         .partials(partials)
         .build()
         .unwrap()
@@ -114,6 +116,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
         });
 
         let template = liquid::ParserBuilder::with_stdlib()
+            .filter(Commafy)
             .partials(partials)
             .build()
             .unwrap()
@@ -158,6 +161,7 @@ pub fn render_list_page(
     });
 
     let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
         .partials(partials)
         .build()
         .unwrap()
@@ -193,6 +197,7 @@ pub fn render_news_pages() {
         let output_path =
             Path::new("_site").join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
         let template = liquid::ParserBuilder::with_stdlib()
+            .filter(Commafy)
             .partials(partials)
             .build()
             .unwrap()
@@ -225,6 +230,7 @@ pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     };
 
     let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
         .partials(partials)
         .build()
         .unwrap()
@@ -263,6 +269,7 @@ pub fn generate_user_pages(
     };
 
     let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
         .partials(partials)
         .build()
         .unwrap()
@@ -334,6 +341,7 @@ fn generate_list_of_users(users: &Vec<User>) {
     };
 
     let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
         .partials(partials)
         .build()
         .unwrap()
@@ -369,6 +377,7 @@ fn render_stats_page(
     };
 
     let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
         .partials(partials)
         .build()
         .unwrap()
@@ -441,6 +450,7 @@ pub fn generate_sitemap() {
     //log::info!("{:?}", paths);
 
     let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
         .build()
         .unwrap()
         .parse_file("templates/sitemap.xml")

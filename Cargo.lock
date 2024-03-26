@@ -726,6 +726,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "liquid-filter-commafy"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd509c55f4c8e0ea1f5a0337c00147b122a5cf1efdf09b3180ddeb52625483e7"
+dependencies = [
+ "liquid",
+ "liquid-core",
+]
+
+[[package]]
 name = "liquid-lib"
 version = "0.26.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1059,6 +1069,7 @@ dependencies = [
  "csv",
  "flate2",
  "liquid",
+ "liquid-filter-commafy",
  "log",
  "once_cell",
  "regex",
