@@ -100,8 +100,45 @@
 - display: deuxfleurs (Forgejo)
   name: deuxfleurs
   url: https://git.deuxfleurs.fr/
-
-
+- display: 4neko (Gitea)
+  name: 4neko
+  url: https://repo.4neko.org/
+- display: pijul
+  name: pijul
+  url: https://nest.pijul.com/
+- display: themackabu (GitLab)
+  name: themackabu
+  url: https://lab.themackabu.dev/
+- display: cscherr (Forgejo)
+  name: cscherr
+  url: https://git.cscherr.de/
+- display: kitware (GitLab)
+  name: kitware
+  url: https://gitlab.kitware.com/
+- display: reclaimprotocol (GitLab)
+  name: reclaimprotocol
+  url: https://gitlab.reclaimprotocol.org/
+- display: Software Heritage (GitLab)
+  name: softwareheritage
+  url: https://gitlab.softwareheritage.org/
+- display: Syndicate-lang (Forgejo)
+  name: syndicate-lang
+  url: https://git.syndicate-lang.org/
+- display: txmn (Forgejo)
+  name: txmn
+  url: https://git.txmn.tk/
+- display: radial (Forgejo)
+  name: radial
+  url: https://git.radial.gg/
+- display: picodata (GitLab)
+  name: picodata
+  url: https://git.picodata.io/
+- display: Debian (GitLab)
+  name: debian
+  url: https://salsa.debian.org/
+- display: alienscience (Forgejo)
+  name: alienscience
+  url: https://code.alienscience.org/
 
 - display: Repo with http
   name: repo-with-http
