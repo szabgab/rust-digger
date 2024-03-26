@@ -1,0 +1,63 @@
+- display: GitHub
+  name: github
+  url: https://github.com/
+- display: GitLab
+  name: gitlab
+  url: https://gitlab.com/
+- display: Codeberg
+  name: codeberg
+  url: https://codeberg.org/
+- display: Gitee
+  name: gitee
+  url: https://gitee.com/
+- display: Tor Project (GitLab)
+  name: torproject
+  url: https://gitlab.torproject.org/
+- display: Free Desktop (GitLab)
+  name: freedesktop
+  url: https://gitlab.freedesktop.org/
+- display: CERN (GitLab)
+  name: cern
+  url: https://gitlab.cern.ch/
+- display: Wikimedia (GitLab)
+  name: wikimedia
+  url: https://gitlab.wikimedia.org/
+- display: e3t
+  name: e3t
+  url: https://git.e3t.cc/
+- display: srht
+  name: srht
+  url: https://git.sr.ht/
+- display: Open Privacy (Gitea)
+  name: openprivacy
+  url: https://git.openprivacy.ca/
+- display: Cronce (GitLab)
+  name: cronce
+  url: https://gitlab.cronce.io/
+- display: Gnome (GitLab)
+  name: gnome
+  url: https://gitlab.gnome.org/
+- display: Repo with http
+  name: repo-with-http
+  url: http://
+- display: GitHub with www
+  name: github-with-www
+  url: https://www.github.com/
+- display: Bitbucket
+  name: bitbucket
+  url: https://bitbucket.org/
+- display: Lightsout Games (Gitea)
+  name: lightsout
+  url: https://labs.lightsout.games/
+- display: Redox OS (GitLab)
+  name: redox-os
+  url: https://gitlab.redox-os.org/
+- display: Kernel (Cgit)
+  name: kernel
+  url: https://git.kernel.org/
+- display: Open CoDE (GitLab)
+  name: opencode
+  url: https://gitlab.opencode.de/
+- display: in2p3.fr (GitLab)
+  name: in2p3
+  url: https://gitlab.in2p3.fr/

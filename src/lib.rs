@@ -44,11 +44,28 @@ pub struct Repo {
     pub display: String,
     pub name: String,
     pub url: String,
+
+    #[serde(default = "get_default_count")]
     pub count: usize,
+
+    #[serde(default = "get_default_percentage")]
     pub percentage: String,
+
+    #[serde(default = "get_default_crates")]
     pub crates: Vec<Crate>,
 }
 
+fn get_default_count() -> usize {
+    0
+}
+
+fn get_default_percentage() -> String {
+    String::from("0")
+}
+
+fn get_default_crates() -> Vec<Crate> {
+    vec![]
+}
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Crate {
     pub created_at: String,
