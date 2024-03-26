@@ -15,7 +15,7 @@
     {% for repo in repos %}
       <tr>
         <td><a href="/vcs/{{repo.name | downcase}}">{{repo.display}}</a></td>
-        <td>{{repo.count}}</td>
+        <td>{{repo.count | commafy}}</td>
       </tr>
     {% endfor %}
     </tbody>
