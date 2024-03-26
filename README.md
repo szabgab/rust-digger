@@ -71,12 +71,12 @@ There is a cron-job that runs `all.sh` once a day. (As long as we use the dumped
 
 Discussed here: https://crates.io/data-access
 
-As of 2023.06.17
+As of 2024.03.26
 
 1. The git repository https://github.com/rust-lang/crates.io-index does not contain the meta data, such as the github URL
 1. The https://static.crates.io/db-dump.tar.gz is 305 Mb It unzipped to a timestamped folder called `YYYY-MM-DD-020046` which is 1.1 Gb and contains CSV dumps of a Postgresql database.
 
-The fetching and unzipping is done by `download.sh`.
+The fetching and unzipping is done by the `rust-digger-download` binary.
 
 For each crate (or for each new crate if we start working incrementally) check if it refers to a repo.
 For each repo maintain a file called repo-details/github/repo-name.json in this repo we keep all the information we collected about the repository. When generating the HTML files we consult these files. These files are also updated by the stand-alone processes listed below.
