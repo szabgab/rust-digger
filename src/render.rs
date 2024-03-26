@@ -280,41 +280,35 @@ pub fn generate_user_pages(
         .into_iter()
         .map(|mut user| {
             let mut selected_crates: Vec<&Crate> = vec![];
-            match crates_by_owner.get(&user.id) {
-                Some(crate_ids) => {
-                    //dbg!(crate_ids);
-                    for crate_id in crate_ids {
-                        log::info!("crated_id: {}", &crate_id);
-                        //log::info!("crate_by_id: {:#?}", crate_by_id);
-                        //log::info!("crate_by_id: {:#?}", crate_by_id.keys());
-                        //dbg!(&crate_by_id[crate_id.as_str()]);
-                        //dbg!(&crate_by_id.get(&crate_id.clone()));
-                        if crate_by_id.contains_key(crate_id.as_str()) {
-                            selected_crates.push(crate_by_id[crate_id.as_str()]);
-                        }
+            if let Some(crate_ids) = crates_by_owner.get(&user.id) {
+                //dbg!(crate_ids);
+                for crate_id in crate_ids {
+                    log::info!("crated_id: {}", &crate_id);
+                    //log::info!("crate_by_id: {:#?}", crate_by_id);
+                    //log::info!("crate_by_id: {:#?}", crate_by_id.keys());
+                    //dbg!(&crate_id);
+                    //dbg!(&crate_by_id[crate_id.as_str()]);
+                    //dbg!(&crate_by_id.get(&crate_id.clone()));
+                    if crate_by_id.contains_key(crate_id.as_str()) {
+                        selected_crates.push(crate_by_id[crate_id.as_str()]);
                     }
-                    user.count = selected_crates.len() as u16;
-                    //users_with_crates.push(user);
+                }
+                user.count = selected_crates.len() as u16;
+                //users_with_crates.push(user);
 
-                    selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
-                    let filename =
-                        format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
-                    let utc: DateTime<Utc> = Utc::now();
-                    let globals = liquid::object!({
-                        "version": format!("{VERSION}"),
-                        "utc":     format!("{}", utc),
-                        "title":   &user.name,
-                        "user":    user,
-                        "crates":  selected_crates,
-                    });
-                    let html = template.render(&globals).unwrap();
-                    let mut file = File::create(filename).unwrap();
-                    writeln!(&mut file, "{}", html).unwrap();
-                }
-                None => {
-                    // We do not create a page for people who don't have crates.
-                    //log::warn!("user {uid} does not have crates");
-                }
+                selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+                let filename = format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
+                let utc: DateTime<Utc> = Utc::now();
+                let globals = liquid::object!({
+                    "version": format!("{VERSION}"),
+                    "utc":     format!("{}", utc),
+                    "title":   &user.name,
+                    "user":    user,
+                    "crates":  selected_crates,
+                });
+                let html = template.render(&globals).unwrap();
+                let mut file = File::create(filename).unwrap();
+                writeln!(&mut file, "{}", html).unwrap();
             }
             user
         })
