@@ -52,9 +52,11 @@ restriction  = { priority = -1, level = "deny" }
 style        = { priority = -1, level = "deny" }
 suspicious   = { priority = -1, level = "deny" }
 
+blanket_clippy_restriction_lints = "allow" # We use Extreme Clippy so yes, we wanted to enable everything.
+
+
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
-blanket_clippy_restriction_lints = "allow"
 cargo_common_metadata = "allow"
 cast_precision_loss = "allow"
 exhaustive_structs = "allow"
