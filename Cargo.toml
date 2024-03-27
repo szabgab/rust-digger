@@ -65,7 +65,7 @@ blanket_clippy_restriction_lints = "allow" # We use Extreme Clippy so yes, we wa
 multiple_crate_versions = "allow" # I am not sure if we can fix this given that they are all brought in by dependencies
 implicit_return = "allow"         # We want to encourage implicit return in this project
 question_mark_used = "allow"      # We like using ? as a way to shorten code.
-
+module_name_repetitions = "allow" # I don't mind it as it makes the functions more readable.
 
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
@@ -91,7 +91,6 @@ expect_used = "allow"
 get_unwrap = "allow"
 ignored_unit_patterns = "allow"
 let_underscore_untyped = "allow"
-module_name_repetitions = "allow"
 shadow_reuse = "allow"
 single_call_fn = "allow"
 string_slice = "allow"
