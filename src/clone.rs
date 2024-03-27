@@ -141,20 +141,21 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
         );
         fs::create_dir_all(&owner_path).unwrap();
         let repo_path = format!("{owner_path}/{repo}");
+        let status = check_url(&krate.repository);
+        if status != 200 {
+            log::error!(
+                "Error accessing the repository {}. status: {}",
+                &krate.repository,
+                status
+            );
+            continue;
+        }
         if Path::new(&repo_path).exists() {
+            log::info!("repo exist; cd to {}", &repo_path);
             env::set_current_dir(&repo_path).unwrap();
             git_pull();
         } else {
-            let status = check_url(&krate.repository);
-            if status != 200 {
-                log::error!(
-                    "Error accessing the repository {}. status: {}",
-                    &krate.repository,
-                    status
-                );
-                continue;
-            }
-
+            log::info!("new repo; cd to {}", &owner_path);
             env::set_current_dir(owner_path).unwrap();
             git_clone(&krate.repository, &repo);
         }
