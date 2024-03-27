@@ -18,13 +18,6 @@
           <td>{{total | commafy}}</td>
           <td>100%</td>
       </tr>
-      {% for repo in repos %}
-        <tr>
-            <td>{{repo.display}}</td>
-            <td>{{repo.count | commafy}}</td>
-            <td>{{repo.percentage}}%</td>
-        </tr>
-      {% endfor %}
       <tr>
           <td><a href="/has-homepage-but-no-repo">Has homepage but no repository</a></td>
           <td>{{home_page_but_no_repo | commafy}}</td>
