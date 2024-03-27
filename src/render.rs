@@ -592,3 +592,8 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
 
     true
 }
+
+#[test]
+fn check_load_templates() {
+    let _partials = load_templates();
+}
