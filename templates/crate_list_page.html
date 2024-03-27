@@ -10,24 +10,24 @@
           Listing all the crates starting from the most recently released ones.
 
         {% when "no-repo" %}
-          The list of all the crates that have no "reposiotry" entry in their Cargo.toml file. Some of them might have a link to their repositry
+          The list of all the crates that have no "repository" entry in their Cargo.toml file. Some of them might have a link to their repository
           in some other field (e.g. the <a href="/has-homepage-but-no-repo">homepage field</a>) other have no such link
           <a href="/no-homepage-no-repo">neither in the homepage nor the repository field</a>.
-          You can find <a href="/about-repository">futher explanation</a> and a way to fix this.
+          You can find <a href="/about-repository">further explanation</a> and a way to fix this.
 
         {% when "has-homepage-but-no-repo" %}
           Some crates have a <b>homepage</b> field in their <b>Cargo.toml</b> file, but no <b>repository</b> field.
           It would be probably better if all the crates had their repository listed in the <b>repository</b> field, but
-          it is probably even more importan that the crates the have
+          it is probably even more important that the crates the have
           <a href="/no-homepage-no-repo">neither homepage nor repository field</a> would get the <b>repository</b> field.
-          You can find <a href="/about-repository">futher explanation</a>.
+          You can find <a href="/about-repository">further explanation</a>.
 
         {% when "no-homepage-no-repo" %}
-          List of crates that don't have a "repositry" field in their Cargo.toml file and not even a "homepage" field that might help locating the repository.
+          List of crates that don't have a "repository" field in their Cargo.toml file and not even a "homepage" field that might help locating the repository.
           In order to make it easier for user of a crate to find the public VCS (Version Control System) of the crate, it is recommended that each crate
           will include the <b>repository</b> filed in the Cargo.toml file.
 
-          You can find <a href="/about-repository">futher explanation</a> and how you might help fixing this.
+          You can find <a href="/about-repository">further explanation</a> and how you might help fixing this.
 
           {% when "crates-without-owner" %}
           This list is really strange. It is totally unclear how could that happen that some crates are without an owner. Is this a bug in Rust Digger?
@@ -40,11 +40,11 @@
 
         {% when "repo-with-http" %}
           Both GitHub and GitLab will respond to a requests sent via <b>http</b> and will redirect the request to the <b>https</b> counterpart of the same page.
-          There is no real value in having a URL using <b>http</b> to be listed as the <b>repoistory</b> field in the <b>Cargo.toml</b> file.
+          There is no real value in having a URL using <b>http</b> to be listed as the <b>repository</b> field in the <b>Cargo.toml</b> file.
 
           This list shows the crates that have the <b>http</b> link.
 
-          You can find <a href="/about-repository">futher explanation</a> and instructions how to fix this issue.
+          You can find <a href="/about-repository">further explanation</a> and instructions how to fix this issue.
 
         {% when "github-with-www" %}
           For some reason some crates link to <b>www.github.com</b> with the <b>www</b> prefix, despite GitHub redirecting those urls to the address at <b>github.com</b> (without www).
@@ -52,10 +52,10 @@
 
           This is not really a big issue, it is just a bit unnecessary.
 
-          You can find <a href="/about-repository">futher explanation</a> and instructions how to fix this issue.
+          You can find <a href="/about-repository">further explanation</a> and instructions how to fix this issue.
 
         {% when "github-but-no-ci" %}
-          Having some cloud-based <b>Continuous Integration (CI)</b> system configured is an excellent way to get quick feedback on changes one mades to the code both for
+          Having some cloud-based <b>Continuous Integration (CI)</b> system configured is an excellent way to get quick feedback on changes one makes to the code both for
           maintainers of a crate and for people who might want to send a pull-request. Therefore for crates that we already have the repository link we are checking
           if they have any Continuous Integration system configured.
 
@@ -65,7 +65,7 @@
 
         {% when "gitlab-but-no-ci" %}
 
-          Having some cloud-based <b>Continuous Integration (CI)</b> system configured is an excellent way to get quick feedback on changes one mades to the code both for
+          Having some cloud-based <b>Continuous Integration (CI)</b> system configured is an excellent way to get quick feedback on changes one makes to the code both for
           maintainers of a crate and for people who might want to send a pull-request. Therefore for crates that we already have the repository link we are checking
           if they have any Continuous Integration system configured.
 
