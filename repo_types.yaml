@@ -181,6 +181,44 @@
 - display: mentality (Gitea)
   name: mentality
   url: https://git.mentality.rip/
+- display: sourceforge
+  name: sourceforge
+  url: https://sourceforge.net/
+- display: tozt (cgit)
+  name: tozt
+  url: https://git.tozt.net/rbw
+- display: latte (Gitea)
+  name: latte
+  url: https://git.latte.to/
+- display: mozilla (Mercurial)
+  name: mozilla
+  url: https://hg.mozilla.org/
+- display: fizz.buzz (Gitea)
+  name: fizz_buzz
+  url: https://code.fizz.buzz/
+- display: orbitsolutions (Gitea)
+  name: orbitsolutions
+  url: https://code.orbitsolutions.dev/
+- display: gitgud (GitLab)
+  name: gitgud
+  url: https://gitgud.io/
+- display: duguying (Gitea)
+  name: duguying
+  url: https://git.duguying.net/
+- display: envs (Gitea)
+  name: envs
+  url: https://git.envs.net/
+- display: rtng (Gitea)
+  name: rtng
+  url: https://git.rtng.org/
+- display: Philomathic Life
+  name: philomathiclife
+  url: https://git.philomathiclife.com/
+- display: moparisthebest (Gitea)
+  name: moparisthebest
+  url: https://code.moparisthebest.com/
+
+
 
 
 - display: Repo with http
