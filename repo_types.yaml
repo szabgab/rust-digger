@@ -360,6 +360,30 @@
   name: framagit.org
   url: https://framagit.org/
   platform: GitLab
+- display: flueren.eu
+  name: flueren.eu
+  url: https://git.flueren.eu/
+  platform: Gitea
+- display: aikuro.net
+  name: aikuro.net
+  url: https://git.aikuro.net/
+  platform: Gitea
+- display: git.gay
+  name: git.gay
+  url: https://git.gay/
+  platform: Forgejo
+- display: batsense.net
+  name: batsense.net
+  url: https://git.batsense.net/
+  platform: Forgejo
+- display: buny.computer
+  name: buny.computer
+  url: https://git.buny.computer/
+  platform: Forgejo
+- display: vanten-s.com
+  name: vanten-s.com
+  url: https://forgejo.vanten-s.com/
+  platform: Forgejo
 
 
 
