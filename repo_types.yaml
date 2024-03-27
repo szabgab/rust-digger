@@ -139,6 +139,49 @@
 - display: alienscience (Forgejo)
   name: alienscience
   url: https://code.alienscience.org/
+- display: colean (Forgejo)
+  name: colean
+  url: https://git.colean.cc/
+- display: dragonma (cgit)
+  name: dragonma
+  url: http://git.dragonma.us/
+- display: simaek (Gitea)
+  name: simaek
+  url: https://code.simaek.com/
+- display: panter (GitLab)
+  name: panter
+  url: https://git.panter.ch/
+- display: communiquons (Gitea)
+  name: communiquons
+  url: https://gitea.communiquons.org/
+- display: hatter (Gitea)
+  name: hatter
+  url: https://git.hatter.ink/
+- display: sourcehut
+  name: sourcehut
+  url: https://sr.ht
+- display: chiselapp (Fossil)
+  name: chiselapp
+  url: https://chiselapp.com/
+- display: bauke (Forgejo)
+  name: bauke
+  url: https://git.bauke.xyz/
+- display: hrzn (Forgejo)
+  name: hrzn
+  url: https://hrzn.ee/
+- display: pipapo (Gitea)
+  name: pipapo
+  url: https://git.pipapo.org/
+- display: lemonsh (Forgejo)
+  name: lemonsh
+  url: https://git.lemonsh.moe/
+- display: jesterpm (cgit)
+  name: jesterpm
+  url: https://git.jesterpm.net/
+- display: mentality (Gitea)
+  name: mentality
+  url: https://git.mentality.rip/
+
 
 - display: Repo with http
   name: repo-with-http
