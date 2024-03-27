@@ -45,7 +45,7 @@ pub fn render_list_of_repos(repos: &Vec<Repo>) {
     let globals = liquid::object!({
         "version": format!("{VERSION}"),
         "utc":     format!("{}", utc),
-        "title":   "Repositories".to_string(),
+        "title":   String::from("Repositories"),
         "repos":    repos,
     });
     let html = template.render(&globals).unwrap();
@@ -332,7 +332,7 @@ fn generate_list_of_users(users: &Vec<User>) {
     let globals = liquid::object!({
         "version": format!("{VERSION}"),
         "utc":     format!("{}", utc),
-        "title":   "Users".to_string(),
+        "title":   String::from("Users"),
         "users":    users,
     });
     let html = template.render(&globals).unwrap();
@@ -459,57 +459,57 @@ pub fn generate_pages(crates: &[Crate], repos: &Vec<Repo>) -> Result<(), Box<dyn
     render_list_of_repos(repos);
 
     render_list_page(
-        &"_site/all.html".to_string(),
-        &"Rust Digger".to_string(),
-        &"all".to_string(),
+        &String::from("_site/all.html"),
+        &String::from("Rust Digger"),
+        &String::from("all"),
         crates,
     )?;
 
     let github_but_no_ci = render_filtered_crates(
-        &"_site/github-but-no-ci.html".to_string(),
-        &"On GitHub but has no CI".to_string(),
-        &"github-but-no-ci".to_string(),
+        &String::from("_site/github-but-no-ci.html"),
+        &String::from("On GitHub but has no CI"),
+        &String::from("github-but-no-ci"),
         crates,
         |krate| on_github_but_no_ci(krate),
     )?;
 
     let gitlab_but_no_ci = render_filtered_crates(
-        &"_site/gitlab-but-no-ci.html".to_string(),
-        &"On GitLab but has no CI".to_string(),
-        &"gitlab-but-no-ci".to_string(),
+        &String::from("_site/gitlab-but-no-ci.html"),
+        &String::from("On GitLab but has no CI"),
+        &String::from("gitlab-but-no-ci"),
         crates,
         |krate| on_gitlab_but_no_ci(krate),
     )?;
 
     let home_page_but_no_repo = render_filtered_crates(
-        &"_site/has-homepage-but-no-repo.html".to_string(),
-        &"Has homepage, but no repository".to_string(),
-        &"has-homepage-but-no-repo".to_string(),
+        &String::from("_site/has-homepage-but-no-repo.html"),
+        &String::from("Has homepage, but no repository"),
+        &String::from("has-homepage-but-no-repo"),
         crates,
         |krate| has_homepage_no_repo(krate),
     )?;
 
     let no_homepage_no_repo_crates = render_filtered_crates(
-        &"_site/no-homepage-no-repo.html".to_string(),
-        &"No repository, no homepage".to_string(),
-        &"no-homepage-no-repo".to_string(),
+        &String::from("_site/no-homepage-no-repo.html"),
+        &String::from("No repository, no homepage"),
+        &String::from("no-homepage-no-repo"),
         crates,
         |krate| no_homepage_no_repo(krate),
     )?;
 
     render_filtered_crates(
-        &"_site/crates-without-owner-name.html".to_string(),
-        &"Crates without owner name".to_string(),
-        &"crates-without-owner-name".to_string(),
+        &String::from("_site/crates-without-owner-name.html"),
+        &String::from("Crates without owner name"),
+        &String::from("crates-without-owner-name"),
         crates,
         |krate| krate.owner_name.is_empty(),
     )
     .unwrap();
 
     render_filtered_crates(
-        &"_site/crates-without-owner.html".to_string(),
-        &"Crates without owner".to_string(),
-        &"crates-without-owner".to_string(),
+        &String::from("_site/crates-without-owner.html"),
+        &String::from("Crates without owner"),
+        &String::from("crates-without-owner"),
         crates,
         |krate| krate.owner_name.is_empty() && krate.owner_gh_login.is_empty(),
     )?;

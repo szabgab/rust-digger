@@ -213,7 +213,7 @@ pub fn percentage(num: usize, total: usize) -> String {
 }
 
 pub fn repo_details_root() -> String {
-    "repo-details".to_string()
+    String::from("repo-details")
 }
 
 pub fn get_details_path(repository: &str) -> Option<PathBuf> {

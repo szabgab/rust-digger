@@ -179,22 +179,22 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
     }
 
     repos.push(Repo {
-        display: "Has no repository".to_string(),
-        name: "no-repo".to_string(),
+        display: String::from("Has no repository"),
+        name: String::from("no-repo"),
         url: String::new(),
         count: no_repo.len(),
-        percentage: "0".to_string(),
+        percentage: String::from("0"),
         crates: no_repo,
         platform: None,
         bold: true,
     });
 
     repos.push(Repo {
-        display: "Other repositories we don't recognize".to_string(),
-        name: "other-repos".to_string(),
+        display: String::from("Other repositories we don't recognize"),
+        name: String::from("other-repos"),
         url: String::new(),
         count: other_repo.len(),
-        percentage: "0".to_string(),
+        percentage: String::from("0"),
         crates: other_repo,
         platform: None,
         bold: true,
