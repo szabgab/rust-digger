@@ -258,7 +258,7 @@ pub fn load_details(repository: &str) -> Details {
             };
         }
         Err(error) => {
-            println!("Error opening file {}: {}", details_path.display(), error);
+            log::error!("Error opening file {}: {}", details_path.display(), error);
         }
     }
     Details::new()
