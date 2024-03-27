@@ -279,7 +279,33 @@
   name: moparisthebest
   url: https://code.moparisthebest.com/
   platform: Gitea
-
+- display: fem.mint.lgbt
+  name: fem.mint.lgbt
+  url: https://fem.mint.lgbt/
+  platform: Forgejo
+- display: whoisthisjoker
+  name: whoisthisjoker
+  url: https://git.whoisthisjoker.com/
+  platform: Gitea
+- display: vdx.hu
+  name: vdx-hu
+  url: https://git.vdx.hu/
+  platform: Forgejo
+- display: notabug
+  name: notabug
+  url: https://notabug.org/
+- display: ascee.nl
+  name: ascee.nl
+  url: https://code.ascee.nl/
+  platform: Gitea
+- display: based.computer
+  name: based.computer
+  url: https://git.based.computer/
+  platform: Forgejo
+- display: geomar
+  name: geomar
+  url: https://git.geomar.de/
+  platform: gitLab
 
 
 
