@@ -74,29 +74,26 @@ pub fn read_crate_owners(limit: u32) -> (Owners, CratesByOwner) {
     let filepath = "data/data/crate_owners.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
-    match File::open(filepath) {
-        Ok(file) => {
-            let mut rdr = csv::Reader::from_reader(file);
-            for result in rdr.deserialize() {
-                count += 1;
-                if limit > 0 && count >= limit {
-                    log::info!("Limit of {limit} reached");
-                    break;
-                }
-                let record: CrateOwner = match result {
-                    Ok(value) => value,
-                    Err(error) => panic!("Error {}", error),
-                };
-                owner_by_crate_id.insert(record.crate_id.clone(), record.owner_id.clone());
-                crates_by_owner.entry(record.owner_id.clone()).or_default();
-                let _ = &crates_by_owner
-                    .get_mut(&record.owner_id)
-                    .unwrap()
-                    .push(record.crate_id.clone());
-                //dbg!(&crates_by_owner[&record.owner_id]);
-            }
+
+    let file = File::open(filepath).unwrap();
+    let mut rdr = csv::Reader::from_reader(file);
+    for result in rdr.deserialize() {
+        count += 1;
+        if limit > 0 && count >= limit {
+            log::info!("Limit of {limit} reached");
+            break;
         }
-        Err(error) => panic!("Error opening file {}: {}", filepath, error),
+        let record: CrateOwner = match result {
+            Ok(value) => value,
+            Err(error) => panic!("Error {}", error),
+        };
+        owner_by_crate_id.insert(record.crate_id.clone(), record.owner_id.clone());
+        crates_by_owner.entry(record.owner_id.clone()).or_default();
+        let _ = &crates_by_owner
+            .get_mut(&record.owner_id)
+            .unwrap()
+            .push(record.crate_id.clone());
+        //dbg!(&crates_by_owner[&record.owner_id]);
     }
 
     log::info!("Finished reading {filepath}");
