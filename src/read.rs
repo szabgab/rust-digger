@@ -83,10 +83,8 @@ pub fn read_crate_owners(limit: u32) -> (Owners, CratesByOwner) {
             log::info!("Limit of {limit} reached");
             break;
         }
-        let record: CrateOwner = match result {
-            Ok(value) => value,
-            Err(error) => panic!("Error {}", error),
-        };
+        let record: CrateOwner = result.unwrap();
+
         owner_by_crate_id.insert(record.crate_id.clone(), record.owner_id.clone());
         crates_by_owner.entry(record.owner_id.clone()).or_default();
         let _ = &crates_by_owner
