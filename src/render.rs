@@ -50,7 +50,7 @@ pub fn render_list_of_repos(repos: &Vec<Repo>) {
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{}", html).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
     log::info!("render_list_of_repos end");
 }
 
@@ -119,7 +119,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
         let html = template.render(&globals).unwrap();
 
         let mut file = File::create(format!("_site/{}.html", page.0)).unwrap();
-        writeln!(&mut file, "{}", html).unwrap();
+        writeln!(&mut file, "{html}").unwrap();
     }
     log::info!("render_static_pages end");
     Ok(())
@@ -161,7 +161,7 @@ pub fn render_list_page(
     let html = template.render(&globals).unwrap();
 
     let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{}", html).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
     //match res {
     //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
     //    Err(error) => log:error!("{}", error)
@@ -199,7 +199,7 @@ pub fn render_news_pages() {
         let html = template.render(&globals).unwrap();
         //let filename = "_site/news.html";
         let mut file = File::create(output_path).unwrap();
-        writeln!(&mut file, "{}", html).unwrap();
+        writeln!(&mut file, "{html}").unwrap();
     }
 
     //            },
@@ -235,7 +235,7 @@ pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         });
         let html = template.render(&globals).unwrap();
         let mut file = File::create(filename).unwrap();
-        writeln!(&mut file, "{}", html).unwrap();
+        writeln!(&mut file, "{html}").unwrap();
     }
     log::info!("generate_crate_pages end");
     Ok(())
@@ -298,7 +298,7 @@ pub fn generate_user_pages(
                 });
                 let html = template.render(&globals).unwrap();
                 let mut file = File::create(filename).unwrap();
-                writeln!(&mut file, "{}", html).unwrap();
+                writeln!(&mut file, "{html}").unwrap();
             }
             user
         })
@@ -337,7 +337,7 @@ fn generate_list_of_users(users: &Vec<User>) {
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{}", html).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
     log::info!("generate_list_of_users end");
 }
 
@@ -382,7 +382,7 @@ fn render_stats_page(
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{}", html).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
 }
 
 fn create_folders() {
@@ -440,13 +440,13 @@ pub fn generate_sitemap() {
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create("_site/sitemap.xml").unwrap();
-    writeln!(&mut file, "{}", html).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
 }
 
 pub fn generate_robots_txt() {
-    let text = format!("Sitemap: {}/sitemap.xml\n\nUser-agent: *\n", URL);
+    let text = format!("Sitemap: {URL}/sitemap.xml\n\nUser-agent: *\n");
     let mut file = File::create("_site/robots.txt").unwrap();
-    writeln!(&mut file, "{}", text).unwrap();
+    writeln!(&mut file, "{text}").unwrap();
 }
 pub fn generate_pages(crates: &[Crate], repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");

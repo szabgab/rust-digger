@@ -283,7 +283,7 @@ pub fn save_details(repository: &str, details: &Details) {
 
     let content = serde_json::to_string(&details).unwrap();
     let mut file = File::create(details_path).unwrap();
-    writeln!(&mut file, "{}", content).unwrap();
+    writeln!(&mut file, "{content}").unwrap();
 }
 
 /// # Errors
