@@ -305,7 +305,7 @@
 - display: geomar
   name: geomar
   url: https://git.geomar.de/
-  platform: gitLab
+  platform: GitLab
 
 
 
