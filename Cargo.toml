@@ -66,6 +66,8 @@ multiple_crate_versions = "allow" # I am not sure if we can fix this given that 
 implicit_return = "allow"         # We want to encourage implicit return in this project
 question_mark_used = "allow"      # We like using ? as a way to shorten code.
 module_name_repetitions = "allow" # I don't mind it as it makes the functions more readable.
+absolute_paths = "allow"          # I like using absoulut paths in function calls.
+
 
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
@@ -81,7 +83,6 @@ shadow_unrelated = "allow"
 str_to_string = "allow"
 uninlined_format_args = "allow"
 unwrap_used = "allow"
-absolute_paths = "allow"
 cast_lossless = "allow"
 cast_possible_truncation = "allow"
 default_numeric_fallback = "allow"
