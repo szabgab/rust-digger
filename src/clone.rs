@@ -133,9 +133,14 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
             krate.repository
         );
         let owner_path = format!("repos/{host}/{owner}");
-        let _res = fs::create_dir_all(&owner_path);
-        let repo_path = format!("{owner_path}/{repo}");
         let current_dir = env::current_dir().unwrap();
+        log::info!(
+            "Creating owner_path '{}' while current_dir is {:?}",
+            &owner_path,
+            &current_dir
+        );
+        fs::create_dir_all(&owner_path).unwrap();
+        let repo_path = format!("{owner_path}/{repo}");
         if Path::new(&repo_path).exists() {
             env::set_current_dir(&repo_path).unwrap();
             git_pull();
