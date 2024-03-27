@@ -30,10 +30,7 @@ pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error
 
 pub fn render_list_of_repos(repos: &Vec<Repo>) {
     log::info!("render_list_of_repos start");
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
+    let partials = load_templates().unwrap();
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
@@ -103,10 +100,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
     ];
 
     for page in pages {
-        let partials = match load_templates() {
-            Ok(partials) => partials,
-            Err(error) => panic!("Error loading templates {}", error),
-        };
+        let partials = load_templates().unwrap();
 
         let utc: DateTime<Utc> = Utc::now();
         let globals = liquid::object!({
@@ -139,10 +133,7 @@ pub fn render_list_page(
 ) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
 
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
+    let partials = load_templates().unwrap();
 
     let page_size = if crates.len() > PAGE_SIZE {
         PAGE_SIZE
@@ -184,10 +175,7 @@ pub fn render_news_pages() {
 
     let path = Path::new("templates/news");
     for entry in path.read_dir().expect("read_dir call failed").flatten() {
-        let partials = match load_templates() {
-            Ok(partials) => partials,
-            Err(error) => panic!("Error loading templates {}", error),
-        };
+        let partials = load_templates().unwrap();
         if entry.path().extension().unwrap() != "html" {
             continue;
         }
@@ -224,10 +212,7 @@ pub fn render_news_pages() {
 
 pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
     log::info!("generate_crate_pages start");
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
+    let partials = load_templates().unwrap();
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
@@ -263,10 +248,7 @@ pub fn generate_user_pages(
 ) -> Result<(), Box<dyn Error>> {
     log::info!("generate_user_pages start");
 
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
+    let partials = load_templates().unwrap();
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
@@ -335,10 +317,7 @@ pub fn generate_user_pages(
 fn generate_list_of_users(users: &Vec<User>) {
     log::info!("generate_list_of_users start");
     // list all the users on the /users/ page
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
+    let partials = load_templates().unwrap();
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
@@ -371,10 +350,7 @@ fn render_stats_page(
     gitlab_but_no_ci: usize,
 ) {
     log::info!("render_stats_page");
-    let partials = match load_templates() {
-        Ok(partials) => partials,
-        Err(error) => panic!("Error loading templates {}", error),
-    };
+    let partials = load_templates().unwrap();
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
