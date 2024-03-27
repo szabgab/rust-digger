@@ -367,6 +367,8 @@
 - display: Repo with http
   name: repo-with-http
   url: http://
+  bold: true
 - display: GitHub with www
   name: github-with-www
   url: https://www.github.com/
+  bold: true

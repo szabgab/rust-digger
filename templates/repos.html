@@ -15,7 +15,11 @@
     <tbody>
     {% for repo in repos %}
       <tr>
-        <td><a href="/vcs/{{repo.name | downcase}}">{{repo.display}}</a></td>
+        {% if repo.bold %}
+           <td><a href="/vcs/{{repo.name | downcase}}"><b>{{repo.display}}</b></a></td>
+        {% else %}
+           <td><a href="/vcs/{{repo.name | downcase}}">{{repo.display}}</a></td>
+        {% endif %}
         <td>{% if repo.platform %} {{repo.platform}} {% else %} Unknown {% endif %}</td>
         <td>{{repo.count | commafy}}</td>
       </tr>

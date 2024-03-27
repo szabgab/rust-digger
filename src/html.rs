@@ -186,6 +186,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
         percentage: "0".to_string(),
         crates: no_repo,
         platform: None,
+        bold: true,
     });
 
     repos.push(Repo {
@@ -196,6 +197,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
         percentage: "0".to_string(),
         crates: other_repo,
         platform: None,
+        bold: true,
     });
 
     repos = repos

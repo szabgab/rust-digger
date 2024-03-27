@@ -68,6 +68,13 @@ pub struct Repo {
     pub crates: Vec<Crate>,
 
     pub platform: Option<RepoPlatform>,
+
+    #[serde(default = "get_default_bold")]
+    pub bold: bool,
+}
+
+fn get_default_bold() -> bool {
+    false
 }
 
 fn get_default_count() -> usize {
