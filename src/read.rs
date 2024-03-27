@@ -44,23 +44,20 @@ pub fn read_users(limit: u32) -> Vec<User> {
     let filepath = "data/data/users.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
-    match File::open(filepath) {
-        Ok(file) => {
-            let mut rdr = csv::Reader::from_reader(file);
-            for result in rdr.deserialize() {
-                count += 1;
-                if limit > 0 && count >= limit {
-                    log::info!("Limit of {limit} reached");
-                    break;
-                }
-                let record: User = match result {
-                    Ok(value) => value,
-                    Err(err) => panic!("Error: {}", err),
-                };
-                users.push(record);
-            }
+
+    let file = File::open(filepath).unwrap();
+    let mut rdr = csv::Reader::from_reader(file);
+    for result in rdr.deserialize() {
+        count += 1;
+        if limit > 0 && count >= limit {
+            log::info!("Limit of {limit} reached");
+            break;
         }
-        Err(error) => panic!("Error opening file {}: {}", filepath, error),
+        let record: User = match result {
+            Ok(value) => value,
+            Err(err) => panic!("Error: {}", err),
+        };
+        users.push(record);
     }
 
     log::info!("Finished reading {filepath}");
