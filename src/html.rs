@@ -206,6 +206,8 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
         })
         .collect();
 
+    repos.sort_by_key(|repo| repo.count);
+    repos.reverse();
     log::info!("collect_repos end");
     repos
 }
