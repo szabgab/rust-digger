@@ -73,11 +73,11 @@ pub struct Repo {
     pub bold: bool,
 }
 
-fn get_default_bold() -> bool {
+const fn get_default_bold() -> bool {
     false
 }
 
-fn get_default_count() -> usize {
+const fn get_default_count() -> usize {
     0
 }
 
@@ -85,7 +85,7 @@ fn get_default_percentage() -> String {
     String::from("0")
 }
 
-fn get_default_crates() -> Vec<Crate> {
+const fn get_default_crates() -> Vec<Crate> {
     vec![]
 }
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -131,11 +131,11 @@ fn empty_details() -> Details {
     Details::new()
 }
 
-fn empty_string() -> String {
+const fn empty_string() -> String {
     String::new()
 }
 
-fn get_zero() -> u16 {
+const fn get_zero() -> u16 {
     0
 }
 
