@@ -10,6 +10,7 @@
        <th>name</th>
        <th>platform</th>
        <th>crates</th>
+       <th>percentage</th>
       </tr>
       </thead>
     <tbody>
@@ -22,6 +23,7 @@
         {% endif %}
         <td>{% if repo.platform %} {{repo.platform}} {% else %} Unknown {% endif %}</td>
         <td>{{repo.count | commafy}}</td>
+        <td>{{repo.percentage}}%</td>
       </tr>
     {% endfor %}
     </tbody>
