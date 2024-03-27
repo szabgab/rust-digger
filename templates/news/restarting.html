@@ -69,19 +69,22 @@
         and there are a few (232) <a href="/vcs/github-with-www"><b>crates that link to www.github.com instead github.com</b></a>.
         I know both redirect to the correct place, but if you are looking for an easy PR, fixing these would be that.
     </li>
-    </ul>
-    <p>
+    <li>
         The biggest issue with the repositories is of course that there are <a href="/no-homepage-no-repo">24,013 crates that have no repository and no homepage</a><div class=""></div>
         Finding the repo, adding the <b>repository</b> field will help the connectivity.
         A much easier thing to do is to visit the <a href="/has-homepage-but-no-repo">3,292 crates that have homepage but no repository</a>.
         In many cases it would be enough to copy the content of the <b>homepage</b> field to the <b>repository</b> field.
-    </p>
-    <p>
+    </li>
+    <li>
         The lack of Continuous Integration for at least 42.6% of the crates show that there is still a lot to do on that front.
         I bet many of those don't have any tests either. If you have time, check out one of those crates.
         on <a href="/github-but-no-ci">GitHub</a> or on <a href="/gitlab-but-no-ci">GitLab</a>.
         Add tests if they don't have yet and add CI configuration.
-    </p>
+    </li>
+    <li>
+        Finally, you can help with the development of <a href="https://github.com/szabgab/rust-digger">Rust Digger</a> as well.
+    </li>
+    </ul>
 
     <h2>Rust Digger Stats from the <a href="/stats">stats page</a></h2>
 
@@ -121,6 +124,960 @@
       </tr>
      </tbody>
     </table>
+
+
+    <h2>VCS hosts from the <a href="/vcs/">VCS page</a></h2>
+
+    <table class="table">
+      <thead>
+      <tr>
+       <th>name</th>
+       <th>platform</th>
+       <th>crates</th>
+       <th>percentage</th>
+      </tr>
+      </thead>
+    <tbody>
+    
+      <tr>
+        
+           <td><a href="/vcs/github">GitHub</a></td>
+        
+        <td> GitHub </td>
+        <td>106,415</td>
+        <td>75.55%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/no-repo"><b>Has no repository</b></a></td>
+        
+        <td> Unknown </td>
+        <td>27,305</td>
+        <td>19.38%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/gitlab">GitLab</a></td>
+        
+        <td> GitLab </td>
+        <td>3,601</td>
+        <td>2.55%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/other-repos"><b>Other repositories we don't recognize</b></a></td>
+        
+        <td> Unknown </td>
+        <td>864</td>
+        <td>0.61%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/codeberg">Codeberg</a></td>
+        
+        <td> Unknown </td>
+        <td>464</td>
+        <td>0.32%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/srht">srht</a></td>
+        
+        <td> Unknown </td>
+        <td>410</td>
+        <td>0.29%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/repo-with-http"><b>Repo with http</b></a></td>
+        
+        <td> Unknown </td>
+        <td>306</td>
+        <td>0.21%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/github-with-www"><b>GitHub with www</b></a></td>
+        
+        <td> Unknown </td>
+        <td>233</td>
+        <td>0.16%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/gitee">Gitee</a></td>
+        
+        <td> Unknown </td>
+        <td>166</td>
+        <td>0.11%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/freedesktop">Free Desktop</a></td>
+        
+        <td> GitLab </td>
+        <td>130</td>
+        <td>0.09%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/bitbucket">Bitbucket</a></td>
+        
+        <td> Unknown </td>
+        <td>119</td>
+        <td>0.08%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/gnome">Gnome</a></td>
+        
+        <td> GitLab </td>
+        <td>75</td>
+        <td>0.05%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/asonix">Asonix</a></td>
+        
+        <td> Forgejo </td>
+        <td>70</td>
+        <td>0.04%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/torproject">Tor Project</a></td>
+        
+        <td> GitLab </td>
+        <td>62</td>
+        <td>0.04%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/redox-os">Redox OS</a></td>
+        
+        <td> GitLab </td>
+        <td>51</td>
+        <td>0.03%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/pijul_com">pijul.com</a></td>
+        
+        <td> Unknown </td>
+        <td>48</td>
+        <td>0.03%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/qrnch_tech">Qrnch tech</a></td>
+        
+        <td> Unknown </td>
+        <td>36</td>
+        <td>0.02%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/sourcehut">sourcehut</a></td>
+        
+        <td> Unknown </td>
+        <td>35</td>
+        <td>0.02%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/debian">Debian</a></td>
+        
+        <td> GitLab </td>
+        <td>28</td>
+        <td>0.01%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/framagit.org">framagit.org</a></td>
+        
+        <td> GitLab </td>
+        <td>23</td>
+        <td>0.01%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/deuxfleurs">deuxfleurs</a></td>
+        
+        <td> Forgejo </td>
+        <td>19</td>
+        <td>0.01%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/cronce">Cronce</a></td>
+        
+        <td> GitLab </td>
+        <td>19</td>
+        <td>0.01%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/hatter">hatter</a></td>
+        
+        <td> Gitea </td>
+        <td>15</td>
+        <td>0.01%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/moparisthebest">moparisthebest</a></td>
+        
+        <td> Gitea </td>
+        <td>13</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/e3t">e3t</a></td>
+        
+        <td> Unknown </td>
+        <td>13</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/wikimedia">Wikimedia</a></td>
+        
+        <td> GitLab </td>
+        <td>12</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/pipapo">pipapo</a></td>
+        
+        <td> Gitea </td>
+        <td>12</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/uni-stuttgart">University Stuttgart</a></td>
+        
+        <td> Gitea </td>
+        <td>11</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/openlogisticsfoundation">Open Logistics Foundation</a></td>
+        
+        <td> GitLab </td>
+        <td>11</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/opencode">Open CoDE</a></td>
+        
+        <td> GitLab </td>
+        <td>11</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/cscherr">cscherr</a></td>
+        
+        <td> Forgejo </td>
+        <td>11</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/scd31">scd31</a></td>
+        
+        <td> GitLab </td>
+        <td>10</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/picodata">picodata</a></td>
+        
+        <td> GitLab </td>
+        <td>10</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/kitware">kitware</a></td>
+        
+        <td> GitLab </td>
+        <td>10</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/bauke">bauke</a></td>
+        
+        <td> Forgejo </td>
+        <td>10</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/philomathiclife">Philomathic Life</a></td>
+        
+        <td> Unknown </td>
+        <td>9</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/gitgud">gitgud</a></td>
+        
+        <td> GitLab </td>
+        <td>9</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/mozilla">mozilla</a></td>
+        
+        <td> Mercurial </td>
+        <td>8</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/lcr">LCR Code</a></td>
+        
+        <td> GitLab </td>
+        <td>8</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/fem.mint.lgbt">fem.mint.lgbt</a></td>
+        
+        <td> Forgejo </td>
+        <td>7</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/computer.surgery">computer.surgery</a></td>
+        
+        <td> GitLab </td>
+        <td>7</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/communiquons">communiquons</a></td>
+        
+        <td> Gitea </td>
+        <td>7</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/chiselapp">chiselapp</a></td>
+        
+        <td> Fossil </td>
+        <td>7</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/alienscience">alienscience</a></td>
+        
+        <td> Forgejo </td>
+        <td>7</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/4neko">4neko</a></td>
+        
+        <td> Gitea </td>
+        <td>7</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/themackabu">themackabu</a></td>
+        
+        <td> GitLab </td>
+        <td>6</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/kernel">Kernel</a></td>
+        
+        <td> Cgit </td>
+        <td>6</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/colean">colean</a></td>
+        
+        <td> Forgejo </td>
+        <td>6</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/batsense.net">batsense.net</a></td>
+        
+        <td> Forgejo </td>
+        <td>6</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/3lp.cx">3lp.cx</a></td>
+        
+        <td> Gitea </td>
+        <td>6</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/vdx-hu">vdx.hu</a></td>
+        
+        <td> Forgejo </td>
+        <td>5</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/syndicate-lang">Syndicate-lang</a></td>
+        
+        <td> Forgejo </td>
+        <td>5</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/openprivacy">Open Privacy</a></td>
+        
+        <td> Gitea </td>
+        <td>5</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/notabug">notabug</a></td>
+        
+        <td> Unknown </td>
+        <td>5</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/ngni.us">ngni.us</a></td>
+        
+        <td> Forgejo </td>
+        <td>5</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/softwareheritage">Software Heritage</a></td>
+        
+        <td> GitLab </td>
+        <td>4</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/mentality">mentality</a></td>
+        
+        <td> Gitea </td>
+        <td>4</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/lightsout">Lightsout Games</a></td>
+        
+        <td> Gitea </td>
+        <td>4</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/jekel.ca">jekel.ca</a></td>
+        
+        <td> Gitea </td>
+        <td>4</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/cern">CERN</a></td>
+        
+        <td> GitLab </td>
+        <td>4</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/vwolfe">vwolfe</a></td>
+        
+        <td> Forgejo </td>
+        <td>3</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/skreutz">skreutz</a></td>
+        
+        <td> Cgit </td>
+        <td>3</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/orbitsolutions">orbitsolutions</a></td>
+        
+        <td> Gitea </td>
+        <td>3</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/midefos">Midefos</a></td>
+        
+        <td> Gitea </td>
+        <td>3</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/in2p3">in2p3.fr</a></td>
+        
+        <td> GitLab </td>
+        <td>3</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/geomar">geomar</a></td>
+        
+        <td> GitLab </td>
+        <td>3</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/flying-kestrel">flying-kestrel</a></td>
+        
+        <td> Unknown </td>
+        <td>3</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/fizz_buzz">fizz.buzz</a></td>
+        
+        <td> Gitea </td>
+        <td>3</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/vanten-s.com">vanten-s.com</a></td>
+        
+        <td> Forgejo </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/sourceforge">sourceforge</a></td>
+        
+        <td> Unknown </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/rtng">rtng</a></td>
+        
+        <td> Gitea </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/pijul_org">pijul.org</a></td>
+        
+        <td> Unknown </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/lemonsh">lemonsh</a></td>
+        
+        <td> Forgejo </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/jeffa">Jeffa</a></td>
+        
+        <td> Gitea </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/envs">envs</a></td>
+        
+        <td> Gitea </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/duguying">duguying</a></td>
+        
+        <td> Gitea </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/dubzland">Dubzland</a></td>
+        
+        <td> GitLab </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/cyplo.dev">cyplo.dev</a></td>
+        
+        <td> Forgejo </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/based.computer">based.computer</a></td>
+        
+        <td> Forgejo </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/arielaw.ar">arielaw.ar</a></td>
+        
+        <td> Forgejo </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/archlinux">archlinux</a></td>
+        
+        <td> GitLab </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/apple_bear">Apple Bear</a></td>
+        
+        <td> Gitea </td>
+        <td>2</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/whoisthisjoker">whoisthisjoker</a></td>
+        
+        <td> Gitea </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/txmn">txmn</a></td>
+        
+        <td> Forgejo </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/tozt">tozt</a></td>
+        
+        <td> Cgit </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/simaek">simaek</a></td>
+        
+        <td> Gitea </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/sergeych.net">sergeych.net</a></td>
+        
+        <td> Gitea </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/reclaimprotocol">reclaimprotocol</a></td>
+        
+        <td> GitLab </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/radial">radial</a></td>
+        
+        <td> Forgejo </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/panter">panter</a></td>
+        
+        <td> GitLab </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/onders.org">onders.org</a></td>
+        
+        <td> Forgejo </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/latte">latte</a></td>
+        
+        <td> Gitea </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/jesterpm">jesterpm</a></td>
+        
+        <td> Cgit </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/hrzn">hrzn</a></td>
+        
+        <td> Forgejo </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/hedwing.dev">hedwing.dev</a></td>
+        
+        <td> Gitea </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/git.gay">git.gay</a></td>
+        
+        <td> Forgejo </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/flueren.eu">flueren.eu</a></td>
+        
+        <td> Gitea </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/disroot">Disroot</a></td>
+        
+        <td> Forgejo </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/buny.computer">buny.computer</a></td>
+        
+        <td> Forgejo </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/bitcoin_ninja">Bitcoin Ninja</a></td>
+        
+        <td> Unknown </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/ascee.nl">ascee.nl</a></td>
+        
+        <td> Gitea </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/aikuro.net">aikuro.net</a></td>
+        
+        <td> Gitea </td>
+        <td>1</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/meli-email.org">meli-email.org</a></td>
+        
+        <td> Gitea </td>
+        <td>0</td>
+        <td>0%</td>
+      </tr>
+    
+      <tr>
+        
+           <td><a href="/vcs/dragonma">dragonma</a></td>
+        
+        <td> Cgit </td>
+        <td>0</td>
+        <td>0%</td>
+      </tr>
+    
+    </tbody>
+    </table>
+
 
    </div>
   </div>
