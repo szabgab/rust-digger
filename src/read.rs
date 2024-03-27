@@ -4,12 +4,12 @@ use std::fs::File;
 
 use rust_digger::{CrateOwner, CratesByOwner, Owners, Team, User};
 
-pub fn read_teams(users: &mut Vec<User>, limit: u32) {
+pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error>> {
     let filepath = "data/data/teams.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
 
-    let file = File::open(filepath).unwrap();
+    let file = File::open(filepath)?;
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
         count += 1;
@@ -17,7 +17,7 @@ pub fn read_teams(users: &mut Vec<User>, limit: u32) {
             log::info!("Limit of {limit} reached");
             break;
         }
-        let record: Team = result.unwrap();
+        let record: Team = result?;
         let user = User {
             gh_avatar: record.avatar,
             gh_login: record.login,
@@ -32,6 +32,7 @@ pub fn read_teams(users: &mut Vec<User>, limit: u32) {
     }
 
     log::info!("Finished reading {filepath}");
+    Ok(())
 }
 
 pub fn read_users(limit: u32) -> Vec<User> {
