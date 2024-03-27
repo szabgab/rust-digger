@@ -1,222 +1,284 @@
 - display: GitHub
   name: github
   url: https://github.com/
+  platform: GitHub
 - display: GitLab
   name: gitlab
   url: https://gitlab.com/
+  platform: GitLab
 - display: Codeberg
   name: codeberg
   url: https://codeberg.org/
 - display: Gitee
   name: gitee
   url: https://gitee.com/
-- display: Tor Project (GitLab)
+- display: Tor Project
   name: torproject
   url: https://gitlab.torproject.org/
-- display: Free Desktop (GitLab)
+  platform: GitLab
+- display: Free Desktop
   name: freedesktop
   url: https://gitlab.freedesktop.org/
-- display: CERN (GitLab)
+  platform: GitLab
+- display: CERN
   name: cern
   url: https://gitlab.cern.ch/
-- display: Wikimedia (GitLab)
+  platform: GitLab
+- display: Wikimedia
   name: wikimedia
   url: https://gitlab.wikimedia.org/
+  platform: GitLab
 - display: e3t
   name: e3t
   url: https://git.e3t.cc/
 - display: srht
   name: srht
   url: https://git.sr.ht/
-- display: Open Privacy (Gitea)
+- display: Open Privacy
   name: openprivacy
   url: https://git.openprivacy.ca/
-- display: Cronce (GitLab)
+  platform: Gitea
+- display: Cronce
   name: cronce
   url: https://gitlab.cronce.io/
-- display: Gnome (GitLab)
+  platform: GitLab
+- display: Gnome
   name: gnome
   url: https://gitlab.gnome.org/
+  platform: GitLab
 - display: Bitbucket
   name: bitbucket
   url: https://bitbucket.org/
-- display: Lightsout Games (Gitea)
+- display: Lightsout Games
   name: lightsout
   url: https://labs.lightsout.games/
-- display: Redox OS (GitLab)
+  platform: Gitea
+- display: Redox OS
   name: redox-os
   url: https://gitlab.redox-os.org/
-- display: Kernel (Cgit)
+  platform: GitLab
+- display: Kernel
   name: kernel
   url: https://git.kernel.org/
-- display: Open CoDE (GitLab)
+  platform: Cgit
+- display: Open CoDE
   name: opencode
   url: https://gitlab.opencode.de/
-- display: in2p3.fr (GitLab)
+  platform: GitLab
+- display: in2p3.fr
   name: in2p3
   url: https://gitlab.in2p3.fr/
-- display: Midefos (Gitea)
+  platform: GitLab
+- display: Midefos
   name: midefos
   url: https://git.midefos.com/
-- display: Open Logistics Foundation (GitLab)
+  platform: Gitea
+- display: Open Logistics Foundation
   name: openlogisticsfoundation
   url: https://git.openlogisticsfoundation.org
+  platform: GitLab
 - display: Qrnch tech
   name: qrnch_tech
   url: https://repos.qrnch.tech/
-- display: LCR Code (GitLab)
+- display: LCR Code
   name: lcr
   url: https://lab.lcr.gr/
-- display: Apple Bear (Gitea)
+  platform: GitLab
+- display: Apple Bear
   name: apple_bear
   url: https://apple-bear.com/gitea/
-- display: scd31 (GitLab)
+  platform: Gitea
+- display: scd31
   name: scd31
   url: https://gitlab.scd31.com/
-- display: Disroot (Forgejo)
+  platform: GitLab
+- display: Disroot
   name: disroot
   url: https://git.disroot.org/
-- display: Asonix (Forgejo)
+  platform: Forgejo
+- display: Asonix
   name: asonix
   url: https://git.asonix.dog/
-- display: University Stuttgart (Gitea)
+  platform: Forgejo
+- display: University Stuttgart
   name: uni-stuttgart
   url: https://egit.irs.uni-stuttgart.de/
-- display: Jeffa (Gitea)
+  platform: Gitea
+- display: Jeffa
   name: jeffa
   url: https://git.jeffa.io/
-- display: Dubzland (GitLab)
+  platform: Gitea
+- display: Dubzland
   name: dubzland
   url: https://git.dubzland.com/
+  platform: GitLab
 - display: Bitcoin Ninja
   name: bitcoin_ninja
   url: https://git.bitcoin.ninja/
-- display: vwolfe (Forgejo)
+- display: vwolfe
   name: vwolfe
   url: https://git.vwolfe.io/
-- display: skreutz (cgit)
+  platform: Forgejo
+- display: skreutz
   name: skreutz
   url: https://git.skreutz.com/
-- display: deuxfleurs (Forgejo)
+  platform: Cgit
+- display: deuxfleurs
   name: deuxfleurs
   url: https://git.deuxfleurs.fr/
-- display: 4neko (Gitea)
+  platform: Forgejo
+- display: 4neko
   name: 4neko
   url: https://repo.4neko.org/
+  platform: Gitea
 - display: pijul
   name: pijul
   url: https://nest.pijul.com/
-- display: themackabu (GitLab)
+- display: themackabu
   name: themackabu
   url: https://lab.themackabu.dev/
-- display: cscherr (Forgejo)
+  platform: GitLab
+- display: cscherr
   name: cscherr
   url: https://git.cscherr.de/
-- display: kitware (GitLab)
+  platform: Forgejo
+- display: kitware
   name: kitware
   url: https://gitlab.kitware.com/
-- display: reclaimprotocol (GitLab)
+  platform: GitLab
+- display: reclaimprotocol
   name: reclaimprotocol
   url: https://gitlab.reclaimprotocol.org/
-- display: Software Heritage (GitLab)
+  platform: GitLab
+- display: Software Heritage
   name: softwareheritage
   url: https://gitlab.softwareheritage.org/
-- display: Syndicate-lang (Forgejo)
+  platform: GitLab
+- display: Syndicate-lang
   name: syndicate-lang
   url: https://git.syndicate-lang.org/
-- display: txmn (Forgejo)
+  platform: Forgejo
+- display: txmn
   name: txmn
   url: https://git.txmn.tk/
-- display: radial (Forgejo)
+  platform: Forgejo
+- display: radial
   name: radial
   url: https://git.radial.gg/
-- display: picodata (GitLab)
+  platform: Forgejo
+- display: picodata
   name: picodata
   url: https://git.picodata.io/
-- display: Debian (GitLab)
+  platform: GitLab
+- display: Debian
   name: debian
   url: https://salsa.debian.org/
-- display: alienscience (Forgejo)
+  platform: GitLab
+- display: alienscience
   name: alienscience
   url: https://code.alienscience.org/
-- display: colean (Forgejo)
+  platform: Forgejo
+- display: colean
   name: colean
   url: https://git.colean.cc/
-- display: dragonma (cgit)
+  platform: Forgejo
+- display: dragonma
   name: dragonma
   url: http://git.dragonma.us/
-- display: simaek (Gitea)
+  platform: Cgit
+- display: simaek
   name: simaek
   url: https://code.simaek.com/
-- display: panter (GitLab)
+  platform: Gitea
+- display: panter
   name: panter
   url: https://git.panter.ch/
-- display: communiquons (Gitea)
+  platform: GitLab
+- display: communiquons
   name: communiquons
   url: https://gitea.communiquons.org/
-- display: hatter (Gitea)
+  platform: Gitea
+- display: hatter
   name: hatter
   url: https://git.hatter.ink/
+  platform: Gitea
 - display: sourcehut
   name: sourcehut
   url: https://sr.ht
-- display: chiselapp (Fossil)
+- display: chiselapp
   name: chiselapp
   url: https://chiselapp.com/
-- display: bauke (Forgejo)
+  platform: Fossil
+- display: bauke
   name: bauke
   url: https://git.bauke.xyz/
-- display: hrzn (Forgejo)
+  platform: Forgejo
+- display: hrzn
   name: hrzn
   url: https://hrzn.ee/
-- display: pipapo (Gitea)
+  platform: Forgejo
+- display: pipapo
   name: pipapo
   url: https://git.pipapo.org/
-- display: lemonsh (Forgejo)
+  platform: Gitea
+- display: lemonsh
   name: lemonsh
   url: https://git.lemonsh.moe/
-- display: jesterpm (cgit)
+  platform: Forgejo
+- display: jesterpm
   name: jesterpm
   url: https://git.jesterpm.net/
-- display: mentality (Gitea)
+  platform: Cgit
+- display: mentality
   name: mentality
   url: https://git.mentality.rip/
+  platform: Gitea
 - display: sourceforge
   name: sourceforge
   url: https://sourceforge.net/
-- display: tozt (cgit)
+- display: tozt
   name: tozt
   url: https://git.tozt.net/rbw
-- display: latte (Gitea)
+  platform: Cgit
+- display: latte
   name: latte
   url: https://git.latte.to/
-- display: mozilla (Mercurial)
+  platform: Gitea
+- display: mozilla
   name: mozilla
   url: https://hg.mozilla.org/
-- display: fizz.buzz (Gitea)
+  platform: Mercurial
+- display: fizz.buzz
   name: fizz_buzz
   url: https://code.fizz.buzz/
-- display: orbitsolutions (Gitea)
+  platform: Gitea
+- display: orbitsolutions
   name: orbitsolutions
   url: https://code.orbitsolutions.dev/
-- display: gitgud (GitLab)
+  platform: Gitea
+- display: gitgud
   name: gitgud
   url: https://gitgud.io/
-- display: duguying (Gitea)
+  platform: GitLab
+- display: duguying
   name: duguying
   url: https://git.duguying.net/
-- display: envs (Gitea)
+  platform: Gitea
+- display: envs
   name: envs
   url: https://git.envs.net/
-- display: rtng (Gitea)
+  platform: Gitea
+- display: rtng
   name: rtng
   url: https://git.rtng.org/
+  platform: Gitea
 - display: Philomathic Life
   name: philomathiclife
   url: https://git.philomathiclife.com/
-- display: moparisthebest (Gitea)
+- display: moparisthebest
   name: moparisthebest
   url: https://code.moparisthebest.com/
+  platform: Gitea
 
 
 

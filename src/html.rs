@@ -185,6 +185,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
         count: no_repo.len(),
         percentage: "0".to_string(),
         crates: no_repo,
+        platform: None,
     });
 
     repos.push(Repo {
@@ -194,6 +195,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
         count: other_repo.len(),
         percentage: "0".to_string(),
         crates: other_repo,
+        platform: None,
     });
 
     repos = repos
@@ -206,4 +208,9 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
 
     log::info!("collect_repos end");
     repos
+}
+
+#[test]
+fn test_get_repo_types() {
+    let _repos = get_repo_types();
 }

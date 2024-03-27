@@ -40,6 +40,19 @@ impl Default for Details {
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[non_exhaustive]
+pub enum RepoPlatform {
+    GitHub,
+    GitLab,
+    Gitea,
+    Cgit,
+    Forgejo,
+    Fossil,
+    Mercurial,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Repo {
     pub display: String,
     pub name: String,
@@ -53,6 +66,8 @@ pub struct Repo {
 
     #[serde(default = "get_default_crates")]
     pub crates: Vec<Crate>,
+
+    pub platform: Option<RepoPlatform>,
 }
 
 fn get_default_count() -> usize {

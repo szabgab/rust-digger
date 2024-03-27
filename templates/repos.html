@@ -8,6 +8,7 @@
       <thead>
       <tr>
        <th>name</th>
+       <th>platform</th>
        <th>crates</th>
       </tr>
       </thead>
@@ -15,6 +16,7 @@
     {% for repo in repos %}
       <tr>
         <td><a href="/vcs/{{repo.name | downcase}}">{{repo.display}}</a></td>
+        <td>{% if repo.platform %} {{repo.platform}} {% else %} Unknown {% endif %}</td>
         <td>{{repo.count | commafy}}</td>
       </tr>
     {% endfor %}
