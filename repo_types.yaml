@@ -131,8 +131,11 @@
   name: 4neko
   url: https://repo.4neko.org/
   platform: Gitea
-- display: pijul
-  name: pijul
+- display: pijul.org
+  name: pijul_org
+  url: https://nest.pijul.org/
+- display: pijul.com
+  name: pijul_com
   url: https://nest.pijul.com/
 - display: themackabu
   name: themackabu
@@ -306,6 +309,58 @@
   name: geomar
   url: https://git.geomar.de/
   platform: GitLab
+- display: computer.surgery
+  name: computer.surgery
+  url: https://or.computer.surgery/
+  platform: GitLab
+- display: archlinux
+  name: archlinux
+  url: https://gitlab.archlinux.org/
+  platform: GitLab
+- display: ngni.us
+  name: ngni.us
+  url: https://git.ngni.us/
+  platform: Forgejo
+- display: flying-kestrel
+  name: flying-kestrel
+  url: https://git.flying-kestrel.ca/
+- display: 3lp.cx
+  name: 3lp.cx
+  url: https://git.3lp.cx/
+  platform: Gitea
+- display: jekel.ca
+  name: jekel.ca
+  url: https://git.jekel.ca/
+  platform: Gitea
+- display: sergeych.net
+  name: sergeych.net
+  url: https://gitea.sergeych.net/
+  platform: Gitea
+- display: hedwing.dev
+  name: hedwing.dev
+  url: https://git.hedwing.dev/
+  platform: Gitea
+- display: meli-email.org
+  name: meli-email.org
+  url: https://git.meli-email.org/
+  platform: Gitea
+- display: arielaw.ar
+  name: arielaw.ar
+  url: https://git.arielaw.ar/
+  platform: Forgejo
+- display: cyplo.dev
+  name: cyplo.dev
+  url: https://git.cyplo.dev/
+  platform: Forgejo
+- display: onders.org
+  name: onders.org
+  url: https://git.onders.org/
+  platform: Forgejo
+- display: framagit.org
+  name: framagit.org
+  url: https://framagit.org/
+  platform: GitLab
+
 
 
 
