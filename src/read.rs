@@ -35,13 +35,13 @@ pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error
     Ok(())
 }
 
-pub fn read_users(limit: u32) -> Vec<User> {
+pub fn read_users(limit: u32) -> Result<Vec<User>, Box<dyn Error>> {
     let mut users: Vec<User> = vec![];
     let filepath = "data/data/users.csv";
     log::info!("Start reading {}", filepath);
     let mut count = 0;
 
-    let file = File::open(filepath).unwrap();
+    let file = File::open(filepath)?;
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
         count += 1;
@@ -49,12 +49,12 @@ pub fn read_users(limit: u32) -> Vec<User> {
             log::info!("Limit of {limit} reached");
             break;
         }
-        let record: User = result.unwrap();
+        let record: User = result?;
         users.push(record);
     }
 
     log::info!("Finished reading {filepath}");
-    users
+    Ok(users)
 }
 
 pub fn read_crate_owners(limit: u32) -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
