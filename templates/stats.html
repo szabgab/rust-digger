@@ -20,32 +20,32 @@
       </tr>
       <tr>
         <td><a href="/vcs/no-repo">No repository</a></td>
-        <td>{{no_repo | commafy}}</td>
+        <td>{{stats.no_repo | commafy}}</td>
         <td>{{no_repo_percentage}}%</td>
       </tr>
       <tr>
           <td><a href="/has-homepage-but-no-repo">Has homepage but no repository</a></td>
-          <td>{{home_page_but_no_repo | commafy}}</td>
+          <td>{{stats.home_page_but_no_repo | commafy}}</td>
           <td>{{home_page_but_no_repo_percentage}}%</td>
       </tr>
       <tr>
           <td><a href="/no-homepage-no-repo">No homepage and no repository</a></td>
-          <td>{{no_homepage_no_repo_crates | commafy}}</td>
+          <td>{{stats.no_homepage_no_repo_crates | commafy}}</td>
           <td>{{no_homepage_no_repo_crates_percentage}}%</td>
       </tr>
       <tr>
         <td><a href="/github-but-no-ci">On GitHub but no CI</a></td>
-        <td>{{github_but_no_ci | commafy}}</td>
+        <td>{{stats.github_but_no_ci | commafy}}</td>
         <td>{{github_but_no_ci_percentage}}%</td>
       </tr>
       <tr>
         <td><a href="/gitlab-but-no-ci">On GitLab but no CI</a></td>
-        <td>{{gitlab_but_no_ci | commafy}}</td>
+        <td>{{stats.gitlab_but_no_ci | commafy}}</td>
         <td>{{gitlab_but_no_ci_percentage}}%</td>
       </tr>
       <tr>
         <td><a href="/crates-without-owner-name">Crates without owner name</a></td>
-        <td>{{crates_without_owner_name | commafy}}</td>
+        <td>{{stats.crates_without_owner_name | commafy}}</td>
         <td>{{crates_without_owner_name_percentage}}%</td>
       </tr>
      </tbody>

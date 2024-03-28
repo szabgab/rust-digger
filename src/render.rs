@@ -341,17 +341,7 @@ fn generate_list_of_users(users: &Vec<User>) {
     log::info!("generate_list_of_users end");
 }
 
-#[allow(clippy::too_many_arguments)]
-fn render_stats_page(
-    crates: usize,
-    repos: &Vec<Repo>,
-    no_repo_count: usize,
-    home_page_but_no_repo: usize,
-    no_homepage_no_repo_crates: usize,
-    github_but_no_ci: usize,
-    gitlab_but_no_ci: usize,
-    crates_without_owner_name: usize,
-) {
+fn render_stats_page(crates: usize, repos: &Vec<Repo>, stats: &HashMap<&str, usize>) {
     log::info!("render_stats_page");
     let partials = load_templates().unwrap();
 
@@ -373,18 +363,13 @@ fn render_stats_page(
         //"crate":   krate,
         "total": crates,
         "repos": repos,
-        "no_repo": no_repo_count,
-        "no_repo_percentage": percentage(no_repo_count, crates),
-        "home_page_but_no_repo": home_page_but_no_repo,
-        "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo, crates),
-        "no_homepage_no_repo_crates": no_homepage_no_repo_crates,
-        "no_homepage_no_repo_crates_percentage": percentage(no_homepage_no_repo_crates, crates),
-        "github_but_no_ci": github_but_no_ci,
-        "github_but_no_ci_percentage": percentage(github_but_no_ci, crates),
-        "gitlab_but_no_ci": gitlab_but_no_ci,
-        "gitlab_but_no_ci_percentage": percentage(gitlab_but_no_ci, crates),
-        "crates_without_owner_name": crates_without_owner_name,
-        "crates_without_owner_name_percentage": percentage(crates_without_owner_name, crates),
+        "no_repo_percentage": percentage(stats["no_repo"], crates),
+        "home_page_but_no_repo_percentage":  percentage(stats["home_page_but_no_repo"], crates),
+        "no_homepage_no_repo_crates_percentage": percentage(stats["no_homepage_no_repo_crates"], crates),
+        "github_but_no_ci_percentage": percentage(stats["github_but_no_ci"], crates),
+        "gitlab_but_no_ci_percentage": percentage(stats["gitlab_but_no_ci"], crates),
+        "crates_without_owner_name_percentage": percentage(stats["crates_without_owner_name"], crates),
+        "stats": stats,
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
@@ -461,7 +446,7 @@ pub fn generate_robots_txt() {
 pub fn generate_pages(
     crates: &[Crate],
     repos: &Vec<Repo>,
-    no_repo_count: usize,
+    no_repo: usize,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
@@ -530,16 +515,16 @@ pub fn generate_pages(
 
     //log::info!("repos: {:?}", repos);
 
-    render_stats_page(
-        crates.len(),
-        repos,
-        no_repo_count,
-        home_page_but_no_repo,
-        no_homepage_no_repo_crates,
-        github_but_no_ci,
-        gitlab_but_no_ci,
-        crates_without_owner_name,
-    );
+    let stats = HashMap::from([
+        ("crates_without_owner_name", crates_without_owner_name),
+        ("home_page_but_no_repo", home_page_but_no_repo),
+        ("no_homepage_no_repo_crates", no_homepage_no_repo_crates),
+        ("github_but_no_ci", github_but_no_ci),
+        ("gitlab_but_no_ci", gitlab_but_no_ci),
+        ("no_repo", no_repo),
+    ]);
+
+    render_stats_page(crates.len(), repos, &stats);
 
     Ok(())
 }
