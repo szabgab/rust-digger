@@ -497,7 +497,7 @@ pub fn generate_pages(
         "Crates without owner name",
         "crates-without-owner-name",
         crates,
-        |krate| krate.owner_name.is_empty(),
+        |krate| no_owner_name(krate),
     )
     .unwrap();
 
@@ -506,7 +506,7 @@ pub fn generate_pages(
         "Crates without owner",
         "crates-without-owner",
         crates,
-        |krate| krate.owner_name.is_empty() && krate.owner_gh_login.is_empty(),
+        |krate| crate_has_no_owner(krate),
     )?;
 
     //log::info!("repos: {:?}", repos);
@@ -589,6 +589,14 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
     }
 
     true
+}
+
+fn no_owner_name(krate: &Crate) -> bool {
+    krate.owner_name.is_empty()
+}
+
+fn crate_has_no_owner(krate: &Crate) -> bool {
+    krate.owner_name.is_empty() && krate.owner_gh_login.is_empty()
 }
 
 #[test]
