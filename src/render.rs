@@ -272,7 +272,7 @@ pub fn generate_user_pages(
             if let Some(crate_ids) = crates_by_owner.get(&user.id) {
                 //dbg!(crate_ids);
                 for crate_id in crate_ids {
-                    log::info!("crated_id: {}", &crate_id);
+                    log::info!("crate_id: {}", &crate_id);
                     //log::info!("crate_by_id: {:#?}", crate_by_id);
                     //log::info!("crate_by_id: {:#?}", crate_by_id.keys());
                     //dbg!(&crate_id);
