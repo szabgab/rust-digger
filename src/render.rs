@@ -353,6 +353,12 @@ fn render_stats_page(crates: usize, repos: &Vec<Repo>, stats: &HashMap<&str, usi
         .parse_file("templates/stats.html")
         .unwrap();
 
+    let vector = stats
+        .iter()
+        .map(|(field, value)| (field, percentage(*value, crates)))
+        .collect::<Vec<(&&str, String)>>();
+    let perc: HashMap<&&str, String> = HashMap::from_iter(vector);
+
     let filename = "_site/stats.html";
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
@@ -363,12 +369,7 @@ fn render_stats_page(crates: usize, repos: &Vec<Repo>, stats: &HashMap<&str, usi
         //"crate":   krate,
         "total": crates,
         "repos": repos,
-        "no_repo_percentage": percentage(stats["no_repo"], crates),
-        "home_page_but_no_repo_percentage":  percentage(stats["home_page_but_no_repo"], crates),
-        "no_homepage_no_repo_crates_percentage": percentage(stats["no_homepage_no_repo_crates"], crates),
-        "github_but_no_ci_percentage": percentage(stats["github_but_no_ci"], crates),
-        "gitlab_but_no_ci_percentage": percentage(stats["gitlab_but_no_ci"], crates),
-        "crates_without_owner_name_percentage": percentage(stats["crates_without_owner_name"], crates),
+        "percentage": perc,
         "stats": stats,
     });
     let html = template.render(&globals).unwrap();
