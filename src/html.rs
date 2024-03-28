@@ -5,7 +5,7 @@ use std::error::Error;
 use clap::Parser;
 
 mod macros;
-use macros::return_or_exit;
+use macros::ok_or_exit;
 
 pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
@@ -48,7 +48,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         read_crate_owners(args.limit)?;
     let mut users = read_users(args.limit)?;
     read_teams(&mut users, args.limit)?;
-    let mut crates: Vec<Crate> = return_or_exit!(read_crates(args.limit), 1);
+    let mut crates: Vec<Crate> = ok_or_exit!(read_crates(args.limit), 1);
 
     //dbg!(&crates_by_owner);
 

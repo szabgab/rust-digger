@@ -1,6 +1,6 @@
 #![allow(clippy::pub_with_shorthand)]
 
-macro_rules! return_or_exit {
+macro_rules! ok_or_exit {
     ($result: expr, $exit: expr) => {
         match $result {
             Ok(val) => val,
@@ -12,4 +12,4 @@ macro_rules! return_or_exit {
     };
 }
 
-pub(crate) use return_or_exit;
+pub(crate) use ok_or_exit;

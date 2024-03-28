@@ -9,7 +9,7 @@ use clap::Parser;
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
 mod macros;
-use macros::return_or_exit;
+use macros::ok_or_exit;
 
 use rust_digger::{get_owner_and_repo, load_details, read_crates, Crate};
 
@@ -63,7 +63,7 @@ fn main() {
 
     log::info!("Starting the clone process {}", args.limit);
 
-    let crates: Vec<Crate> = return_or_exit!(read_crates(0), 2);
+    let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 2);
     update_repositories(&crates, args.limit, args.recent, args.force);
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the clone process");
