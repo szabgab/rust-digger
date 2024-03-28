@@ -321,7 +321,6 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::Path;
     //use crate::repo_details_root;
 
     #[test]
@@ -380,17 +379,22 @@ mod tests {
 
     #[test]
     fn test_get_details_path() {
+        let expected = repo_details_root()
+            .join("github")
+            .join("foo")
+            .join("bar.json");
         assert_eq!(
             get_details_path("https://github.com/foo/bar")
                 .expect("X")
                 .as_path(),
-            Path::new(&format!("{:?}/github/foo/bar.json", repo_details_root()))
+            expected
         );
+
         assert_eq!(
             get_details_path("https://github.com/foo/bar/baz")
                 .expect("X")
                 .as_path(),
-            Path::new(&format!("{:?}/github/foo/bar.json", &repo_details_root()))
+            expected
         ); // TODO this should not work I think
         assert_eq!(get_details_path("https://zorg.com/foo/bar"), None);
     }
