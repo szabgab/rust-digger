@@ -212,21 +212,19 @@ pub fn percentage(num: usize, total: usize) -> String {
     (total / 100.0).to_string()
 }
 
-pub fn repo_details_root() -> String {
-    String::from("repo-details")
+pub fn repo_details_root() -> PathBuf {
+    PathBuf::from("repo-details")
 }
 
 pub fn get_details_path(repository: &str) -> Option<PathBuf> {
     let (host, owner, repo) = get_owner_and_repo(repository);
+
     if repo.is_empty() {
         return None;
     }
 
-    let mut details_path = PathBuf::new();
-    details_path.push(format!(
-        "{}/{host}/{owner}/{repo}.json",
-        repo_details_root()
-    ));
+    let mut details_path = repo_details_root().join(host).join(owner).join(repo);
+    details_path.set_extension("json");
     Some(details_path)
 }
 
@@ -267,16 +265,16 @@ pub fn save_details(repository: &str, details: &Details) {
     log::info!("save_details for '{}'", repository);
 
     let _res = fs::create_dir_all(repo_details_root());
-    let _res = fs::create_dir_all(format!("{}/github", repo_details_root()));
-    let _res = fs::create_dir_all(format!("{}/gitlab", repo_details_root()));
+    let _res = fs::create_dir_all(repo_details_root().join("github"));
+    let _res = fs::create_dir_all(repo_details_root().join("gitlab"));
 
     let (host, owner, repo) = get_owner_and_repo(repository);
     if owner.is_empty() {
         return; // this should never happen
     }
 
-    let _res = fs::create_dir_all(format!("{}/{host}/{owner}", repo_details_root()));
-    let details_path = format!("{}/{host}/{owner}/{repo}.json", repo_details_root());
+    let _res = fs::create_dir_all(repo_details_root().join(&host).join(&owner));
+    let details_path = format!("{:?}/{host}/{owner}/{repo}.json", repo_details_root());
     // if Path::new(&details_path).exists() {
     //     match File::open(details_path.to_string()) {
     // }
@@ -386,13 +384,13 @@ mod tests {
             get_details_path("https://github.com/foo/bar")
                 .expect("X")
                 .as_path(),
-            Path::new(&format!("{}/github/foo/bar.json", repo_details_root()))
+            Path::new(&format!("{:?}/github/foo/bar.json", repo_details_root()))
         );
         assert_eq!(
             get_details_path("https://github.com/foo/bar/baz")
                 .expect("X")
                 .as_path(),
-            Path::new(&format!("{}/github/foo/bar.json", &repo_details_root()))
+            Path::new(&format!("{:?}/github/foo/bar.json", &repo_details_root()))
         ); // TODO this should not work I think
         assert_eq!(get_details_path("https://zorg.com/foo/bar"), None);
     }
