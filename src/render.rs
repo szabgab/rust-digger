@@ -538,12 +538,12 @@ fn render_filtered_crates(
     Ok(filtered_crates.len())
 }
 
-fn no_homepage_no_repo(w: &Crate) -> bool {
-    w.homepage.is_empty() && w.repository.is_empty()
+fn no_homepage_no_repo(krate: &Crate) -> bool {
+    krate.homepage.is_empty() && krate.repository.is_empty()
 }
 
-fn has_homepage_no_repo(w: &Crate) -> bool {
-    !w.homepage.is_empty() && w.repository.is_empty()
+fn has_homepage_no_repo(krate: &Crate) -> bool {
+    !krate.homepage.is_empty() && krate.repository.is_empty()
 }
 
 // fn has_repo(w: &Crate) -> bool {
