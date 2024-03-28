@@ -9,6 +9,7 @@
 - display: Codeberg
   name: codeberg
   url: https://codeberg.org/
+  platform: Forgejo
 - display: Gitee
   name: gitee
   url: https://gitee.com/
