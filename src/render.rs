@@ -506,7 +506,7 @@ pub fn generate_pages(
     )
     .unwrap();
 
-    render_filtered_crates(
+    let crates_without_owner = render_filtered_crates(
         &String::from("_site/crates-without-owner.html"),
         &String::from("Crates without owner"),
         &String::from("crates-without-owner"),
@@ -517,6 +517,7 @@ pub fn generate_pages(
     //log::info!("repos: {:?}", repos);
 
     let stats = HashMap::from([
+        ("crates_without_owner", crates_without_owner),
         ("crates_without_owner_name", crates_without_owner_name),
         ("home_page_but_no_repo", home_page_but_no_repo),
         ("no_homepage_no_repo_crates", no_homepage_no_repo_crates),
