@@ -126,9 +126,9 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
 }
 
 pub fn render_list_page(
-    filename: &String,
-    title: &String,
-    preface: &String,
+    filename: &str,
+    title: &str,
+    preface: &str,
     crates: &[Crate],
 ) -> Result<(), Box<dyn Error>> {
     // log::info!("render {filename}");
@@ -458,58 +458,53 @@ pub fn generate_pages(
     render_list_crates_by_repo(repos)?;
     render_list_of_repos(repos);
 
-    render_list_page(
-        &String::from("_site/all.html"),
-        &String::from("Rust Digger"),
-        &String::from("all"),
-        crates,
-    )?;
+    render_list_page("_site/all.html", "Rust Digger", "all", crates)?;
 
     let github_but_no_ci = render_filtered_crates(
-        &String::from("_site/github-but-no-ci.html"),
-        &String::from("On GitHub but has no CI"),
-        &String::from("github-but-no-ci"),
+        "_site/github-but-no-ci.html",
+        "On GitHub but has no CI",
+        "github-but-no-ci",
         crates,
         |krate| on_github_but_no_ci(krate),
     )?;
 
     let gitlab_but_no_ci = render_filtered_crates(
-        &String::from("_site/gitlab-but-no-ci.html"),
-        &String::from("On GitLab but has no CI"),
-        &String::from("gitlab-but-no-ci"),
+        "_site/gitlab-but-no-ci.html",
+        "On GitLab but has no CI",
+        "gitlab-but-no-ci",
         crates,
         |krate| on_gitlab_but_no_ci(krate),
     )?;
 
     let home_page_but_no_repo = render_filtered_crates(
-        &String::from("_site/has-homepage-but-no-repo.html"),
-        &String::from("Has homepage, but no repository"),
-        &String::from("has-homepage-but-no-repo"),
+        "_site/has-homepage-but-no-repo.html",
+        "Has homepage, but no repository",
+        "has-homepage-but-no-repo",
         crates,
         |krate| has_homepage_no_repo(krate),
     )?;
 
     let no_homepage_no_repo_crates = render_filtered_crates(
-        &String::from("_site/no-homepage-no-repo.html"),
-        &String::from("No repository, no homepage"),
-        &String::from("no-homepage-no-repo"),
+        "_site/no-homepage-no-repo.html",
+        "No repository, no homepage",
+        "no-homepage-no-repo",
         crates,
         |krate| no_homepage_no_repo(krate),
     )?;
 
     let crates_without_owner_name = render_filtered_crates(
-        &String::from("_site/crates-without-owner-name.html"),
-        &String::from("Crates without owner name"),
-        &String::from("crates-without-owner-name"),
+        "_site/crates-without-owner-name.html",
+        "Crates without owner name",
+        "crates-without-owner-name",
         crates,
         |krate| krate.owner_name.is_empty(),
     )
     .unwrap();
 
     let crates_without_owner = render_filtered_crates(
-        &String::from("_site/crates-without-owner.html"),
-        &String::from("Crates without owner"),
-        &String::from("crates-without-owner"),
+        "_site/crates-without-owner.html",
+        "Crates without owner",
+        "crates-without-owner",
         crates,
         |krate| krate.owner_name.is_empty() && krate.owner_gh_login.is_empty(),
     )?;
@@ -532,9 +527,9 @@ pub fn generate_pages(
 }
 
 fn render_filtered_crates(
-    filename: &String,
-    title: &String,
-    preface: &String,
+    filename: &str,
+    title: &str,
+    preface: &str,
     crates: &[Crate],
     cond: fn(&&Crate) -> bool,
 ) -> Result<usize, Box<dyn Error>> {
