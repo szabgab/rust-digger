@@ -92,7 +92,7 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
                         // TODO there are some crates, eg. one called cargo-script where the
                         // updated_at field has no microseconds and it looks like this: 2023-09-18 01:44:10
                         log::error!(
-                            "Error parsing timestamp '{}' of {} ({})",
+                            "Error parsing timestamp '{}' of the crate {} ({})",
                             &krate.updated_at,
                             &krate.name,
                             err
@@ -144,7 +144,7 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
         let status = check_url(&krate.repository);
         if status != 200 {
             log::error!(
-                "Error accessing the repository {}. status: {}",
+                "Error accessing the repository '{}' status: {}",
                 &krate.repository,
                 status
             );
@@ -174,9 +174,14 @@ fn git_clone(url: &str, path: &str) {
         .output()
         .expect("Could not run");
     if result.status.success() {
-        log::info!("git_clone exit code {}", result.status);
+        log::info!("git_clone exit code: '{}'", result.status);
     } else {
-        log::warn!("git_clone exit code {}", result.status);
+        log::warn!(
+            "git_clone exit code: '{}' for url '{}' cloning to '{}'",
+            result.status,
+            url,
+            path
+        );
     }
 }
 
@@ -196,13 +201,23 @@ fn check_url(url: &str) -> reqwest::StatusCode {
 
 fn git_pull() {
     log::info!("git pull");
+    let current_dir = env::current_dir().unwrap();
+
     let result = Command::new("git")
         .arg("pull")
         .output()
         .expect("Could not run");
     if result.status.success() {
-        log::info!("git_pull exit code {}", result.status);
+        log::info!(
+            "git_pull exit code: '{}' in folder {:?}",
+            result.status,
+            current_dir
+        );
     } else {
-        log::warn!("git_pull exit code {}", result.status);
+        log::warn!(
+            "git_pull exit code: '{}' in folder {:?}",
+            result.status,
+            current_dir
+        );
     }
 }
