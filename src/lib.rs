@@ -124,7 +124,7 @@ pub struct User {
     pub name: String,
 
     #[serde(default = "get_zero")]
-    pub count: u16,
+    pub count: usize,
 }
 
 fn empty_details() -> Details {
@@ -135,7 +135,7 @@ const fn empty_string() -> String {
     String::new()
 }
 
-const fn get_zero() -> u16 {
+const fn get_zero() -> usize {
     0
 }
 

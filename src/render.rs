@@ -282,7 +282,7 @@ pub fn generate_user_pages(
                         selected_crates.push(crate_by_id[crate_id.as_str()]);
                     }
                 }
-                user.count = selected_crates.len() as u16;
+                user.count = selected_crates.len();
                 //users_with_crates.push(user);
 
                 #[allow(clippy::min_ident_chars)]
