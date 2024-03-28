@@ -55,10 +55,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
     load_details_for_all_the_crates(&mut crates);
 
-    let repos = collect_repos(&crates);
+    let (repos, no_repo_count) = collect_repos(&crates);
 
     std::thread::scope(|scope| {
-        scope.spawn(|| generate_pages(&crates, &repos).unwrap());
+        scope.spawn(|| generate_pages(&crates, &repos, no_repo_count).unwrap());
         scope.spawn(render_news_pages);
         scope.spawn(|| render_static_pages().unwrap());
         scope.spawn(|| generate_crate_pages(&crates).unwrap());
@@ -149,7 +149,7 @@ fn get_repo_types() -> Vec<Repo> {
     repos
 }
 
-fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
+fn collect_repos(crates: &Vec<Crate>) -> (Vec<Repo>, usize) {
     log::info!("collect_repos start");
     let mut repos: Vec<Repo> = get_repo_types();
     let mut no_repo: Vec<Crate> = vec![];
@@ -178,11 +178,12 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
         }
     }
 
+    let no_repo_count = no_repo.len();
     repos.push(Repo {
         display: String::from("Has no repository"),
         name: String::from("no-repo"),
         url: String::new(),
-        count: no_repo.len(),
+        count: no_repo_count,
         percentage: String::from("0"),
         crates: no_repo,
         platform: None,
@@ -213,7 +214,7 @@ fn collect_repos(crates: &Vec<Crate>) -> Vec<Repo> {
     });
 
     log::info!("collect_repos end");
-    repos
+    (repos, no_repo_count)
 }
 
 #[test]

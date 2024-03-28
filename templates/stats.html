@@ -19,6 +19,11 @@
           <td>100%</td>
       </tr>
       <tr>
+        <td><a href="/vcs/no-repo">No repository</a></td>
+        <td>{{no_repo | commafy}}</td>
+        <td>{{no_repo_percentage}}%</td>
+      </tr>
+      <tr>
           <td><a href="/has-homepage-but-no-repo">Has homepage but no repository</a></td>
           <td>{{home_page_but_no_repo | commafy}}</td>
           <td>{{home_page_but_no_repo_percentage}}%</td>
@@ -37,6 +42,11 @@
         <td><a href="/gitlab-but-no-ci">On GitLab but no CI</a></td>
         <td>{{gitlab_but_no_ci | commafy}}</td>
         <td>{{gitlab_but_no_ci_percentage}}%</td>
+      </tr>
+      <tr>
+        <td><a href="/crates-without-owner-name">Crates without owner name</a></td>
+        <td>{{crates_without_owner_name | commafy}}</td>
+        <td>{{crates_without_owner_name_percentage}}%</td>
       </tr>
      </tbody>
     </table>

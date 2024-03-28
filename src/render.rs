@@ -341,13 +341,16 @@ fn generate_list_of_users(users: &Vec<User>) {
     log::info!("generate_list_of_users end");
 }
 
+#[allow(clippy::too_many_arguments)]
 fn render_stats_page(
     crates: usize,
     repos: &Vec<Repo>,
+    no_repo_count: usize,
     home_page_but_no_repo: usize,
     no_homepage_no_repo_crates: usize,
     github_but_no_ci: usize,
     gitlab_but_no_ci: usize,
+    crates_without_owner_name: usize,
 ) {
     log::info!("render_stats_page");
     let partials = load_templates().unwrap();
@@ -370,6 +373,8 @@ fn render_stats_page(
         //"crate":   krate,
         "total": crates,
         "repos": repos,
+        "no_repo": no_repo_count,
+        "no_repo_percentage": percentage(no_repo_count, crates),
         "home_page_but_no_repo": home_page_but_no_repo,
         "home_page_but_no_repo_percentage":  percentage(home_page_but_no_repo, crates),
         "no_homepage_no_repo_crates": no_homepage_no_repo_crates,
@@ -378,7 +383,8 @@ fn render_stats_page(
         "github_but_no_ci_percentage": percentage(github_but_no_ci, crates),
         "gitlab_but_no_ci": gitlab_but_no_ci,
         "gitlab_but_no_ci_percentage": percentage(gitlab_but_no_ci, crates),
-
+        "crates_without_owner_name": crates_without_owner_name,
+        "crates_without_owner_name_percentage": percentage(crates_without_owner_name, crates),
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
@@ -448,7 +454,15 @@ pub fn generate_robots_txt() {
     let mut file = File::create("_site/robots.txt").unwrap();
     writeln!(&mut file, "{text}").unwrap();
 }
-pub fn generate_pages(crates: &[Crate], repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
+
+/// Generate various lists of crates:
+/// Filter the crates according to various rules and render them using `render_filtered_crates`.
+/// Then using the numbers returned by that function generate the stats page.
+pub fn generate_pages(
+    crates: &[Crate],
+    repos: &Vec<Repo>,
+    no_repo_count: usize,
+) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
     create_folders();
@@ -497,7 +511,7 @@ pub fn generate_pages(crates: &[Crate], repos: &Vec<Repo>) -> Result<(), Box<dyn
         |krate| no_homepage_no_repo(krate),
     )?;
 
-    render_filtered_crates(
+    let crates_without_owner_name = render_filtered_crates(
         &String::from("_site/crates-without-owner-name.html"),
         &String::from("Crates without owner name"),
         &String::from("crates-without-owner-name"),
@@ -519,10 +533,12 @@ pub fn generate_pages(crates: &[Crate], repos: &Vec<Repo>) -> Result<(), Box<dyn
     render_stats_page(
         crates.len(),
         repos,
+        no_repo_count,
         home_page_but_no_repo,
         no_homepage_no_repo_crates,
         github_but_no_ci,
         gitlab_but_no_ci,
+        crates_without_owner_name,
     );
 
     Ok(())
