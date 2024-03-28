@@ -124,7 +124,7 @@ fn run_cargo_in_docker() -> String {
         log::warn!("stderr: {}", core::str::from_utf8(&result.stderr).unwrap());
     }
 
-    core::str::from_utf8(&result.stdout).unwrap().to_string()
+    core::str::from_utf8(&result.stdout).unwrap().to_owned()
 }
 
 //git status --porcelain

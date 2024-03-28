@@ -37,9 +37,9 @@ fn main() {
     let extracted_dir = fs::read_dir(path::Path::new("."))
         .expect("should read directory extracted from archive")
         .filter_map(Result::ok)
-        .map(|entry| entry.file_name().to_str().unwrap().to_string())
+        .map(|entry| entry.file_name().to_str().unwrap().to_owned())
         .filter(|entry| entry.starts_with(&year_of_yesterday()))
-        .map(|entry| entry.split('/').next().unwrap().to_string())
+        .map(|entry| entry.split('/').next().unwrap().to_owned())
         .next()
         .expect("should find name of directory extracted from archive");
 
