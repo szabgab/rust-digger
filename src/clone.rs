@@ -167,21 +167,20 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
 
 fn git_clone(url: &str, path: &str) {
     log::info!("git clone {} {}", url, path);
-    let result = Command::new("git")
-        .arg("clone")
-        .arg(url)
-        .arg(path)
-        .output()
-        .expect("Could not run");
-    if result.status.success() {
-        log::info!("git_clone exit code: '{}'", result.status);
-    } else {
-        log::warn!(
-            "git_clone exit code: '{}' for url '{}' cloning to '{}'",
-            result.status,
-            url,
-            path
-        );
+    match Command::new("git").arg("clone").arg(url).arg(path).output() {
+        Ok(result) => {
+            if result.status.success() {
+                log::info!("git_clone exit code: '{}'", result.status);
+            } else {
+                log::warn!(
+                    "git_clone exit code: '{}' for url '{}' cloning to '{}'",
+                    result.status,
+                    url,
+                    path
+                );
+            }
+        }
+        Err(err) => log::error!("Could not run git_clone {url} {path} error: {err}"),
     }
 }
 
@@ -203,21 +202,22 @@ fn git_pull() {
     log::info!("git pull");
     let current_dir = env::current_dir().unwrap();
 
-    let result = Command::new("git")
-        .arg("pull")
-        .output()
-        .expect("Could not run");
-    if result.status.success() {
-        log::info!(
-            "git_pull exit code: '{}' in folder {:?}",
-            result.status,
-            current_dir
-        );
-    } else {
-        log::warn!(
-            "git_pull exit code: '{}' in folder {:?}",
-            result.status,
-            current_dir
-        );
+    match Command::new("git").arg("pull").output() {
+        Ok(result) => {
+            if result.status.success() {
+                log::info!(
+                    "git_pull exit code: '{}' in folder {:?}",
+                    result.status,
+                    current_dir
+                );
+            } else {
+                log::warn!(
+                    "git_pull exit code: '{}' in folder {:?}",
+                    result.status,
+                    current_dir
+                );
+            }
+        }
+        Err(err) => log::error!("Could not run git_pull in folder {current_dir:?} error: {err}"),
     }
 }
