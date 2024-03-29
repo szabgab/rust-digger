@@ -1,24 +1,29 @@
 use chrono::prelude::{DateTime, Utc};
 use liquid_filter_commafy::Commafy;
+use rust_digger::build_path;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
 use rust_digger::{get_owner_and_repo, percentage};
 
 const URL: &str = "https://rust-digger.code-maven.com";
 
+fn get_site_folder() -> PathBuf {
+    PathBuf::from("_site")
+}
+
 pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
     log::info!("render_list_crates_by_repo start");
     for repo in repos {
         // dbg!(&repo);
         render_list_page(
-            &format!("_site/vcs/{}.html", repo.name),
+            build_path(get_site_folder(), &["vcs", &repo.name], Some("html")),
             &format!("Crates in {}", repo.display),
             &repo.name,
             &repo.crates,
@@ -126,7 +131,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
 }
 
 pub fn render_list_page(
-    filename: &str,
+    filename: PathBuf,
     title: &str,
     preface: &str,
     crates: &[Crate],
@@ -458,10 +463,15 @@ pub fn generate_pages(
     render_list_crates_by_repo(repos)?;
     render_list_of_repos(repos);
 
-    render_list_page("_site/all.html", "Rust Digger", "all", crates)?;
+    render_list_page(
+        get_site_folder().join("all.html"),
+        "Rust Digger",
+        "all",
+        crates,
+    )?;
 
     let github_but_no_ci = render_filtered_crates(
-        "_site/github-but-no-ci.html",
+        "github-but-no-ci.html",
         "On GitHub but has no CI",
         "github-but-no-ci",
         crates,
@@ -469,7 +479,7 @@ pub fn generate_pages(
     )?;
 
     let gitlab_but_no_ci = render_filtered_crates(
-        "_site/gitlab-but-no-ci.html",
+        "gitlab-but-no-ci.html",
         "On GitLab but has no CI",
         "gitlab-but-no-ci",
         crates,
@@ -477,7 +487,7 @@ pub fn generate_pages(
     )?;
 
     let home_page_but_no_repo = render_filtered_crates(
-        "_site/has-homepage-but-no-repo.html",
+        "has-homepage-but-no-repo.html",
         "Has homepage, but no repository",
         "has-homepage-but-no-repo",
         crates,
@@ -485,7 +495,7 @@ pub fn generate_pages(
     )?;
 
     let no_homepage_no_repo_crates = render_filtered_crates(
-        "_site/no-homepage-no-repo.html",
+        "no-homepage-no-repo.html",
         "No repository, no homepage",
         "no-homepage-no-repo",
         crates,
@@ -493,7 +503,7 @@ pub fn generate_pages(
     )?;
 
     let crates_without_owner_name = render_filtered_crates(
-        "_site/crates-without-owner-name.html",
+        "crates-without-owner-name.html",
         "Crates without owner name",
         "crates-without-owner-name",
         crates,
@@ -502,7 +512,7 @@ pub fn generate_pages(
     .unwrap();
 
     let crates_without_owner = render_filtered_crates(
-        "_site/crates-without-owner.html",
+        "crates-without-owner.html",
         "Crates without owner",
         "crates-without-owner",
         crates,
@@ -534,7 +544,12 @@ fn render_filtered_crates(
     cond: fn(&&Crate) -> bool,
 ) -> Result<usize, Box<dyn Error>> {
     let filtered_crates = crates.iter().filter(cond).cloned().collect::<Vec<Crate>>();
-    render_list_page(filename, title, preface, &filtered_crates)?;
+    render_list_page(
+        get_site_folder().join(filename),
+        title,
+        preface,
+        &filtered_crates,
+    )?;
     Ok(filtered_crates.len())
 }
 
