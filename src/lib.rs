@@ -273,7 +273,7 @@ pub fn save_details(repository: &str, details: &Details) {
     }
 
     let _res = fs::create_dir_all(repo_details_root().join(&host).join(&owner));
-    let details_path = format!("{:?}/{host}/{owner}/{repo}.json", repo_details_root());
+    let details_path = build_path(repo_details_root(), &[&host, &owner, &repo], Some("json"));
     // if Path::new(&details_path).exists() {
     //     match File::open(details_path.to_string()) {
     // }
