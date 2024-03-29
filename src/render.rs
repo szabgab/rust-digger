@@ -189,7 +189,7 @@ pub fn render_news_pages() {
         log::info!("news file: {:?}", entry.path());
         log::info!("{:?}", entry.path().strip_prefix("templates/"));
         let output_path =
-            Path::new("_site").join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
+            get_site_folder().join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
         let template = liquid::ParserBuilder::with_stdlib()
             .filter(Commafy)
             .partials(partials)
@@ -229,7 +229,7 @@ pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         .unwrap();
 
     for krate in crates {
-        let filename = format!("_site/crates/{}.html", krate.name);
+        let filename = build_path(get_site_folder(), &["crates", &krate.name], Some("html"));
         let utc: DateTime<Utc> = Utc::now();
         //log::info!("{:?}", krate);
         //std::process::exit(1);
@@ -293,7 +293,11 @@ pub fn generate_user_pages(
 
                 #[allow(clippy::min_ident_chars)]
                 selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
-                let filename = format!("_site/users/{}.html", user.gh_login.to_ascii_lowercase());
+                let filename = build_path(
+                    get_site_folder(),
+                    &["users", &user.gh_login.to_ascii_lowercase()],
+                    Some("html"),
+                );
                 let utc: DateTime<Utc> = Utc::now();
                 let globals = liquid::object!({
                     "version": format!("{VERSION}"),
@@ -333,7 +337,7 @@ fn generate_list_of_users(users: &Vec<User>) {
         .parse_file("templates/users.html")
         .unwrap();
 
-    let filename = "_site/users/index.html";
+    let filename = get_site_folder().join("users").join("index.html");
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
         "version": format!("{VERSION}"),
@@ -365,7 +369,7 @@ fn render_stats_page(crates: usize, repos: &Vec<Repo>, stats: &HashMap<&str, usi
         .collect::<Vec<(&&str, String)>>();
     let perc: HashMap<&&str, String> = HashMap::from_iter(vector);
 
-    let filename = "_site/stats.html";
+    let filename = get_site_folder().join("stats.html");
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
         "version": format!("{VERSION}"),
@@ -419,7 +423,7 @@ fn collect_paths(root: &Path) -> Vec<String> {
 }
 pub fn generate_sitemap() {
     log::info!("generate_sitemap");
-    let paths = collect_paths(Path::new("_site"));
+    let paths = collect_paths(&get_site_folder());
     //log::info!("{:?}", paths);
 
     let template = liquid::ParserBuilder::with_stdlib()
@@ -436,13 +440,13 @@ pub fn generate_sitemap() {
         "pages":    paths,
     });
     let html = template.render(&globals).unwrap();
-    let mut file = File::create("_site/sitemap.xml").unwrap();
+    let mut file = File::create(get_site_folder().join("sitemap.xml")).unwrap();
     writeln!(&mut file, "{html}").unwrap();
 }
 
 pub fn generate_robots_txt() {
     let text = format!("Sitemap: {URL}/sitemap.xml\n\nUser-agent: *\n");
-    let mut file = File::create("_site/robots.txt").unwrap();
+    let mut file = File::create(get_site_folder().join("robots.txt")).unwrap();
     writeln!(&mut file, "{text}").unwrap();
 }
 
@@ -458,7 +462,7 @@ pub fn generate_pages(
 
     create_folders();
 
-    fs::copy("digger.js", "_site/digger.js")?;
+    fs::copy("digger.js", get_site_folder().join("digger.js"))?;
 
     render_list_crates_by_repo(repos)?;
     render_list_of_repos(repos);
