@@ -583,7 +583,15 @@ fn render_filtered_crates(
     crates: &[Crate],
     cond: fn(&&Crate) -> bool,
 ) -> Result<usize, Box<dyn Error>> {
+    log::info!(
+        "render_filtered_crates number of crates: {}, {filename}",
+        crates.len()
+    );
     let filtered_crates = crates.iter().filter(cond).cloned().collect::<Vec<Crate>>();
+    log::info!(
+        "render_filtered_crates number of filtered crates: {}",
+        filtered_crates.len()
+    );
     render_list_page(
         get_site_folder().join(filename),
         title,

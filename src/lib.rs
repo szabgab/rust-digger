@@ -215,7 +215,7 @@ pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
     let repo_url = if let Some(value) = RE.captures(repository) {
         value
     } else {
-        log::warn!("No match for repo in {}", &repository);
+        log::warn!("No match for repo in '{}'", &repository);
         return (String::new(), String::new(), String::new());
     };
     let host = repo_url[1].to_lowercase();
@@ -278,7 +278,7 @@ pub fn load_details(repository: &str) -> Details {
 }
 
 pub fn save_details(repository: &str, details: &Details) {
-    log::info!("save_details for '{}'", repository);
+    log::info!("save_details for '{repository}'");
 
     let _res = fs::create_dir_all(repo_details_root());
     let _res = fs::create_dir_all(repo_details_root().join("github"));
@@ -291,6 +291,8 @@ pub fn save_details(repository: &str, details: &Details) {
 
     let _res = fs::create_dir_all(repo_details_root().join(&host).join(&owner));
     let details_path = build_path(repo_details_root(), &[&host, &owner, &repo], Some("json"));
+    // log::info!("details {:#?}", &details);
+    log::info!("Going to save in details_path {:?}", &details_path);
     // if Path::new(&details_path).exists() {
     //     match File::open(details_path.to_string()) {
     // }

@@ -65,6 +65,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         if seen.contains(&krate.repository.to_lowercase()) {
             continue;
         }
+        //log::info!("{:?}", seen);
         seen.insert(krate.repository.to_lowercase());
 
         let mut details = load_details(&krate.repository);
@@ -76,6 +77,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         }
         let current_dir = env::current_dir().unwrap();
         env::set_current_dir(&repo_path).unwrap();
+        log::info!("in folder: {:?}", env::current_dir().unwrap());
 
         if host == "github" {
             details.has_github_action = false;
