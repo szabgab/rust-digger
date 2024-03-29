@@ -223,8 +223,7 @@ pub fn get_details_path(repository: &str) -> Option<PathBuf> {
         return None;
     }
 
-    let mut details_path = repo_details_root().join(host).join(owner).join(repo);
-    details_path.set_extension("json");
+    let details_path = build_path(repo_details_root(), &[&host, &owner, &repo], Some("json"));
     Some(details_path)
 }
 
@@ -318,6 +317,18 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, String> {
     Ok(crates)
 }
 
+pub fn build_path(mut path: PathBuf, parts: &[&str], extension: Option<&str>) -> PathBuf {
+    for part in parts {
+        path = path.join(part);
+    }
+
+    if let Some(ext) = extension {
+        path.set_extension(ext);
+    };
+
+    path
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -397,5 +408,23 @@ mod tests {
             expected
         ); // TODO this should not work I think
         assert_eq!(get_details_path("https://zorg.com/foo/bar"), None);
+    }
+
+    #[test]
+    fn check_build_path() {
+        // empty
+        let path = build_path(PathBuf::from("root"), &[], None);
+        assert_eq!(path, PathBuf::from("root"));
+
+        let path = build_path(PathBuf::from("root"), &[], Some("rs"));
+        assert_eq!(path, PathBuf::from("root.rs"));
+
+        let path = build_path(PathBuf::from("root"), &["one", "two"], None);
+        let mut expected = PathBuf::from("root").join("one").join("two");
+        assert_eq!(path, expected);
+
+        let path = build_path(PathBuf::from("root"), &["one", "two"], Some("html"));
+        expected.set_extension("html");
+        assert_eq!(path, expected);
     }
 }
