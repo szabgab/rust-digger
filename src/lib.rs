@@ -192,6 +192,10 @@ pub type Owners = HashMap<String, String>;
 pub type CratesByOwner = HashMap<String, Vec<String>>;
 // type Users = HashMap<String, User>;
 
+pub fn get_repos_folder() -> PathBuf {
+    PathBuf::from("repos")
+}
+
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
     static RE: Lazy<Regex> =
         Lazy::new(|| Regex::new("^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());

@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::env;
 use std::fs;
 use std::path::Path;
-use std::path::PathBuf;
 use std::process::Command;
 
 use clap::Parser;
@@ -12,7 +11,7 @@ use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 mod macros;
 use macros::ok_or_exit;
 
-use rust_digger::{get_owner_and_repo, load_details, read_crates, Crate};
+use rust_digger::{get_owner_and_repo, get_repos_folder, load_details, read_crates, Crate};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -68,10 +67,6 @@ fn main() {
     update_repositories(&crates, args.limit, args.recent, args.force);
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the clone process");
-}
-
-fn get_repos_folder() -> PathBuf {
-    PathBuf::from("repos")
 }
 
 fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool) {

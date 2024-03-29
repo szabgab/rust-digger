@@ -76,7 +76,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 // fn save_repo_details(crates: &Vec<Crate>) {
 //     log::info!("start saving details");
 
-//     let _res = fs::create_dir_all("repos");
+//     let _res = fs::create_dir_all("repos"); // get_repos_folder()
 //     let _res = fs::create_dir_all("repos/github");
 //     let _res = fs::create_dir_all("repos/gitlab");
 

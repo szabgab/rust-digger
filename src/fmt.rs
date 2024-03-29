@@ -4,6 +4,8 @@ use std::process::Command;
 
 use clap::Parser;
 
+use rust_digger::get_repos_folder;
+
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
@@ -33,7 +35,7 @@ fn run_cargo_fmt(limit: u32) {
 
     build_docker_image();
     let mut count: u32 = 0;
-    let path = Path::new("repos");
+    let path = get_repos_folder();
     for host in path.read_dir().expect("read_dir call failed").flatten() {
         log::info!("host: {:?}", host.path());
         for user in host
