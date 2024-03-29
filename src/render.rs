@@ -474,6 +474,14 @@ pub fn generate_pages(
         crates,
     )?;
 
+    let has_cargo_toml_in_root = render_filtered_crates(
+        "has-cargo-toml-in-root.html",
+        "Has Cargo.toml file in the root",
+        "has-cargo-toml-in-root",
+        crates,
+        |krate| krate.details.cargo_toml_in_root,
+    )?;
+
     let has_rustfmt_toml = render_filtered_crates(
         "has-rustfmt-toml.html",
         "Has rustfmt.toml file",
@@ -560,6 +568,7 @@ pub fn generate_pages(
         ("has_rustfmt_toml", has_rustfmt_toml),
         ("has_dot_rustfmt_toml", has_dot_rustfmt_toml),
         ("has_both_rustfmt_toml", has_both_rustfmt_toml),
+        ("has_cargo_toml_in_root", has_cargo_toml_in_root),
     ]);
 
     render_stats_page(crates.len(), repos, &stats);
