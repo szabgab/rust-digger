@@ -96,6 +96,8 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
             details.has_gitlab_pipeline = gitlab_ci_file.exists();
         }
         details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
+        details.has_rustfmt_toml = Path::new("rustfmt.toml").exists();
+        details.has_dot_rustfmt_toml = Path::new(".rustfmt.toml").exists();
 
         if !host.is_empty() {
             details.commit_count = git_get_count();

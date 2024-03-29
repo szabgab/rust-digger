@@ -8,6 +8,7 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct Details {
     pub has_github_action: bool,
     pub has_gitlab_pipeline: bool,
@@ -17,6 +18,12 @@ pub struct Details {
 
     #[serde(default = "empty_string")]
     pub git_clone_error: String,
+
+    #[serde(default = "default_false")]
+    pub has_rustfmt_toml: bool,
+
+    #[serde(default = "default_false")]
+    pub has_dot_rustfmt_toml: bool,
 }
 
 impl Details {
@@ -27,6 +34,8 @@ impl Details {
             commit_count: 0,
             cargo_toml_in_root: false,
             cargo_fmt: String::new(),
+            has_rustfmt_toml: false,
+            has_dot_rustfmt_toml: false,
 
             git_clone_error: String::new(),
         }
@@ -137,6 +146,10 @@ const fn empty_string() -> String {
 
 const fn get_zero() -> usize {
     0
+}
+
+const fn default_false() -> bool {
+    false
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]

@@ -474,6 +474,22 @@ pub fn generate_pages(
         crates,
     )?;
 
+    let has_rustfmt_toml = render_filtered_crates(
+        "has-rustfmt-toml.html",
+        "Has rustfmt.toml file",
+        "has-rustfmt-toml",
+        crates,
+        |krate| krate.details.has_rustfmt_toml,
+    )?;
+
+    let has_dot_rustfmt_toml = render_filtered_crates(
+        "has-dot-rustfmt-toml.html",
+        "Has .rustfmt.toml file",
+        "has-dot-rustfmt-toml",
+        crates,
+        |krate| krate.details.has_dot_rustfmt_toml,
+    )?;
+
     let github_but_no_ci = render_filtered_crates(
         "github-but-no-ci.html",
         "On GitHub but has no CI",
@@ -533,6 +549,8 @@ pub fn generate_pages(
         ("github_but_no_ci", github_but_no_ci),
         ("gitlab_but_no_ci", gitlab_but_no_ci),
         ("no_repo", no_repo),
+        ("has_rustfmt_toml", has_rustfmt_toml),
+        ("has_dot_rustfmt_toml", has_dot_rustfmt_toml),
     ]);
 
     render_stats_page(crates.len(), repos, &stats);
