@@ -45,7 +45,7 @@ pub fn render_list_of_repos(repos: &Vec<Repo>) {
         .parse_file("templates/repos.html")
         .unwrap();
 
-    let filename = "_site/vcs/index.html";
+    let filename = get_site_folder().join("vcs").join("index.html");
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
         "version": format!("{VERSION}"),
@@ -123,7 +123,8 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
             .unwrap();
         let html = template.render(&globals).unwrap();
 
-        let mut file = File::create(format!("_site/{}.html", page.0)).unwrap();
+        let mut file =
+            File::create(build_path(get_site_folder(), &[page.0], Some("html"))).unwrap();
         writeln!(&mut file, "{html}").unwrap();
     }
     log::info!("render_static_pages end");
@@ -383,11 +384,10 @@ fn render_stats_page(crates: usize, repos: &Vec<Repo>, stats: &HashMap<&str, usi
 }
 
 fn create_folders() {
-    let _res = fs::create_dir_all("_site");
-    let _res = fs::create_dir_all("_site/crates");
-    let _res = fs::create_dir_all("_site/users");
-    let _res = fs::create_dir_all("_site/news");
-    let _res = fs::create_dir_all("_site/vcs");
+    let _res = fs::create_dir_all(get_site_folder());
+    for folder in ["crates", "users", "news", "vcs"] {
+        let _res = fs::create_dir_all(get_site_folder().join(folder));
+    }
 }
 
 fn collect_paths(root: &Path) -> Vec<String> {
