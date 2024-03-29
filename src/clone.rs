@@ -126,12 +126,7 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
             continue;
         }
 
-        log::info!(
-            "update ({}/{}) repository '{}'",
-            count,
-            limit,
-            krate.repository
-        );
+        log::info!("update ({count}/{limit}) repository '{}'", krate.repository);
         let owner_path = get_repos_folder().join(host).join(owner);
         let current_dir = env::current_dir().unwrap();
         log::info!(

@@ -5,7 +5,9 @@ use std::process::Command;
 
 use clap::Parser;
 
-use rust_digger::{get_owner_and_repo, load_details, read_crates, save_details, Crate};
+use rust_digger::{
+    get_owner_and_repo, get_repos_folder, load_details, read_crates, save_details, Crate,
+};
 
 mod macros;
 use macros::ok_or_exit;
@@ -67,7 +69,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
 
         let mut details = load_details(&krate.repository);
 
-        let repo_path = format!("repos/{host}/{owner}/{repo}");
+        let repo_path = get_repos_folder().join(&host).join(&owner).join(&repo);
         if !Path::new(&repo_path).exists() {
             log::warn!("Cloned path does not exist for {}", &krate.repository);
             continue;
