@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::env;
 use std::fs;
 use std::path::Path;
+use std::path::PathBuf;
 use std::process::Command;
 
 use clap::Parser;
@@ -69,6 +70,10 @@ fn main() {
     log::info!("Ending the clone process");
 }
 
+fn get_repos_folder() -> PathBuf {
+    PathBuf::from("repos")
+}
+
 fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool) {
     log::info!("start update repositories");
 
@@ -132,15 +137,15 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
             limit,
             krate.repository
         );
-        let owner_path = format!("repos/{host}/{owner}");
+        let owner_path = get_repos_folder().join(host).join(owner);
         let current_dir = env::current_dir().unwrap();
         log::info!(
-            "Creating owner_path '{}' while current_dir is {:?}",
+            "Creating owner_path {:?} while current_dir is {:?}",
             &owner_path,
             &current_dir
         );
         fs::create_dir_all(&owner_path).unwrap();
-        let repo_path = format!("{owner_path}/{repo}");
+        let repo_path = owner_path.join(&repo);
         let status = check_url(&krate.repository);
         if status != 200 {
             log::error!(
@@ -151,11 +156,11 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
             continue;
         }
         if Path::new(&repo_path).exists() {
-            log::info!("repo exist; cd to {}", &repo_path);
+            log::info!("repo exist; cd to {:?}", &repo_path);
             env::set_current_dir(&repo_path).unwrap();
             git_pull();
         } else {
-            log::info!("new repo; cd to {}", &owner_path);
+            log::info!("new repo; cd to {:?}", &owner_path);
             env::set_current_dir(owner_path).unwrap();
             git_clone(&krate.repository, &repo);
         }
