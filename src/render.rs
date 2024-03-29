@@ -490,6 +490,14 @@ pub fn generate_pages(
         |krate| krate.details.has_dot_rustfmt_toml,
     )?;
 
+    let has_both_rustfmt_toml = render_filtered_crates(
+        "has-both-rustfmt-toml.html",
+        "Has both rustfmt.toml and .rustfmt.toml file",
+        "has-both-rustfmt-toml",
+        crates,
+        |krate| krate.details.has_rustfmt_toml && krate.details.has_dot_rustfmt_toml,
+    )?;
+
     let github_but_no_ci = render_filtered_crates(
         "github-but-no-ci.html",
         "On GitHub but has no CI",
@@ -551,6 +559,7 @@ pub fn generate_pages(
         ("no_repo", no_repo),
         ("has_rustfmt_toml", has_rustfmt_toml),
         ("has_dot_rustfmt_toml", has_dot_rustfmt_toml),
+        ("has_both_rustfmt_toml", has_both_rustfmt_toml),
     ]);
 
     render_stats_page(crates.len(), repos, &stats);
