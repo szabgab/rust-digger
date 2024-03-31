@@ -427,6 +427,43 @@
 - display: atomgit.com
   name: atomgit.com
   url: https://atomgit.com/
+- display: voremicrocomputers.com
+  name: voremicrocomputers.com
+  url: https://git.voremicrocomputers.com/
+  platform: GitLab
+- display: cijber.net
+  name: cijber.net
+  url: https://git.cijber.net/
+  platform: Gitea
+- display: doggoat.de
+  name: doggoat.de
+  url: https://git.doggoat.de/
+  platform: Forgejo
+- display: kemitix.net
+  name: kemitix.net
+  url: https://git.kemitix.net/
+  platform: Forgejo
+- display: themackabu.dev
+  name: themackabu.dev
+  url: https://lab.themackabu.dev/
+  platform: GitLab
+- display: ablecorp.us
+  name: ablecorp.us
+  url: https://git.ablecorp.us/
+  platform: Gitea
+- display: hydrar.de
+  name: hydrar.de
+  url: https://git.hydrar.de/
+  platform: Gitea
+- display: swzry.com
+  name: swzry.com
+  url: https://git.swzry.com/
+  platform: Gogs
+- display: ewi.tudelft.nl
+  name: ewi.tudelft.nl
+  url: https://gitlab.ewi.tudelft.nl/
+  platform: GitLab
+
 
 
 
