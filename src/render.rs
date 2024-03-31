@@ -351,7 +351,7 @@ fn generate_list_of_users(users: &Vec<User>) {
     log::info!("generate_list_of_users end");
 }
 
-fn render_stats_page(crates: usize, repos: &Vec<Repo>, stats: &HashMap<&str, usize>) {
+fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>) {
     log::info!("render_stats_page");
     let partials = load_templates().unwrap();
 
@@ -378,7 +378,6 @@ fn render_stats_page(crates: usize, repos: &Vec<Repo>, stats: &HashMap<&str, usi
         //"user":    user,
         //"crate":   krate,
         "total": crates,
-        "repos": repos,
         "percentage": perc,
         "stats": stats,
     });
@@ -632,7 +631,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         ("has_cargo_toml_in_root", has_cargo_toml_in_root),
     ]);
 
-    render_stats_page(crates.len(), &repos, &stats);
+    render_stats_page(crates.len(), &stats);
 
     Ok(())
 }
