@@ -188,7 +188,7 @@
   platform: Forgejo
 - display: dragonma
   name: dragonma
-  url: http://git.dragonma.us/
+  url: https://git.dragonma.us/
   platform: Cgit
 - display: simaek
   name: simaek
