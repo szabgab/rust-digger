@@ -452,12 +452,19 @@ pub fn generate_robots_txt() {
 fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
     log::info!("collect_repos start");
     let mut repos: Vec<Repo> = get_repo_types();
-    let mut no_repo: Vec<Crate> = vec![];
+
+    let no_repo_count = render_filtered_crates(
+        "vcs/no-repo.html",
+        "Crates without repository", // Crates in Has no repository
+        "no-repo",
+        crates,
+        |krate| krate.repository.is_empty(),
+    )?;
+
     let mut other_repo: Vec<Crate> = vec![];
 
     for krate in crates {
         if krate.repository.is_empty() {
-            no_repo.push(krate.clone());
             continue;
         }
         let mut matched = false;
@@ -478,18 +485,6 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
         }
     }
 
-    let no_repo_count = no_repo.len();
-    repos.push(Repo {
-        display: String::from("Has no repository"),
-        name: String::from("no-repo"),
-        url: String::new(),
-        count: no_repo_count,
-        percentage: String::from("0"),
-        crates: no_repo,
-        platform: None,
-        bold: true,
-    });
-
     repos.push(Repo {
         display: String::from("Other repositories we don't recognize"),
         name: String::from("other-repos"),
@@ -509,11 +504,23 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
         })
         .collect();
 
+    render_list_crates_by_repo(&repos)?;
+
+    repos.push(Repo {
+        display: String::from("Has no repository"),
+        name: String::from("no-repo"),
+        url: String::new(),
+        count: no_repo_count,
+        percentage: percentage(no_repo_count, crates.len()),
+        crates: vec![],
+        platform: None,
+        bold: true,
+    });
+
     repos.sort_unstable_by(|repoa, repob| {
         (repob.count, repob.name.to_lowercase()).cmp(&(repoa.count, repoa.name.to_lowercase()))
     });
 
-    render_list_crates_by_repo(&repos)?;
     render_list_of_repos(&repos);
 
     log::info!("collect_repos end");
