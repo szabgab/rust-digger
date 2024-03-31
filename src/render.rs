@@ -449,7 +449,7 @@ pub fn generate_robots_txt() {
     writeln!(&mut file, "{text}").unwrap();
 }
 
-fn collect_repos(crates: &[Crate]) -> (Vec<Repo>, usize) {
+fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
     log::info!("collect_repos start");
     let mut repos: Vec<Repo> = get_repo_types();
     let mut no_repo: Vec<Crate> = vec![];
@@ -513,8 +513,11 @@ fn collect_repos(crates: &[Crate]) -> (Vec<Repo>, usize) {
         (repob.count, repob.name.to_lowercase()).cmp(&(repoa.count, repoa.name.to_lowercase()))
     });
 
+    render_list_crates_by_repo(&repos)?;
+    render_list_of_repos(&repos);
+
     log::info!("collect_repos end");
-    (repos, no_repo_count)
+    Ok(no_repo_count)
 }
 
 /// Generate various lists of crates:
@@ -523,14 +526,10 @@ fn collect_repos(crates: &[Crate]) -> (Vec<Repo>, usize) {
 pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
-    let (repos, no_repo) = collect_repos(crates);
-
     create_folders();
-
     fs::copy("digger.js", get_site_folder().join("digger.js"))?;
 
-    render_list_crates_by_repo(&repos)?;
-    render_list_of_repos(&repos);
+    let no_repo = collect_repos(crates)?;
 
     let _all = render_filtered_crates("all.html", "Rust Digger", "all", crates, |_krate| true)?;
 
@@ -614,8 +613,6 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         crates,
         |krate| crate_has_no_owner(krate),
     )?;
-
-    //log::info!("repos: {:?}", repos);
 
     let stats = HashMap::from([
         ("crates_without_owner", crates_without_owner),
