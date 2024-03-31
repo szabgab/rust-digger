@@ -450,22 +450,88 @@ pub fn generate_robots_txt() {
     writeln!(&mut file, "{text}").unwrap();
 }
 
+fn collect_repos(crates: &[Crate]) -> (Vec<Repo>, usize) {
+    log::info!("collect_repos start");
+    let mut repos: Vec<Repo> = get_repo_types();
+    let mut no_repo: Vec<Crate> = vec![];
+    let mut other_repo: Vec<Crate> = vec![];
+
+    for krate in crates {
+        if krate.repository.is_empty() {
+            no_repo.push(krate.clone());
+            continue;
+        }
+        let mut matched = false;
+        repos = repos
+            .into_iter()
+            .map(|mut repo| {
+                if krate.repository.starts_with(&repo.url) {
+                    repo.count += 1;
+                    matched = true;
+                    repo.crates.push(krate.clone());
+                }
+                repo
+            })
+            .collect();
+
+        if !matched {
+            other_repo.push(krate.clone());
+        }
+    }
+
+    let no_repo_count = no_repo.len();
+    repos.push(Repo {
+        display: String::from("Has no repository"),
+        name: String::from("no-repo"),
+        url: String::new(),
+        count: no_repo_count,
+        percentage: String::from("0"),
+        crates: no_repo,
+        platform: None,
+        bold: true,
+    });
+
+    repos.push(Repo {
+        display: String::from("Other repositories we don't recognize"),
+        name: String::from("other-repos"),
+        url: String::new(),
+        count: other_repo.len(),
+        percentage: String::from("0"),
+        crates: other_repo,
+        platform: None,
+        bold: true,
+    });
+
+    repos = repos
+        .into_iter()
+        .map(|mut repo| {
+            repo.percentage = percentage(repo.count, crates.len());
+            repo
+        })
+        .collect();
+
+    repos.sort_unstable_by(|repoa, repob| {
+        (repob.count, repob.name.to_lowercase()).cmp(&(repoa.count, repoa.name.to_lowercase()))
+    });
+
+    log::info!("collect_repos end");
+    (repos, no_repo_count)
+}
+
 /// Generate various lists of crates:
 /// Filter the crates according to various rules and render them using `render_filtered_crates`.
 /// Then using the numbers returned by that function generate the stats page.
-pub fn generate_pages(
-    crates: &[Crate],
-    repos: &Vec<Repo>,
-    no_repo: usize,
-) -> Result<(), Box<dyn Error>> {
+pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
+
+    let (repos, no_repo) = collect_repos(crates);
 
     create_folders();
 
     fs::copy("digger.js", get_site_folder().join("digger.js"))?;
 
-    render_list_crates_by_repo(repos)?;
-    render_list_of_repos(repos);
+    render_list_crates_by_repo(&repos)?;
+    render_list_of_repos(&repos);
 
     render_list_page(
         get_site_folder().join("all.html"),
@@ -571,7 +637,7 @@ pub fn generate_pages(
         ("has_cargo_toml_in_root", has_cargo_toml_in_root),
     ]);
 
-    render_stats_page(crates.len(), repos, &stats);
+    render_stats_page(crates.len(), &repos, &stats);
 
     Ok(())
 }
@@ -662,7 +728,19 @@ fn crate_has_no_owner(krate: &Crate) -> bool {
     krate.owner_name.is_empty() && krate.owner_gh_login.is_empty()
 }
 
+fn get_repo_types() -> Vec<Repo> {
+    let text = include_str!("../repo_types.yaml");
+
+    let repos: Vec<Repo> = serde_yaml::from_str(text).unwrap();
+    repos
+}
+
 #[test]
 fn check_load_templates() {
     let _partials = load_templates();
+}
+
+#[test]
+fn test_get_repo_types() {
+    let _repos = get_repo_types();
 }
