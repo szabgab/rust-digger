@@ -51,13 +51,14 @@ impl Default for Details {
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 #[non_exhaustive]
 pub enum RepoPlatform {
-    GitHub,
-    GitLab,
-    Gitea,
-    Cgit,
-    Forgejo,
-    Fossil,
-    Mercurial,
+    GitHub,    // https://github.com/
+    GitLab,    // https://gitlab.com/
+    Gitea,     // https://about.gitea.com/
+    Cgit,      // https://git.zx2c4.com/cgit/about/
+    Forgejo,   // https://forgejo.org/
+    Fossil,    // https://fossil-scm.org/
+    Mercurial, // https://www.mercurial-scm.org/
+    Gogs,      // https://gogs.io/
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
