@@ -461,7 +461,18 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
         |krate| krate.repository.is_empty(),
     )?;
 
-    let mut other_repo: Vec<Crate> = vec![];
+    let other_repo_count = render_filtered_crates(
+        "vcs/other-repos.html",
+        "Crates with other repositories we don't recognize",
+        "other-repos",
+        crates,
+        |krate| {
+            !(krate.repository.is_empty()
+                || repos
+                    .iter()
+                    .any(|repo| krate.repository.starts_with(&repo.url)))
+        },
+    )?;
 
     for krate in crates {
         if krate.repository.is_empty() {
@@ -479,22 +490,7 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
                 repo
             })
             .collect();
-
-        if !matched {
-            other_repo.push(krate.clone());
-        }
     }
-
-    repos.push(Repo {
-        display: String::from("Other repositories we don't recognize"),
-        name: String::from("other-repos"),
-        url: String::new(),
-        count: other_repo.len(),
-        percentage: String::from("0"),
-        crates: other_repo,
-        platform: None,
-        bold: true,
-    });
 
     repos = repos
         .into_iter()
@@ -505,6 +501,17 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
         .collect();
 
     render_list_crates_by_repo(&repos)?;
+
+    repos.push(Repo {
+        display: String::from("Other repositories we don't recognize"),
+        name: String::from("other-repos"),
+        url: String::new(),
+        count: other_repo_count,
+        percentage: percentage(other_repo_count, crates.len()),
+        crates: vec![],
+        platform: None,
+        bold: true,
+    });
 
     repos.push(Repo {
         display: String::from("Has no repository"),
