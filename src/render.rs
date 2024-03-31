@@ -18,21 +18,6 @@ fn get_site_folder() -> PathBuf {
     PathBuf::from("_site")
 }
 
-pub fn render_list_crates_by_repo(repos: &Vec<Repo>) -> Result<(), Box<dyn Error>> {
-    log::info!("render_list_crates_by_repo start");
-    for repo in repos {
-        // dbg!(&repo);
-        render_list_page(
-            build_path(get_site_folder(), &["vcs", &repo.name], Some("html")),
-            &format!("Crates in {}", repo.display),
-            &repo.name,
-            &repo.crates,
-        )?;
-    }
-    log::info!("render_list_crates_by_repo end");
-    Ok(())
-}
-
 pub fn render_list_of_repos(repos: &Vec<Repo>) {
     log::info!("render_list_of_repos start");
     let partials = load_templates().unwrap();
@@ -137,7 +122,7 @@ pub fn render_list_page(
     preface: &str,
     crates: &[Crate],
 ) -> Result<(), Box<dyn Error>> {
-    // log::info!("render {filename}");
+    log::info!("render_list_page: {filename:?}");
 
     let partials = load_templates().unwrap();
 
@@ -474,33 +459,24 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
         },
     )?;
 
-    for krate in crates {
-        if krate.repository.is_empty() {
-            continue;
-        }
-        let mut matched = false;
-        repos = repos
-            .into_iter()
-            .map(|mut repo| {
-                if krate.repository.starts_with(&repo.url) {
-                    repo.count += 1;
-                    matched = true;
-                    repo.crates.push(krate.clone());
-                }
-                repo
-            })
-            .collect();
-    }
-
     repos = repos
         .into_iter()
         .map(|mut repo| {
+            let count = render_filtered_crates(
+                &format!("vcs/{}.html", &repo.name),
+                &format!("Crates in {}", repo.display),
+                &repo.name,
+                crates,
+                |krate| krate.repository.starts_with(&repo.url),
+            )
+            .unwrap();
+
+            repo.count = count;
             repo.percentage = percentage(repo.count, crates.len());
+
             repo
         })
         .collect();
-
-    render_list_crates_by_repo(&repos)?;
 
     repos.push(Repo {
         display: String::from("Other repositories we don't recognize"),
