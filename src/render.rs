@@ -533,12 +533,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     render_list_crates_by_repo(&repos)?;
     render_list_of_repos(&repos);
 
-    render_list_page(
-        get_site_folder().join("all.html"),
-        "Rust Digger",
-        "all",
-        crates,
-    )?;
+    let _all = render_filtered_crates("all.html", "Rust Digger", "all", crates, |_krate| true)?;
 
     let has_cargo_toml_in_root = render_filtered_crates(
         "has-cargo-toml-in-root.html",
