@@ -2,5 +2,17 @@
     "rust-analyzer.linkedProjects": [
         "./Cargo.toml",
         "./Cargo.toml"
-    ]
+    ],
+    "search.exclude": {
+        "target/": true,
+        "_site/": true,
+        "db-dump.tar.gz": true,
+        "data/": true
+    },
+    "files.watcherExclude": {
+        ".git/**": true,
+        "target/**": true,
+        "_site/**": true,
+        "data/**": true
+  }
 }
