@@ -120,7 +120,7 @@ pub fn render_list_page(
     filename: PathBuf,
     title: &str,
     preface: &str,
-    crates: &[Crate],
+    crates: &[&Crate],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("render_list_page: {filename:?}");
 
@@ -634,7 +634,7 @@ fn render_filtered_crates(
         "render_filtered_crates number of crates: {}, {filename}",
         crates.len()
     );
-    let filtered_crates = crates.iter().filter(cond).cloned().collect::<Vec<Crate>>();
+    let filtered_crates = crates.iter().filter(cond).collect::<Vec<&Crate>>();
     log::info!(
         "render_filtered_crates number of filtered crates: {}",
         filtered_crates.len()
