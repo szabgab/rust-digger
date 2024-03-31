@@ -385,7 +385,48 @@
   name: vanten-s.com
   url: https://forgejo.vanten-s.com/
   platform: Forgejo
-
+- display: ueda.info.waseda
+  name: ueda.info.waseda.ac.jp
+  url: https://gitlab.ueda.info.waseda.ac.jp/
+  platform: GitLab
+- display: bues.ch
+  name: bues.ch
+  url: https://git.bues.ch/
+- display: catgirls.systems
+  name: catgirls.systems
+  url: https://git.catgirls.systems/
+  platform: Forgejo
+- display: fawkes.io
+  name: fawkes.io
+  url: https://git.fawkes.io/
+  platform: Gitea
+- display: franklinblanco.dev
+  name: franklinblanco.dev
+  url: https://git.franklinblanco.dev/
+  platform: Gitea
+- display: agnos.is
+  name: agnos.is
+  url: https://git.agnos.is/
+  platform: Forgejo
+- display: alemi.dev
+  name: alemi.dev
+  url: https://git.alemi.dev/
+  platform: Cgit
+- display: jellypro.xyz
+  name: jellypro.xyz
+  url: https://gitea.jellypro.xyz/
+  platform: Gitea
+- display: it-syndikat.org
+  name: it-syndikat.org
+  url: https://git.it-syndikat.org/
+  platform: Forgejo
+- display: shipyard.rs
+  name: shipyard.rs
+  url: https://git.shipyard.rs/
+  platform: Gitea
+- display: atomgit.com
+  name: atomgit.com
+  url: https://atomgit.com/
 
 
 
