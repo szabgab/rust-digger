@@ -645,7 +645,7 @@ fn render_filtered_crates(
     title: &str,
     preface: &str,
     crates: &[Crate],
-    cond: fn(&&Crate) -> bool,
+    cond: impl Fn(&&Crate) -> bool,
 ) -> Result<usize, Box<dyn Error>> {
     log::info!(
         "render_filtered_crates number of crates: {}, {filename}",
