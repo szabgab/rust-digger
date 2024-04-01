@@ -124,7 +124,8 @@ pub fn render_list_page(
 ) -> Result<(), Box<dyn Error>> {
     log::info!("render_list_page: {filename:?}");
 
-    let filepath = get_site_folder().join(filename);
+    let mut filepath = get_site_folder().join(filename);
+    filepath.set_extension("html");
 
     let partials = load_templates().unwrap();
 
@@ -441,7 +442,7 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
     let mut repos: Vec<Repo> = get_repo_types();
 
     let no_repo_count = render_filtered_crates(
-        "vcs/no-repo.html",
+        "vcs/no-repo",
         "Crates without repository", // Crates in Has no repository
         "no-repo",
         crates,
@@ -449,7 +450,7 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
     )?;
 
     let other_repo_count = render_filtered_crates(
-        "vcs/other-repos.html",
+        "vcs/other-repos",
         "Crates with other repositories we don't recognize",
         "other-repos",
         crates,
@@ -465,7 +466,7 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
         .into_iter()
         .map(|mut repo| {
             let count = render_filtered_crates(
-                &format!("vcs/{}.html", &repo.name),
+                &format!("vcs/{}", &repo.name),
                 &format!("Crates in {}", repo.display),
                 &repo.name,
                 crates,
@@ -523,10 +524,10 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
 
     let no_repo = collect_repos(crates)?;
 
-    let _all = render_filtered_crates("all.html", "Rust Digger", "all", crates, |_krate| true)?;
+    let _all = render_filtered_crates("all", "Rust Digger", "all", crates, |_krate| true)?;
 
     let has_cargo_toml_in_root = render_filtered_crates(
-        "has-cargo-toml-in-root.html",
+        "has-cargo-toml-in-root",
         "Has Cargo.toml file in the root",
         "has-cargo-toml-in-root",
         crates,
@@ -534,7 +535,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let has_rustfmt_toml = render_filtered_crates(
-        "has-rustfmt-toml.html",
+        "has-rustfmt-toml",
         "Has rustfmt.toml file",
         "has-rustfmt-toml",
         crates,
@@ -542,7 +543,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let has_dot_rustfmt_toml = render_filtered_crates(
-        "has-dot-rustfmt-toml.html",
+        "has-dot-rustfmt-toml",
         "Has .rustfmt.toml file",
         "has-dot-rustfmt-toml",
         crates,
@@ -550,7 +551,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let has_both_rustfmt_toml = render_filtered_crates(
-        "has-both-rustfmt-toml.html",
+        "has-both-rustfmt-toml",
         "Has both rustfmt.toml and .rustfmt.toml file",
         "has-both-rustfmt-toml",
         crates,
@@ -558,7 +559,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let github_but_no_ci = render_filtered_crates(
-        "github-but-no-ci.html",
+        "github-but-no-ci",
         "On GitHub but has no CI",
         "github-but-no-ci",
         crates,
@@ -566,7 +567,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let gitlab_but_no_ci = render_filtered_crates(
-        "gitlab-but-no-ci.html",
+        "gitlab-but-no-ci",
         "On GitLab but has no CI",
         "gitlab-but-no-ci",
         crates,
@@ -574,7 +575,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let home_page_but_no_repo = render_filtered_crates(
-        "has-homepage-but-no-repo.html",
+        "has-homepage-but-no-repo",
         "Has homepage, but no repository",
         "has-homepage-but-no-repo",
         crates,
@@ -582,7 +583,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let no_homepage_no_repo_crates = render_filtered_crates(
-        "no-homepage-no-repo.html",
+        "no-homepage-no-repo",
         "No repository, no homepage",
         "no-homepage-no-repo",
         crates,
@@ -590,7 +591,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let crates_without_owner_name = render_filtered_crates(
-        "crates-without-owner-name.html",
+        "crates-without-owner-name",
         "Crates without owner name",
         "crates-without-owner-name",
         crates,
@@ -599,7 +600,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     .unwrap();
 
     let crates_without_owner = render_filtered_crates(
-        "crates-without-owner.html",
+        "crates-without-owner",
         "Crates without owner",
         "crates-without-owner",
         crates,
