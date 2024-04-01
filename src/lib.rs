@@ -74,9 +74,6 @@ pub struct Repo {
     #[serde(default = "get_default_percentage")]
     pub percentage: String,
 
-    #[serde(default = "get_default_crates")]
-    pub crates: Vec<Crate>,
-
     pub platform: Option<RepoPlatform>,
 
     #[serde(default = "get_default_bold")]
@@ -95,9 +92,6 @@ fn get_default_percentage() -> String {
     String::from("0")
 }
 
-const fn get_default_crates() -> Vec<Crate> {
-    vec![]
-}
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Crate {
     pub created_at: String,

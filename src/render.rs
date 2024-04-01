@@ -483,7 +483,6 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
         url: String::new(),
         count: other_repo_count,
         percentage: percentage(other_repo_count, crates.len()),
-        crates: vec![],
         platform: None,
         bold: true,
     });
@@ -494,7 +493,6 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
         url: String::new(),
         count: no_repo_count,
         percentage: percentage(no_repo_count, crates.len()),
-        crates: vec![],
         platform: None,
         bold: true,
     });
