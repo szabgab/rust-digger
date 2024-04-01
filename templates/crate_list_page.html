@@ -51,6 +51,16 @@
 
           Get <a href="/about-ci">more explanation</a> and some instructions on how to add GitHub Actions to a crate.
 
+        {% when "has-no-cargo-toml-in-root" %}
+          The crates listed here link to a repository where we could not find a <b>Cargo.toml</b> file in the root of the repository.
+
+          Right now we still list crates where we do NOT have access to the repository itself. These should be removed.
+
+          We also list crates where we did not even attempt to clone the repository.
+
+          There also seem to be a few crates listed with a proper link to a GitHub repo that has a Cargo.toml and we still have them here.
+          This needs to be investigated.
+
         {% when "vcs/no-repo" %}
           The list of all the crates that have no "repository" entry in their Cargo.toml file. Some of them might have a link to their repository
           in some other field (e.g. the <a href="/has-homepage-but-no-repo">homepage field</a>) other have no such link
