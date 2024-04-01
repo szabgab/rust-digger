@@ -117,12 +117,14 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
 }
 
 pub fn render_list_page(
-    filename: PathBuf,
+    filename: &str,
     title: &str,
     preface: &str,
     crates: &[&Crate],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("render_list_page: {filename:?}");
+
+    let filepath = get_site_folder().join(filename);
 
     let partials = load_templates().unwrap();
 
@@ -151,7 +153,7 @@ pub fn render_list_page(
         .unwrap();
     let html = template.render(&globals).unwrap();
 
-    let mut file = File::create(filename).unwrap();
+    let mut file = File::create(filepath).unwrap();
     writeln!(&mut file, "{html}").unwrap();
     //match res {
     //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
@@ -639,12 +641,7 @@ fn render_filtered_crates(
         "render_filtered_crates number of filtered crates: {}",
         filtered_crates.len()
     );
-    render_list_page(
-        get_site_folder().join(filename),
-        title,
-        preface,
-        &filtered_crates,
-    )?;
+    render_list_page(filename, title, preface, &filtered_crates)?;
     Ok(filtered_crates.len())
 }
 
