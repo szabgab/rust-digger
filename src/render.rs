@@ -527,6 +527,13 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         |krate| krate.details.cargo_toml_in_root,
     )?;
 
+    let has_no_cargo_toml_in_root = render_filtered_crates(
+        "has-no-cargo-toml-in-root",
+        "Has no Cargo.toml file in the root",
+        crates,
+        |krate| !krate.details.cargo_toml_in_root,
+    )?;
+
     let has_rustfmt_toml = render_filtered_crates(
         "has-rustfmt-toml",
         "Has rustfmt.toml file",
@@ -603,6 +610,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         ("has_dot_rustfmt_toml", has_dot_rustfmt_toml),
         ("has_both_rustfmt_toml", has_both_rustfmt_toml),
         ("has_cargo_toml_in_root", has_cargo_toml_in_root),
+        ("has_no_cargo_toml_in_root", has_no_cargo_toml_in_root),
     ]);
 
     render_stats_page(crates.len(), &stats);
