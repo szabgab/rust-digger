@@ -10,9 +10,9 @@
         "data/": true
     },
     "files.watcherExclude": {
-        ".git/**": true,
-        "target/**": true,
-        "_site/**": true,
-        "data/**": true
+        "**/.git/**": true,
+        "**/target/**": true,
+        "**/_site/**": true,
+        "**/data/**": true
   }
 }
