@@ -9,12 +9,6 @@
         {% when "all" %}
           Listing all the crates starting from the most recently released ones.
 
-        {% when "vcs/no-repo" %}
-          The list of all the crates that have no "repository" entry in their Cargo.toml file. Some of them might have a link to their repository
-          in some other field (e.g. the <a href="/has-homepage-but-no-repo">homepage field</a>) other have no such link
-          <a href="/no-homepage-no-repo">neither in the homepage nor the repository field</a>.
-          You can find <a href="/about-repository">further explanation</a> and a way to fix this.
-
         {% when "has-homepage-but-no-repo" %}
           Some crates have a <b>homepage</b> field in their <b>Cargo.toml</b> file, but no <b>repository</b> field.
           It would be probably better if all the crates had their repository listed in the <b>repository</b> field, but
@@ -38,22 +32,6 @@
           This means that if the name is missing here then it is missing in GitHub as well.
           I don't know if is an issue copyright and license-wise.
 
-        {% when "vcs/repo-with-http" %}
-          Both GitHub and GitLab will respond to a requests sent via <b>http</b> and will redirect the request to the <b>https</b> counterpart of the same page.
-          There is no real value in having a URL using <b>http</b> to be listed as the <b>repository</b> field in the <b>Cargo.toml</b> file.
-
-          This list shows the crates that have the <b>http</b> link.
-
-          You can find <a href="/about-repository">further explanation</a> and instructions how to fix this issue.
-
-        {% when "vcs/github-with-www" %}
-          For some reason some crates link to <b>www.github.com</b> with the <b>www</b> prefix, despite GitHub redirecting those URLs to the address at <b>github.com</b> (without www).
-          This is the list of the crates that have the <b>www</b> prefix.
-
-          This is not really a big issue, it is just a bit unnecessary.
-
-          You can find <a href="/about-repository">further explanation</a> and instructions how to fix this issue.
-
         {% when "github-but-no-ci" %}
           Having some cloud-based <b>Continuous Integration (CI)</b> system configured is an excellent way to get quick feedback on changes one makes to the code both for
           maintainers of a crate and for people who might want to send a pull-request. Therefore for crates that we already have the repository link we are checking
@@ -73,9 +51,29 @@
 
           Get <a href="/about-ci">more explanation</a> and some instructions on how to add GitHub Actions to a crate.
 
-        {% else %}
-        {{filename}}
-      {% endcase %}
+        {% when "vcs/no-repo" %}
+          The list of all the crates that have no "repository" entry in their Cargo.toml file. Some of them might have a link to their repository
+          in some other field (e.g. the <a href="/has-homepage-but-no-repo">homepage field</a>) other have no such link
+          <a href="/no-homepage-no-repo">neither in the homepage nor the repository field</a>.
+          You can find <a href="/about-repository">further explanation</a> and a way to fix this.
+      
+        {% when "vcs/repo-with-http" %}
+          Both GitHub and GitLab will respond to a requests sent via <b>http</b> and will redirect the request to the <b>https</b> counterpart of the same page.
+          There is no real value in having a URL using <b>http</b> to be listed as the <b>repository</b> field in the <b>Cargo.toml</b> file.
+
+          This list shows the crates that have the <b>http</b> link.
+
+          You can find <a href="/about-repository">further explanation</a> and instructions how to fix this issue.
+
+        {% when "vcs/github-with-www" %}
+          For some reason some crates link to <b>www.github.com</b> with the <b>www</b> prefix, despite GitHub redirecting those URLs to the address at <b>github.com</b> (without www).
+          This is the list of the crates that have the <b>www</b> prefix.
+
+          This is not really a big issue, it is just a bit unnecessary.
+
+          You can find <a href="/about-repository">further explanation</a> and instructions how to fix this issue.
+
+    {% endcase %}
   
     </p>
     <p>
