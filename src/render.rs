@@ -784,6 +784,21 @@ fn generate_rustfmt_pages(
         )?;
     }
 
+    #[allow(clippy::pattern_type_mismatch)] // TODO
+    for (field, value, _count) in &count_by_pair {
+        let crate_names = rustfmt
+            .iter()
+            .filter(|entry| &&entry.0 == field && &&entry.1 == value)
+            .map(|entry| &entry.2)
+            .collect::<Vec<&String>>();
+        render_filtered_crates(
+            &format!("rustfmt/{field}_{value}"),
+            &format!("Crates using the {field} formatting option set to {value}"),
+            crates,
+            |krate| crate_names.contains(&&krate.name),
+        )?;
+    }
+
     let partials = load_templates().unwrap();
 
     let template = liquid::ParserBuilder::with_stdlib()

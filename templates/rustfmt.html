@@ -43,7 +43,7 @@
     {% for pair in count_by_pair %}
       <tr>
           <td>{{ pair[0] }}</td>
-          <td>{{ pair[1] }}</td>
+          <td><a href="/rustfmt/{{ pair[0] }}_{{ pair[1] }}">{{ pair[1] }}</a></td>
           <td>{{ pair[2] }}</td>
       </tr>
     {% endfor %}
