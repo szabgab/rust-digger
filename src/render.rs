@@ -375,7 +375,7 @@ fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>) {
 
 pub fn create_folders() {
     let _res = fs::create_dir_all(get_site_folder());
-    for folder in ["crates", "users", "news", "vcs"] {
+    for folder in ["crates", "users", "news", "vcs", "rustfmt"] {
         let _res = fs::create_dir_all(get_site_folder().join(folder));
     }
 }
@@ -613,6 +613,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     ]);
 
     render_stats_page(crates.len(), &stats);
+    generate_rustfmt_pages(crates.len(), &stats);
 
     Ok(())
 }
@@ -735,7 +736,7 @@ fn load_collected_rustfmt() -> Vec<(String, String, String)> {
     rustfmt
 }
 
-pub fn generate_rustfmt_pages() {
+fn generate_rustfmt_pages(number_of_crates: usize, stats: &HashMap<&str, usize>) {
     let rustfmt = load_collected_rustfmt();
     let mut count_by_key: HashMap<String, u32> = HashMap::new();
     let mut count_by_pair: HashMap<(String, String), u32> = HashMap::new();
@@ -774,7 +775,7 @@ pub fn generate_rustfmt_pages() {
         .parse_file("templates/rustfmt.html")
         .unwrap();
 
-    let filename = get_site_folder().join("rustfmt.html");
+    let filename = get_site_folder().join("rustfmt/index.html");
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
         "version": format!("{VERSION}"),
@@ -784,6 +785,9 @@ pub fn generate_rustfmt_pages() {
         //"crate":   krate,
         "count_by_key": count_by_key,
         "count_by_pair": count_by_pair,
+        "stats": stats,
+        "number_of_crates": number_of_crates,
+        "with_rustfmt": stats["has_rustfmt_toml"] + stats["has_dot_rustfmt_toml"],
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();

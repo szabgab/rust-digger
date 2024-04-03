@@ -4,7 +4,15 @@
   <div class="container">
     <h1 class="title">Rustfmt Stats</h1>
 
-    <h2 class="title">Config option used</h2>
+    <p>
+        There are two tables on this page. A list of <a href="#config-option">Config option used</a> and a list of <a href="#config-options-with-values">config option with values</a>
+    </p>
+    <p>
+        Number of crates with rustfmt.toml or .rustfmt.toml: <b>{{ with_rustfmt | commafy }}</b> out of <b>{{ number_of_crates | commafy }}</b> crates
+    </p>
+    
+
+    <h2 id="config-options" class="title">Config option used</h2>
     <table class="table">
       <thead>
       <tr>
@@ -16,13 +24,13 @@
     {% for pair in count_by_key %}
       <tr>
           <td>{{ pair[0] }}</td>
-          <td>{{ pair[1] }}</td>
+          <td>{{ pair[1] | commafy }}</td>
       </tr>
     {% endfor %}
      </tbody>
     </table>
 
-    <h2 class="title">Config option and values used</h2>
+    <h2 id="config-options-with-values" class="title">Config option and values used</h2>
     <table class="table">
       <thead>
       <tr>
