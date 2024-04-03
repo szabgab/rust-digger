@@ -26,6 +26,74 @@
     <h2>How is rustfmt configured?</h2>
     <p>
       See the collected data on which <a href="/rustfmt">configuration options are used for rustfmt</a>.
+      The most popular configuration options are:
+
+      <table class="table">
+        <thead>
+        <tr>
+         <th>name</th>
+         <th>count</th>
+        </tr>
+        </thead>
+      <tbody>
+      
+        <tr>
+            <td>max_width</td>
+            <td>4774</td>
+        </tr>
+      
+        <tr>
+            <td>edition</td>
+            <td>3168</td>
+        </tr>
+      
+        <tr>
+            <td>imports_granularity</td>
+            <td>2942</td>
+        </tr>
+      
+        <tr>
+            <td>use_field_init_shorthand</td>
+            <td>2853</td>
+        </tr>
+      
+        <tr>
+            <td>wrap_comments</td>
+            <td>2391</td>
+        </tr>
+      
+        <tr>
+            <td>tab_spaces</td>
+            <td>2262</td>
+        </tr>
+      
+        <tr>
+            <td>newline_style</td>
+            <td>2193</td>
+        </tr>
+      
+        <tr>
+            <td>reorder_imports</td>
+            <td>2131</td>
+        </tr>
+      
+        <tr>
+            <td>use_small_heuristics</td>
+            <td>2046</td>
+        </tr>
+      </tbody>
+    </table>
+    See the <a href="/rustfmt">full list</a>.
+    </p>
+    <p>
+      There are apparently crates that have the following in their rustfmt.toml file: <b>Please don't run rustfmt on this repository</b>
+    </p>
+    <p>
+      The <b>array_width</b> field has a lot of very different values. There are crates where it is set to 0 or 1 or 500000.
+    </p>
+
+    <p>
+      One of my TODO items is to list the crates where we have the interesting configuration options and the interesting values. Whatever "interesting" really means.
     </p>
 
 
