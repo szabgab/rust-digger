@@ -17,7 +17,7 @@ mod read;
 use read::{read_crate_owners, read_teams, read_users};
 mod render;
 use render::{
-    generate_crate_pages, generate_pages, generate_robots_txt, generate_sitemap,
+    create_folders, generate_crate_pages, generate_pages, generate_robots_txt, generate_sitemap,
     generate_user_pages, render_news_pages, render_static_pages,
 };
 
@@ -52,6 +52,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
     load_details_for_all_the_crates(&mut crates);
+    create_folders();
 
     std::thread::scope(|scope| {
         scope.spawn(|| generate_pages(&crates).unwrap());

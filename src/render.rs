@@ -373,7 +373,7 @@ fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>) {
     writeln!(&mut file, "{html}").unwrap();
 }
 
-fn create_folders() {
+pub fn create_folders() {
     let _res = fs::create_dir_all(get_site_folder());
     for folder in ["crates", "users", "news", "vcs"] {
         let _res = fs::create_dir_all(get_site_folder().join(folder));
@@ -513,7 +513,6 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
 pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
-    create_folders();
     fs::copy("digger.js", get_site_folder().join("digger.js"))?;
 
     let no_repo = collect_repos(crates)?;
