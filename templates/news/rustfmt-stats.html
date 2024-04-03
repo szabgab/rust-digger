@@ -11,13 +11,16 @@
     <p>
       In the past week after several false direction I made some progress collecting information about the use of <a href="https://github.com/rust-lang/rustfmt">rustfmt</a>.
       I found that 14,951 of the crates (10.53%) have <b>rustfmt.toml</b> and 5,420 crates (3.81%) have <b>.rustfmt.toml</b> 35 crates have both. As far as I understand
-      rustfmt <a href="https://github.com/rust-lang/rustfmt/issues/6135">will disregard rustfmt.toml</a>.
+      in those cases rustfmt <a href="https://github.com/rust-lang/rustfmt/issues/6135">will disregard rustfmt.toml</a>.
     </p>
     <p>
       BTW there are <a href="/crates-without-owner">11 crates without an owner</a>. Is that a bug in Rust-digger or in the database of Crates.io or my own
       understanding of the world?
     </p>
-
+    <p>
+      The number of crates with <b>repository</b> URLs that are either invalid or we don't recognize yet is down to 738 (from 858 last week) as I've mapped a few more.
+      Here is the <a href="/vcs/other-repos">list of crates with invalid or unrecognized repository</a>.
+    </p>
     <p>
     <h2>Number of crates</h2>
     There are now 141,982 (1,773 more than a week ago).
