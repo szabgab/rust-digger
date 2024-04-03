@@ -9,7 +9,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-use crate::{Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
+use crate::{collected_data_root, Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
 use rust_digger::{get_owner_and_repo, percentage};
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -702,6 +702,92 @@ fn get_repo_types() -> Vec<Repo> {
 
     let repos: Vec<Repo> = serde_yaml::from_str(text).unwrap();
     repos
+}
+
+fn load_collected_rustfmt() -> Vec<(String, String, String)> {
+    let mut rustfmt: Vec<(String, String, String)> = vec![];
+
+    let filename = collected_data_root().join("rustfmt.txt");
+    match std::fs::read_to_string(&filename) {
+        Err(err) => {
+            log::error!("Could not read {:?} {err}", filename);
+        }
+        Ok(content) => {
+            for row in content.split('\n') {
+                if row.is_empty() {
+                    continue;
+                }
+                log::info!("{row}");
+                let parts = row.split(',').collect::<Vec<&str>>();
+                if parts.len() != 3 {
+                    log::error!("Row '{row}' was split to {} parts", parts.len());
+                    continue;
+                }
+                rustfmt.push((
+                    parts[0].to_owned(),
+                    parts[1].to_owned(),
+                    parts[2].to_owned(),
+                ));
+            }
+        }
+    }
+
+    rustfmt
+}
+
+pub fn generate_rustfmt_pages() {
+    let rustfmt = load_collected_rustfmt();
+    let mut count_by_key: HashMap<String, u32> = HashMap::new();
+    let mut count_by_pair: HashMap<(String, String), u32> = HashMap::new();
+
+    #[allow(clippy::explicit_iter_loop)] // TODO
+    #[allow(clippy::pattern_type_mismatch)] // TODO
+    for (key, value, _krate) in rustfmt.iter() {
+        *count_by_key.entry(key.to_owned()).or_insert(0) += 1;
+        *count_by_pair
+            .entry((key.to_owned(), value.to_owned()))
+            .or_insert(0) += 1;
+    }
+    let mut count_by_key = count_by_key
+        .iter()
+        //.map(|pair| pair)
+        .collect::<Vec<(&String, &u32)>>();
+    #[allow(clippy::min_ident_chars)]
+    count_by_key.sort_by_key(|f| f.1);
+    count_by_key.reverse();
+
+    let mut count_by_pair = count_by_pair
+        .iter()
+        .map(|pair| (&pair.0 .0, &pair.0 .1, pair.1))
+        .collect::<Vec<(&String, &String, &u32)>>();
+    #[allow(clippy::min_ident_chars)]
+    count_by_pair.sort_by(|a, b| a.0.partial_cmp(b.0).unwrap());
+    //count_by_pair.reverse();
+
+    let partials = load_templates().unwrap();
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/rustfmt.html")
+        .unwrap();
+
+    let filename = get_site_folder().join("rustfmt.html");
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "Rustfmt Stats",
+        //"user":    user,
+        //"crate":   krate,
+        "count_by_key": count_by_key,
+        "count_by_pair": count_by_pair,
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
 }
 
 #[test]

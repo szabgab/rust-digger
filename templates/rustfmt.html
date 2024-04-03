@@ -1,0 +1,49 @@
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title">Rustfmt Stats</h1>
+
+    <h2 class="title">Config option used</h2>
+    <table class="table">
+      <thead>
+      <tr>
+       <th>name</th>
+       <th>count</th>
+      </tr>
+      </thead>
+    <tbody>
+    {% for pair in count_by_key %}
+      <tr>
+          <td>{{ pair[0] }}</td>
+          <td>{{ pair[1] }}</td>
+      </tr>
+    {% endfor %}
+     </tbody>
+    </table>
+
+    <h2 class="title">Config option and values used</h2>
+    <table class="table">
+      <thead>
+      <tr>
+       <th>name</th>
+       <th>value</th>
+       <th>count</th>
+      </tr>
+      </thead>
+    <tbody>
+    {% for pair in count_by_pair %}
+      <tr>
+          <td>{{ pair[0] }}</td>
+          <td>{{ pair[1] }}</td>
+          <td>{{ pair[2] }}</td>
+      </tr>
+    {% endfor %}
+     </tbody>
+    </table>
+
+
+</div>
+</section>
+
+{% include 'templates/incl/footer.html' %}

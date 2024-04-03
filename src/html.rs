@@ -12,13 +12,16 @@ pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySo
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 100;
 
-use rust_digger::{load_details, read_crates, Crate, CratesByOwner, Owners, Repo, User};
+use rust_digger::{
+    collected_data_root, load_details, read_crates, Crate, CratesByOwner, Owners, Repo, User,
+};
 mod read;
 use read::{read_crate_owners, read_teams, read_users};
 mod render;
 use render::{
-    create_folders, generate_crate_pages, generate_pages, generate_robots_txt, generate_sitemap,
-    generate_user_pages, render_news_pages, render_static_pages,
+    create_folders, generate_crate_pages, generate_pages, generate_robots_txt,
+    generate_rustfmt_pages, generate_sitemap, generate_user_pages, render_news_pages,
+    render_static_pages,
 };
 
 #[derive(Parser, Debug)]
@@ -53,6 +56,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
     load_details_for_all_the_crates(&mut crates);
     create_folders();
+
+    generate_rustfmt_pages();
 
     std::thread::scope(|scope| {
         scope.spawn(|| generate_pages(&crates).unwrap());
