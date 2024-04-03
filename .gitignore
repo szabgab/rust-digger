@@ -4,6 +4,7 @@
 /repos/
 /repos
 /repo-details/
+/collected-data/
 /logs/
 *.bak
 db-dump.tar.gz
