@@ -9,4 +9,6 @@
 *.bak
 db-dump.tar.gz
 *.swp
+
 /out
+/err
