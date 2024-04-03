@@ -9,6 +9,9 @@ use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+use once_cell::sync::Lazy;
+use regex::Regex;
+
 use crate::{collected_data_root, Crate, CratesByOwner, Partials, Repo, User, PAGE_SIZE, VERSION};
 use rust_digger::{get_owner_and_repo, percentage};
 
@@ -741,6 +744,9 @@ fn generate_rustfmt_pages(
     stats: &HashMap<&str, usize>,
     crates: &[Crate],
 ) -> Result<(), Box<dyn Error>> {
+    static RE_KEY: Lazy<Regex> = Lazy::new(|| Regex::new("^[a-z_]+$").unwrap());
+    static RE_VALUE: Lazy<Regex> = Lazy::new(|| Regex::new("^[0-9A-Za-z_]+$").unwrap());
+
     let rustfmt = load_collected_rustfmt();
     let mut count_by_key: HashMap<String, u32> = HashMap::new();
     let mut count_by_pair: HashMap<(String, String), u32> = HashMap::new();
@@ -771,6 +777,14 @@ fn generate_rustfmt_pages(
 
     #[allow(clippy::pattern_type_mismatch)] // TODO
     for (field, _count) in &count_by_key {
+        match RE_KEY.captures(field) {
+            None => {
+                log::error!("Invalid fmt key: {field}");
+                continue;
+            }
+            Some(_) => {}
+        };
+
         let crate_names = rustfmt
             .iter()
             .filter(|entry| &&entry.0 == field)
@@ -786,11 +800,26 @@ fn generate_rustfmt_pages(
 
     #[allow(clippy::pattern_type_mismatch)] // TODO
     for (field, value, _count) in &count_by_pair {
+        match RE_KEY.captures(field) {
+            None => {
+                log::error!("Invalid fmt key: {field}");
+                continue;
+            }
+            Some(_) => match RE_VALUE.captures(value) {
+                None => {
+                    log::error!("Invalid fmt value: {field}   '{value}'");
+                    continue;
+                }
+                Some(_) => {}
+            },
+        };
+
         let crate_names = rustfmt
             .iter()
             .filter(|entry| &&entry.0 == field && &&entry.1 == value)
             .map(|entry| &entry.2)
             .collect::<Vec<&String>>();
+
         render_filtered_crates(
             &format!("rustfmt/{field}_{value}"),
             &format!("Crates using the {field} formatting option set to {value}"),
