@@ -28,6 +28,7 @@ serde_json = "1.0"
 serde_yaml = "0.9"
 simple_logger = "4.2"
 tar = "0.4.40"
+toml = "0.8.12"
 
 [[bin]]
 name = "rust-digger-html"

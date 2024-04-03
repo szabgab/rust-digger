@@ -1,12 +1,17 @@
 use std::collections::HashSet;
 use std::env;
+use std::fs;
+use std::fs::File;
+use std::io::Write;
 use std::path::Path;
 use std::process::Command;
 
 use clap::Parser;
+use toml::Table;
 
 use rust_digger::{
-    get_owner_and_repo, get_repos_folder, load_details, read_crates, save_details, Crate,
+    collected_data_root, get_owner_and_repo, get_repos_folder, load_details, read_crates,
+    save_details, Crate,
 };
 
 mod macros;
@@ -41,6 +46,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         log::info!("We are going to process only {} crates", limit);
     }
 
+    let mut rustfmt: Vec<String> = vec![];
     let mut seen: HashSet<String> = HashSet::new();
     let mut count: u32 = 0;
     for krate in crates {
@@ -100,6 +106,12 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
         details.has_rustfmt_toml = Path::new("rustfmt.toml").exists();
         details.has_dot_rustfmt_toml = Path::new(".rustfmt.toml").exists();
+        if details.has_rustfmt_toml {
+            read_rustfmt(&mut rustfmt, "rustfmt.toml", &krate.name);
+        }
+        if details.has_dot_rustfmt_toml {
+            read_rustfmt(&mut rustfmt, ".rustfmt.toml", &krate.name);
+        }
 
         if !host.is_empty() {
             details.commit_count = git_get_count();
@@ -109,6 +121,17 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         save_details(&krate.repository, &details);
 
         count += 1;
+    }
+
+    save_rustfm(&rustfmt);
+}
+
+fn save_rustfm(rustfmt: &[String]) {
+    fs::create_dir_all(collected_data_root()).unwrap();
+    let filename = collected_data_root().join("rustfmt.txt");
+    let mut file = File::create(filename).unwrap();
+    for entry in rustfmt {
+        writeln!(&mut file, "{entry}").unwrap();
     }
 }
 
@@ -127,5 +150,31 @@ fn git_get_count() -> i32 {
         number
     } else {
         0
+    }
+}
+
+fn read_rustfmt(rustfmt: &mut Vec<String>, filename: &str, name: &str) {
+    match std::fs::read_to_string(filename) {
+        Err(err) => {
+            log::error!("Error: {err} when reading {filename} of {name}");
+        }
+        Ok(content) => {
+            match content.parse::<Table>() {
+                Err(err) => {
+                    log::error!("Error: {err} when parsing toml in {filename} of {name}");
+                }
+                Ok(table) => {
+                    for row in &table {
+                        //log::debug!("key: {:30} value: {}", row.0, row.1);
+                        let mut value = row.1.to_string();
+                        if value.starts_with('"') && value.ends_with('"') {
+                            value = value[1..value.len() - 1].to_owned();
+                        }
+
+                        rustfmt.push(format!("{},{},{}", row.0, value, name));
+                    }
+                }
+            }
+        }
     }
 }

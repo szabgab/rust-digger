@@ -228,6 +228,10 @@ pub fn repo_details_root() -> PathBuf {
     PathBuf::from("repo-details")
 }
 
+pub fn collected_data_root() -> PathBuf {
+    PathBuf::from("collected-data")
+}
+
 pub fn get_details_path(repository: &str) -> Option<PathBuf> {
     let (host, owner, repo) = get_owner_and_repo(repository);
 
