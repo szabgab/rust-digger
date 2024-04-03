@@ -23,7 +23,7 @@
     <tbody>
     {% for pair in count_by_key %}
       <tr>
-          <td>{{ pair[0] }}</td>
+          <td><a href="/rustfmt/{{ pair[0] }}">{{ pair[0] }}</a></td>
           <td>{{ pair[1] | commafy }}</td>
       </tr>
     {% endfor %}

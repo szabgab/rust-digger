@@ -613,7 +613,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     ]);
 
     render_stats_page(crates.len(), &stats);
-    generate_rustfmt_pages(crates.len(), &stats);
+    generate_rustfmt_pages(crates.len(), &stats, crates)?;
 
     Ok(())
 }
@@ -736,7 +736,11 @@ fn load_collected_rustfmt() -> Vec<(String, String, String)> {
     rustfmt
 }
 
-fn generate_rustfmt_pages(number_of_crates: usize, stats: &HashMap<&str, usize>) {
+fn generate_rustfmt_pages(
+    number_of_crates: usize,
+    stats: &HashMap<&str, usize>,
+    crates: &[Crate],
+) -> Result<(), Box<dyn Error>> {
     let rustfmt = load_collected_rustfmt();
     let mut count_by_key: HashMap<String, u32> = HashMap::new();
     let mut count_by_pair: HashMap<(String, String), u32> = HashMap::new();
@@ -765,6 +769,21 @@ fn generate_rustfmt_pages(number_of_crates: usize, stats: &HashMap<&str, usize>)
     count_by_pair.sort_by(|a, b| a.0.partial_cmp(b.0).unwrap());
     //count_by_pair.reverse();
 
+    #[allow(clippy::pattern_type_mismatch)] // TODO
+    for (field, _count) in &count_by_key {
+        let crate_names = rustfmt
+            .iter()
+            .filter(|entry| &&entry.0 == field)
+            .map(|entry| &entry.2)
+            .collect::<Vec<&String>>();
+        render_filtered_crates(
+            &format!("rustfmt/{field}"),
+            &format!("Crates using the {field} formatting option"),
+            crates,
+            |krate| crate_names.contains(&&krate.name),
+        )?;
+    }
+
     let partials = load_templates().unwrap();
 
     let template = liquid::ParserBuilder::with_stdlib()
@@ -781,8 +800,6 @@ fn generate_rustfmt_pages(number_of_crates: usize, stats: &HashMap<&str, usize>)
         "version": format!("{VERSION}"),
         "utc":     format!("{}", utc),
         "title":   "Rustfmt Stats",
-        //"user":    user,
-        //"crate":   krate,
         "count_by_key": count_by_key,
         "count_by_pair": count_by_pair,
         "stats": stats,
@@ -792,6 +809,8 @@ fn generate_rustfmt_pages(number_of_crates: usize, stats: &HashMap<&str, usize>)
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{html}").unwrap();
+
+    Ok(())
 }
 
 #[test]
