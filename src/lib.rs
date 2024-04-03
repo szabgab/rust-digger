@@ -276,12 +276,16 @@ pub fn load_details(repository: &str) -> Details {
     Details::new()
 }
 
-pub fn save_details(repository: &str, details: &Details) {
-    log::info!("save_details for '{repository}'");
-
+fn create_repo_details_folders() {
     let _res = fs::create_dir_all(repo_details_root());
     let _res = fs::create_dir_all(repo_details_root().join("github"));
     let _res = fs::create_dir_all(repo_details_root().join("gitlab"));
+}
+
+pub fn save_details(repository: &str, details: &Details) {
+    log::info!("save_details for '{repository}'");
+
+    create_repo_details_folders();
 
     let (host, owner, repo) = get_owner_and_repo(repository);
     if owner.is_empty() {
