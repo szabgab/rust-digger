@@ -122,21 +122,29 @@ fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, 
 fn collect_data_about_ci(host: &RepoHost, details: &mut Details) {
     match host {
         RepoHost::Github => {
-            let workflows = Path::new(".github/workflows");
-            if workflows.exists() {
-                for entry in workflows
+            if Path::new(".github/workflows").exists() {
+                for entry in Path::new(".github/workflows")
                     .read_dir()
                     .expect("read_dir call failed")
                     .flatten()
                 {
                     log::info!("workflows: {:?}", entry.path());
-                    details.ci_service = Some(CiService::GithubActions);
                 }
+                details.ci_service = Some(CiService::GithubActions);
+            } else if Path::new(".circleci/config.yml").exists() {
+                details.ci_service = Some(CiService::CircleCi)
+            } else if Path::new(".cirrus.yml").exists() {
+                details.ci_service = Some(CiService::CirrusCi)
+            } else if Path::new(".travis.yml").exists() {
+                details.ci_service = Some(CiService::TravisCi)
             }
         }
         RepoHost::Gitlab => {
-            let gitlab_ci_file = Path::new(".gitlab-ci.yml");
-            details.ci_service = gitlab_ci_file.exists().then_some(CiService::GitlabPipeline)
+            if Path::new(".gitlab-ci.yml").exists() {
+                details.ci_service = Some(CiService::GitlabPipeline)
+            } else if Path::new(".circleci/config.yml").exists() {
+                details.ci_service = Some(CiService::CircleCi)
+            }
         }
         RepoHost::Other(_) => {}
     }

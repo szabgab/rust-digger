@@ -183,6 +183,9 @@ pub enum RepoHost {
 pub enum CiService {
     GithubActions,
     GitlabPipeline,
+    CircleCi,
+    CirrusCi,
+    TravisCi,
 }
 
 impl Crate {

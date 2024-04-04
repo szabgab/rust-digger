@@ -653,19 +653,14 @@ fn has_homepage_no_repo(krate: &Crate) -> bool {
 //     w.repository != ""
 // }
 fn on_github_but_no_ci(krate: &Crate) -> bool {
-    if krate.repository.is_empty() {
-        return false;
-    }
-
-    let (host, owner, _) = get_owner_and_repo(&krate.repository);
-    if owner.is_empty() {
-        return false;
-    }
-
-    host == RepoHost::Github && krate.details.ci_service.is_none()
+    on_host_but_no_ci(krate, RepoHost::Github)
 }
 
 fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
+    on_host_but_no_ci(krate, RepoHost::Gitlab)
+}
+
+fn on_host_but_no_ci(krate: &Crate, repo_host: RepoHost) -> bool {
     if krate.repository.is_empty() {
         return false;
     }
@@ -675,7 +670,7 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    host == RepoHost::Gitlab && krate.details.ci_service.is_none()
+    host == repo_host && krate.details.ci_service.is_none()
 }
 
 fn no_owner_name(krate: &Crate) -> bool {
