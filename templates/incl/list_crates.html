@@ -29,11 +29,11 @@
         {% if crate.repository != "" %}
           <td><a href="{{crate.repository}}">repo</a></td>
         {% else %}
-          <td><a href="/about-repository">NA</a></td>
+          <td><a href="/about-repository"><span class="tag is-danger is-light">NA</span></a></td>
         {% endif %}
 
         {% if crate.details.commit_count == 0 %}
-          <td><a href="/about-repository#no-commit-count">NA</a></td>
+          <td><a href="/about-repository#no-commit-count"><span class="tag is-danger is-light">NA</span></a></td>
         {% else %}
           <td>{{ crate.details.commit_count }}</td>
         {% endif %}
@@ -41,7 +41,7 @@
         {% if crate.details.has_github_action %}
            <td>GitHub Action</td>
         {% else %}
-           <td><a href="/about-ci">NA</a></td>
+           <td><a href="/about-ci"><span class="tag is-danger is-light">NA</span></a></td>
         {% endif %}
         <td><a href="/about-fmt">fmt</a></td>
       </tr>

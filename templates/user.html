@@ -7,7 +7,9 @@
     <img src={{user.gh_avatar}}>
     <table class="table">
       <tbody>
-        <tr><td>name</td><td><a href="https://crates.io/users/{{user.gh_login}}">{{ user.name }}</a></td><td><a href="https://github.com/{{user.gh_login}}">GitHub</a></td></tr>
+        <tr><td>name</td><td>{% if user.name == "" %}<span class="tag is-danger is-light">Missing</span>{% else %}{{ user.name }}{% endif %}</a></td></tr>
+        <tr><td>Crates.io:</td><td><a href="https://crates.io/users/{{user.gh_login}}">{{ user.gh_login }}</a></td></tr>
+        <tr><td>GitHub user:</td><td><a href="https://github.com/{{user.gh_login}}">{{user.gh_login}}</a></td></tr>
       </tbody>
     </table>
 
