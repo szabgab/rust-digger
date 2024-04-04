@@ -155,15 +155,6 @@ fn process_cargo_toml(details: &mut Details) {
                     }
                 };
             }
-
-            // details.rust_version =
-            //         match cargo_toml.package().rust_version() {
-            //             Some(rust_version) => rust_version.to_owned(),
-            //             None => {
-            //                 log::error!("Could not get rust_version from Cargo.toml in {repo_path:?}");
-            //                 String::new()
-            //             },
-            //         }
         }
         Err(err) => {
             log::error!(
