@@ -7,7 +7,7 @@
     <h2>About Repository</h2>
       Each crate has a file called <b>Cargo.toml</b> in which there must be a section called <b>[package]</b> in which there can be a key called <b>repository</b>.
       For example the <a href="https://github.com/szabgab/rustatic">rustatic</a> project has something like this:
-
+      
       <pre><code class="language-toml">
       [package]
       repository = "https://github.com/szabgab/rustatic"
@@ -15,6 +15,13 @@
 
       Having this entry allows <a href="https://crates.io/">Crates.io</a> to link to the repository and it makes it easy for everyone to find the public version control of the crate.
 
+      <ul>
+        <li><a href="#no-repository">NA for repository</a></li>
+        <li><a href="#https">repository URL starts with http://</a></li>
+        <li><a href="#www">GitHub repository URL starts with www</a></li>
+        <li><a href="#no-commit-count">No commit count</a></li>
+      </ul>
+      
       <h2 id="no-repository">NA for repository</h2>
       <p>
         Each Crate can have a field in the <b>Cargo.toml</b> called <b>repository</b> with the URL of their public Version Control System (VCS). Usually on some git-hosting services.
