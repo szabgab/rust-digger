@@ -89,7 +89,6 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         process_cargo_toml(&mut details);
 
         collect_data_about_ci(&host, &mut details);
-        details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
 
         collect_data_about_rustfmt(&mut details, &mut rustfmt, krate);
 
@@ -139,6 +138,8 @@ fn collect_data_about_ci(host: &String, details: &mut Details) {
 }
 
 fn process_cargo_toml(details: &mut Details) {
+    details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
+
     match load_cargo_toml() {
         Ok(cargo_toml) => {
             if let Some(package) = cargo_toml.get("package") {
