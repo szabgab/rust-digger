@@ -617,6 +617,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
 
     render_stats_page(crates.len(), &stats);
     generate_rustfmt_pages(crates.len(), &stats, crates)?;
+    generate_msrv_pages(crates)?;
 
     Ok(())
 }
@@ -737,6 +738,105 @@ fn load_collected_rustfmt() -> Vec<(String, String, String)> {
     }
 
     rustfmt
+}
+
+fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
+    let mut editions: HashMap<String, u32> = HashMap::new();
+    let mut rust_versions: HashMap<String, u32> = HashMap::new();
+    for krate in crates {
+        *editions.entry(krate.details.edition.clone()).or_insert(0) += 1;
+        *rust_versions
+            .entry(krate.details.rust_version.clone())
+            .or_insert(0) += 1;
+    }
+
+    log::info!("editions {:#?}", editions);
+    log::info!("rust_version {:#?}", rust_versions);
+
+    let mut editions = editions
+        .iter()
+        .map(|entry| {
+            (
+                entry.0.clone(),
+                if entry.0.is_empty() {
+                    String::from("na")
+                } else {
+                    entry.0.clone()
+                },
+                entry.1,
+            )
+        })
+        .collect::<Vec<(String, String, &u32)>>();
+    #[allow(clippy::min_ident_chars)]
+    editions.sort_by_key(|f| f.2);
+    editions.reverse();
+
+    let mut rust_versions = rust_versions
+        .iter()
+        .map(|entry| {
+            (
+                entry.0.clone(),
+                if entry.0.is_empty() {
+                    String::from("na")
+                } else {
+                    entry.0.clone()
+                },
+                entry.1,
+            )
+        })
+        .collect::<Vec<(String, String, &u32)>>();
+
+    #[allow(clippy::min_ident_chars)]
+    rust_versions.sort_by_key(|f| f.2);
+    rust_versions.reverse();
+
+    let partials = load_templates().unwrap();
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/msrv.html")
+        .unwrap();
+
+    let filename = get_site_folder().join("msrv.html");
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+            "version": format!("{VERSION}"),
+            "utc":     format!("{}", utc),
+            "title":   "Rust MSRV Stats",
+            "editions": editions,
+            "rust_versions": rust_versions,
+            //"user":    user,
+            //"crate":   krate,
+    //        "total": crates,
+    //        "percentage": perc,
+    //        "stats": stats,
+        });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
+
+    for edition in editions {
+        render_filtered_crates(
+            &format!("edition-{}", edition.1),
+            &format!("Crates with edition field being '{}'", edition.0),
+            crates,
+            |krate| krate.details.edition == edition.0,
+        )?;
+    }
+
+    for rust_version in rust_versions {
+        render_filtered_crates(
+            &format!("rust-version-{}", rust_version.1),
+            &format!("Crates with rust_version field being '{}'", rust_version.0),
+            crates,
+            |krate| krate.details.edition == rust_version.0,
+        )?;
+    }
+
+    Ok(())
 }
 
 fn generate_rustfmt_pages(
