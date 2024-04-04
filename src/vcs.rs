@@ -12,7 +12,7 @@ use toml::Table;
 
 use rust_digger::{
     collected_data_root, get_owner_and_repo, get_repos_folder, load_details, read_crates,
-    save_details, Crate, Details, RepoHost,
+    save_details, CiService, Crate, Details, RepoHost,
 };
 
 mod macros;
@@ -122,7 +122,6 @@ fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, 
 fn collect_data_about_ci(host: &RepoHost, details: &mut Details) {
     match host {
         RepoHost::Github => {
-            details.has_github_action = false;
             let workflows = Path::new(".github/workflows");
             if workflows.exists() {
                 for entry in workflows
@@ -131,13 +130,13 @@ fn collect_data_about_ci(host: &RepoHost, details: &mut Details) {
                     .flatten()
                 {
                     log::info!("workflows: {:?}", entry.path());
-                    details.has_github_action = true;
+                    details.ci_service = Some(CiService::GithubActions);
                 }
             }
         }
         RepoHost::Gitlab => {
             let gitlab_ci_file = Path::new(".gitlab-ci.yml");
-            details.has_gitlab_pipeline = gitlab_ci_file.exists();
+            details.ci_service = gitlab_ci_file.exists().then_some(CiService::GitlabPipeline)
         }
         RepoHost::Other(_) => {}
     }

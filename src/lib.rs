@@ -10,8 +10,7 @@ use regex::Regex;
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct Details {
-    pub has_github_action: bool,
-    pub has_gitlab_pipeline: bool,
+    pub ci_service: Option<CiService>,
     pub commit_count: i32,
     pub cargo_toml_in_root: bool,
     pub cargo_fmt: String,
@@ -35,8 +34,7 @@ pub struct Details {
 impl Details {
     pub fn new() -> Self {
         Self {
-            has_github_action: false,
-            has_gitlab_pipeline: false,
+            ci_service: None,
             commit_count: 0,
             cargo_toml_in_root: false,
             cargo_fmt: String::new(),
@@ -179,6 +177,12 @@ pub enum RepoHost {
     Github,
     Gitlab,
     Other(String),
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone, Eq, PartialEq)]
+pub enum CiService {
+    GithubActions,
+    GitlabPipeline,
 }
 
 impl Crate {

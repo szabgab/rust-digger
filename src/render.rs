@@ -662,15 +662,7 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    if host != RepoHost::Github {
-        return false;
-    }
-
-    if krate.details.has_github_action {
-        return false;
-    }
-
-    true
+    host == RepoHost::Github && krate.details.ci_service.is_none()
 }
 
 fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
@@ -683,15 +675,7 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    if host != RepoHost::Gitlab {
-        return false;
-    }
-
-    if krate.details.has_gitlab_pipeline {
-        return false;
-    }
-
-    true
+    host == RepoHost::Gitlab && krate.details.ci_service.is_none()
 }
 
 fn no_owner_name(krate: &Crate) -> bool {
