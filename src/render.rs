@@ -1,6 +1,6 @@
 use chrono::prelude::{DateTime, Utc};
 use liquid_filter_commafy::Commafy;
-use rust_digger::build_path;
+use rust_digger::{build_path, RepoHost};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
@@ -662,7 +662,7 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    if host != "github" {
+    if host != RepoHost::Github {
         return false;
     }
 
@@ -683,7 +683,7 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    if host != "gitlab" {
+    if host != RepoHost::Gitlab {
         return false;
     }
 

@@ -127,7 +127,7 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
         }
 
         log::info!("update ({count}/{limit}) repository '{}'", krate.repository);
-        let owner_path = get_repos_folder().join(host).join(owner);
+        let owner_path = get_repos_folder().join(host.as_str()).join(owner);
         let current_dir = env::current_dir().unwrap();
         log::info!(
             "Creating owner_path {:?} while current_dir is {:?}",

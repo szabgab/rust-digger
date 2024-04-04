@@ -12,7 +12,7 @@ use toml::Table;
 
 use rust_digger::{
     collected_data_root, get_owner_and_repo, get_repos_folder, load_details, read_crates,
-    save_details, Crate, Details,
+    save_details, Crate, Details, RepoHost,
 };
 
 mod macros;
@@ -77,7 +77,10 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
 
         let mut details = load_details(&krate.repository);
 
-        let repo_path = get_repos_folder().join(&host).join(&owner).join(&repo);
+        let repo_path = get_repos_folder()
+            .join(host.as_str())
+            .join(&owner)
+            .join(&repo);
         if !Path::new(&repo_path).exists() {
             log::warn!("Cloned path does not exist for {}", &krate.repository);
             continue;
@@ -92,7 +95,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
 
         collect_data_about_rustfmt(&mut details, &mut rustfmt, krate);
 
-        if !host.is_empty() {
+        if !matches!(host, RepoHost::Other(_)) {
             details.commit_count = git_get_count();
         }
 
@@ -116,24 +119,27 @@ fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, 
     }
 }
 
-fn collect_data_about_ci(host: &String, details: &mut Details) {
-    if *host == "github" {
-        details.has_github_action = false;
-        let workflows = Path::new(".github/workflows");
-        if workflows.exists() {
-            for entry in workflows
-                .read_dir()
-                .expect("read_dir call failed")
-                .flatten()
-            {
-                log::info!("workflows: {:?}", entry.path());
-                details.has_github_action = true;
+fn collect_data_about_ci(host: &RepoHost, details: &mut Details) {
+    match host {
+        RepoHost::Github => {
+            details.has_github_action = false;
+            let workflows = Path::new(".github/workflows");
+            if workflows.exists() {
+                for entry in workflows
+                    .read_dir()
+                    .expect("read_dir call failed")
+                    .flatten()
+                {
+                    log::info!("workflows: {:?}", entry.path());
+                    details.has_github_action = true;
+                }
             }
         }
-    }
-    if *host == "gitlab" {
-        let gitlab_ci_file = Path::new(".gitlab-ci.yml");
-        details.has_gitlab_pipeline = gitlab_ci_file.exists();
+        RepoHost::Gitlab => {
+            let gitlab_ci_file = Path::new(".gitlab-ci.yml");
+            details.has_gitlab_pipeline = gitlab_ci_file.exists();
+        }
+        RepoHost::Other(_) => {}
     }
 }
 

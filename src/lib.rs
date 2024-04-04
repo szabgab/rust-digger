@@ -174,6 +174,13 @@ pub struct CrateOwner {
     pub owner_kind: String,
 }
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum RepoHost {
+    Github,
+    Gitlab,
+    Other(String),
+}
+
 impl Crate {
     pub fn new() -> Self {
         Self {
@@ -203,6 +210,16 @@ impl Default for Crate {
     }
 }
 
+impl RepoHost {
+    pub fn as_str(&self) -> &str {
+        match self {
+            RepoHost::Github => "github",
+            RepoHost::Gitlab => "gitlab",
+            RepoHost::Other(other) => other,
+        }
+    }
+}
+
 //type RepoPercentage<'a> = HashMap<&'a str, String>;
 pub type Owners = HashMap<String, String>;
 pub type CratesByOwner = HashMap<String, Vec<String>>;
@@ -212,16 +229,25 @@ pub fn get_repos_folder() -> PathBuf {
     PathBuf::from("repos")
 }
 
-pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
+pub fn get_owner_and_repo(repository: &str) -> (RepoHost, String, String) {
     static RE: Lazy<Regex> =
         Lazy::new(|| Regex::new("^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());
     let repo_url = if let Some(value) = RE.captures(repository) {
         value
     } else {
         log::warn!("No match for repo in '{}'", &repository);
-        return (String::new(), String::new(), String::new());
+        return (
+            RepoHost::Other(String::from("unknown")),
+            String::new(),
+            String::new(),
+        );
     };
-    let host = repo_url[1].to_lowercase();
+    let host = match &repo_url[1] {
+        "github" => RepoHost::Github,
+        "gitlab" => RepoHost::Gitlab,
+        // Not currently reachable due to regex above
+        host => RepoHost::Other(host.to_lowercase()),
+    };
     let owner = repo_url[2].to_lowercase();
     let repo = repo_url[3].to_lowercase();
     (host, owner, repo)
@@ -247,7 +273,11 @@ pub fn get_details_path(repository: &str) -> Option<PathBuf> {
         return None;
     }
 
-    let details_path = build_path(repo_details_root(), &[&host, &owner, &repo], Some("json"));
+    let details_path = build_path(
+        repo_details_root(),
+        &[host.as_str(), &owner, &repo],
+        Some("json"),
+    );
     Some(details_path)
 }
 
@@ -300,8 +330,12 @@ pub fn save_details(repository: &str, details: &Details) {
         return; // this should never happen
     }
 
-    let _res = fs::create_dir_all(repo_details_root().join(&host).join(&owner));
-    let details_path = build_path(repo_details_root(), &[&host, &owner, &repo], Some("json"));
+    let _res = fs::create_dir_all(repo_details_root().join(host.as_str()).join(&owner));
+    let details_path = build_path(
+        repo_details_root(),
+        &[host.as_str(), &owner, &repo],
+        Some("json"),
+    );
     // log::info!("details {:#?}", &details);
     log::info!("Going to save in details_path {:?}", &details_path);
     // if Path::new(&details_path).exists() {
