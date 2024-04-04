@@ -90,14 +90,8 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
 
         collect_data_about_ci(&host, &mut details);
         details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
-        details.has_rustfmt_toml = Path::new("rustfmt.toml").exists();
-        details.has_dot_rustfmt_toml = Path::new(".rustfmt.toml").exists();
-        if details.has_rustfmt_toml {
-            read_rustfmt(&mut rustfmt, "rustfmt.toml", &krate.name);
-        }
-        if details.has_dot_rustfmt_toml {
-            read_rustfmt(&mut rustfmt, ".rustfmt.toml", &krate.name);
-        }
+
+        collect_data_about_rustfmt(&mut details, &mut rustfmt, krate);
 
         if !host.is_empty() {
             details.commit_count = git_get_count();
@@ -110,6 +104,17 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
     }
 
     save_rustfm(&rustfmt);
+}
+
+fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, krate: &Crate) {
+    details.has_rustfmt_toml = Path::new("rustfmt.toml").exists();
+    details.has_dot_rustfmt_toml = Path::new(".rustfmt.toml").exists();
+    if details.has_rustfmt_toml {
+        read_rustfmt(rustfmt, "rustfmt.toml", &krate.name);
+    }
+    if details.has_dot_rustfmt_toml {
+        read_rustfmt(rustfmt, ".rustfmt.toml", &krate.name);
+    }
 }
 
 fn collect_data_about_ci(host: &String, details: &mut Details) {
