@@ -88,24 +88,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
 
         process_cargo_toml(&mut details);
 
-        if host == "github" {
-            details.has_github_action = false;
-            let workflows = Path::new(".github/workflows");
-            if workflows.exists() {
-                for entry in workflows
-                    .read_dir()
-                    .expect("read_dir call failed")
-                    .flatten()
-                {
-                    log::info!("workflows: {:?}", entry.path());
-                    details.has_github_action = true;
-                }
-            }
-        }
-        if host == "gitlab" {
-            let gitlab_ci_file = Path::new(".gitlab-ci.yml");
-            details.has_gitlab_pipeline = gitlab_ci_file.exists();
-        }
+        collect_data_about_ci(&host, &mut details);
         details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
         details.has_rustfmt_toml = Path::new("rustfmt.toml").exists();
         details.has_dot_rustfmt_toml = Path::new(".rustfmt.toml").exists();
@@ -127,6 +110,27 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
     }
 
     save_rustfm(&rustfmt);
+}
+
+fn collect_data_about_ci(host: &String, details: &mut Details) {
+    if *host == "github" {
+        details.has_github_action = false;
+        let workflows = Path::new(".github/workflows");
+        if workflows.exists() {
+            for entry in workflows
+                .read_dir()
+                .expect("read_dir call failed")
+                .flatten()
+            {
+                log::info!("workflows: {:?}", entry.path());
+                details.has_github_action = true;
+            }
+        }
+    }
+    if *host == "gitlab" {
+        let gitlab_ci_file = Path::new(".gitlab-ci.yml");
+        details.has_gitlab_pipeline = gitlab_ci_file.exists();
+    }
 }
 
 fn process_cargo_toml(details: &mut Details) {
