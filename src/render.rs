@@ -72,6 +72,8 @@ pub fn load_templates() -> Result<Partials, Box<dyn Error>> {
     partials.add(filename, read_file(filename));
     let filename = "templates/incl/list_crates.html";
     partials.add(filename, read_file(filename));
+    let filename = "templates/incl/list_crate_errors.html";
+    partials.add(filename, read_file(filename));
 
     Ok(partials)
 }
@@ -288,6 +290,27 @@ pub fn generate_user_pages(
                     &["users", &user.gh_login.to_ascii_lowercase()],
                     Some("html"),
                 );
+
+                let mut problems: HashMap<&str, Vec<&&Crate>> = HashMap::new();
+                problems.insert(
+                    "vcs_with_http",
+                    selected_crates
+                        .iter()
+                        .filter(|krate| {
+                            !krate.repository.is_empty() && krate.repository.starts_with("http://")
+                        })
+                        .collect::<Vec<_>>(),
+                );
+                problems.insert(
+                    "both_rustfm_and_dot_rustfmt",
+                    selected_crates
+                        .iter()
+                        .filter(|krate| {
+                            krate.details.has_rustfmt_toml && krate.details.has_dot_rustfmt_toml
+                        })
+                        .collect::<Vec<_>>(),
+                );
+
                 let utc: DateTime<Utc> = Utc::now();
                 let globals = liquid::object!({
                     "version": format!("{VERSION}"),
@@ -295,6 +318,7 @@ pub fn generate_user_pages(
                     "title":   &user.name,
                     "user":    user,
                     "crates":  selected_crates,
+                    "problems": problems,
                 });
                 let html = template.render(&globals).unwrap();
                 let mut file = File::create(filename).unwrap();

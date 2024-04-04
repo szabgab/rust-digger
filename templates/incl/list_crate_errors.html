@@ -1,0 +1,39 @@
+    <table class="table">
+      <thead>
+      <tr>
+       <th>name</th>
+       <th>repo</th>
+      </tr>
+      </thead>
+    <tbody>
+
+    {% if problems["vcs_with_http"].size > 0 %}
+        <h2 class="title"><span class="tag is-danger is-light">VCS URL starting with <b>http</b> instead of <b>https</b></span></h2>
+
+        See <a href="/about-repository#https">explanation</a>.
+
+        {% for crate in problems["vcs_with_http"] %}
+        <tr>
+            <td><a href="/crates/{{crate.name}}">{{crate.name}}</a></td>
+            <td><a href="{{crate.repository}}">repo</a></td>
+        </tr>
+        {% endfor %}
+    {% endif %}
+
+    
+    {% if problems["both_rustfm_and_dot_rustfmt"].size > 0 %}
+        <h2 class="title"><span class="tag is-danger is-light">Has both rustfmt.toml and .rustfmt.toml</span></h2>
+
+        One of them is disregarded
+
+        {% for crate in problems["both_rustfm_and_dot_rustfmt"] %}
+        <tr>
+            <td><a href="/crates/{{crate.name}}">{{crate.name}}</a></td>
+            <td><a href="{{crate.repository}}">repo</a></td>
+        </tr>
+        {% endfor %}
+    {% endif %}
+
+    </tbody>
+    </table>
+
