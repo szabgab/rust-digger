@@ -19,7 +19,11 @@
         {% if crate.owner_gh_login == "" %}
           <td>NA</td>
         {% else %}
-          <td><a href="/users/{{crate.owner_gh_login | downcase }}">{{crate.owner_name}}</a></td>
+           {% if crate.owner_name == "" %}
+              <td><a href="/users/{{crate.owner_gh_login | downcase }}">({{crate.owner_gh_login}})</a></td>
+           {% else %}
+              <td><a href="/users/{{crate.owner_gh_login | downcase }}">{{crate.owner_name}}</a></td>
+           {% endif %}
         {% endif %}
 
         {% if crate.repository != "" %}
