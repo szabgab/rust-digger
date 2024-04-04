@@ -24,6 +24,12 @@ pub struct Details {
 
     #[serde(default = "default_false")]
     pub has_dot_rustfmt_toml: bool,
+
+    #[serde(default = "empty_string")]
+    pub edition: String,
+
+    #[serde(default = "empty_string")]
+    pub rust_version: String,
 }
 
 impl Details {
@@ -38,6 +44,8 @@ impl Details {
             has_dot_rustfmt_toml: false,
 
             git_clone_error: String::new(),
+            edition: String::new(),
+            rust_version: String::new(),
         }
     }
 }

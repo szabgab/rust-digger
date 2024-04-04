@@ -1,9 +1,10 @@
 use std::collections::HashSet;
 use std::env;
+use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use clap::Parser;
@@ -11,7 +12,7 @@ use toml::Table;
 
 use rust_digger::{
     collected_data_root, get_owner_and_repo, get_repos_folder, load_details, read_crates,
-    save_details, Crate,
+    save_details, Crate, Details,
 };
 
 mod macros;
@@ -85,6 +86,8 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         env::set_current_dir(&repo_path).unwrap();
         log::info!("in folder: {:?}", env::current_dir().unwrap());
 
+        process_cargo_toml(&mut details);
+
         if host == "github" {
             details.has_github_action = false;
             let workflows = Path::new(".github/workflows");
@@ -124,6 +127,41 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
     }
 
     save_rustfm(&rustfmt);
+}
+
+fn process_cargo_toml(details: &mut Details) {
+    match load_cargo_toml() {
+        Ok(cargo_toml) => {
+            if let Some(package) = cargo_toml.get("package") {
+                //log::info!("cargo_toml: {:#?}", package);
+                if let Some(edition) = package.get("edition") {
+                    if let Some(edition) = edition.as_str() {
+                        details.edition = edition.to_owned();
+                    }
+                };
+                if let Some(rust_version) = package.get("rust_version") {
+                    if let Some(rust_version) = rust_version.as_str() {
+                        details.rust_version = rust_version.to_owned();
+                    }
+                };
+            }
+
+            // details.rust_version =
+            //         match cargo_toml.package().rust_version() {
+            //             Some(rust_version) => rust_version.to_owned(),
+            //             None => {
+            //                 log::error!("Could not get rust_version from Cargo.toml in {repo_path:?}");
+            //                 String::new()
+            //             },
+            //         }
+        }
+        Err(err) => {
+            log::error!(
+                "Could not load Cargo.toml in {:?} ({err})",
+                env::current_dir().unwrap()
+            );
+        }
+    };
 }
 
 fn save_rustfm(rustfmt: &[String]) {
@@ -176,5 +214,20 @@ fn read_rustfmt(rustfmt: &mut Vec<String>, filename: &str, name: &str) {
                 }
             }
         }
+    }
+}
+
+fn load_cargo_toml() -> Result<Table, Box<dyn Error>> {
+    log::info!("load_cargo_toml");
+    let path = PathBuf::from("Cargo.toml");
+    if !path.exists() {
+        return Err(Box::<dyn Error>::from("Cargo.toml does not exist"));
+    }
+    let content = std::fs::read_to_string("Cargo.toml")?;
+    match content.parse::<Table>() {
+        Err(err) => Err(Box::<dyn Error>::from(format!(
+            "Error: {err} when parsing toml"
+        ))),
+        Ok(table) => Ok(table),
     }
 }
