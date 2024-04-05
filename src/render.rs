@@ -863,7 +863,7 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         .collect::<Vec<(String, String, &u32)>>();
 
     #[allow(clippy::min_ident_chars)]
-    rust_versions.sort_by_key(|f| f.2);
+    rust_versions.sort_by(|a, b| a.0.cmp(&b.0));
     rust_versions.reverse();
 
     let partials = load_templates().unwrap();
