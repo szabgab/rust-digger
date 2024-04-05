@@ -154,6 +154,12 @@ fn process_cargo_toml(details: &mut Details) {
                         details.rust_version = rust_version.to_owned();
                     }
                 };
+                // TODO should we report if both fields exist?
+                if let Some(rust_version) = package.get("rust-version") {
+                    if let Some(rust_version) = rust_version.as_str() {
+                        details.rust_version = rust_version.to_owned();
+                    }
+                };
             }
         }
         Err(err) => {
