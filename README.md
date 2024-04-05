@@ -6,6 +6,17 @@
 * Process the data
 * Generate static HTML pages
 
+## Contribution
+
+Please send small pull-requests and make sure each PR changes one thing.
+
+If you would like to implement a feature, but first you need to refacto the code, please send the PR to refactor the code 
+and only once I accepted that send the change to implement the feature. This might sound frustrating, but I am
+not very good at code reviews so if I get a long PR that changes several things that don't have to be changed at once,
+then I might not understand it and I might not accept it. That would be a lot more frutrating to both of us.
+
+Please either set up the `pre-commit hooks` as described below or run `cargo fmt`, `cargo clippy`, and `cargo test`
+manually before committing code.
 
 ## Local development environment
 
