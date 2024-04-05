@@ -13,6 +13,9 @@
         "**/.git/**": true,
         "**/target/**": true,
         "**/_site/**": true,
-        "**/data/**": true
+        "**/data/**": true,
+        "**/repos/**": true,
+        "**/repo-details/**": true,
+        "**/crates/**": true
   }
 }
