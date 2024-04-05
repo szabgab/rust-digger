@@ -333,9 +333,34 @@ pub fn generate_user_pages(
     users_with_crates.sort_by(|a, b| a.name.cmp(&b.name));
 
     generate_list_of_users(&users_with_crates);
+    save_list_of_users_json(&users_with_crates);
+    generate_people_search_page();
 
     log::info!("generate_user_pages end");
     Ok(())
+}
+
+fn save_list_of_users_json(users: &[User]) {
+    let mut users_data = users
+        .iter()
+        .map(|user| {
+            HashMap::from([
+                ("name", user.name.clone()),
+                ("gh_login", user.gh_login.to_lowercase()),
+            ])
+        })
+        .collect::<Vec<HashMap<&str, String>>>();
+    #[allow(clippy::min_ident_chars)]
+    users_data.sort_by(|a, b| a["gh_login"].cmp(&b["gh_login"]));
+
+    match serde_json::to_string(&users_data) {
+        Err(err) => log::error!("Could not serialize user list {err}"),
+        Ok(data) => {
+            let filename = get_site_folder().join("users.json");
+            let mut file = File::create(filename).unwrap();
+            writeln!(&mut file, "{data}").unwrap();
+        }
+    }
 }
 
 fn generate_list_of_users(users: &Vec<User>) {
@@ -363,6 +388,33 @@ fn generate_list_of_users(users: &Vec<User>) {
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{html}").unwrap();
     log::info!("generate_list_of_users end");
+}
+
+fn generate_people_search_page() {
+    log::info!("generate_people_search_page start");
+
+    let partials = load_templates().unwrap();
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/people.html")
+        .unwrap();
+
+    let filename = get_site_folder().join("people.html");
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   String::from("People"),
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
+
+    log::info!("generate_people_search_page end");
 }
 
 fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>) {

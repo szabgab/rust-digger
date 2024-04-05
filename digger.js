@@ -1,3 +1,5 @@
+var users;
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // Get all "navbar-burger" elements
@@ -18,3 +20,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+function search_user() {
+  let text = document.getElementById("user-search").value;
+  //console.log("search_user", text);
+  text = text.toLowerCase();
+  //if (text.length < 3) {
+  //    console.log("short");
+  //    return;
+  //}
+  let selected_users = users.filter(function (entry) {
+      return entry["name"].toLowerCase().includes(text) || entry["gh_login"].toLowerCase().includes(text);
+  });
+  //console.log(selected_users.length);
+  let limit = Math.min(selected_users.length, 10);
+  let html = selected_users.slice(0, limit).map(function (entry) {
+       return `<tr><td>${entry["name"]}</td><td><a href="/users/${ entry["gh_login"].toLowerCase() }">${entry["gh_login"]}</a></td></tr>`;
+  }).join("");
+  //console.log(html);
+  document.getElementById("total").innerHTML = `Total: ${users.length} Selected: ${selected_users.length} Showing: ${limit}`;
+  document.getElementById("mytable").innerHTML = html;
+}
+
+function fetchJSONFile(path, callback) {
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function() {
+        if (httpRequest.readyState === 4) {
+            if (httpRequest.status === 200) {
+                //console.log(httpRequest.responseText);
+                var data = JSON.parse(httpRequest.responseText);
+                if (callback) callback(data);
+            }
+        }
+    };
+    httpRequest.open('GET', path);
+    httpRequest.send();
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchJSONFile('/users.json', function(data){
+        users = data;
+        console.log("loaded");
+        //console.log(user);
+    });
+
+    document.getElementById("user-search").addEventListener('input', search_user);
+});
+
