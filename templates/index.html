@@ -4,28 +4,42 @@
   <div class="container">
     <div class="content">
     <h1 class="title is-3">Welcome to the Rust Digger</h1>
-     We are collecting data about <a href="https://crates.io/">Rust Crates</a> and trying to improve the Rust ecosystem.
+     We are collecting data about <a href="https://crates.io/">Rust Crates</a> to find the common practices of Open Source Rust developers and trying to improve the Rust ecosystem.
      <h3>Crate authors</h3>
      <p>
-        If you are a <b>crate author</b> you can go to the <a href="/users/">list of users</a> and find the page listing all of your crates and the information we collected about them.
+      If you are a <b>crate author</b> you can <a href="/people">find your page</a> listing all of your crates and the information we collected about them.
      </p>
 
      <h3>Contributors</h3>
      <p>
         If you are looking for some ideas how to contribute to a Rust project, we have some "low-hanging fruits" listed here.
+     </p>
+     <h3>Low-hanging fruits</h3>
+        
         <div class="list">
             <li class="list-item">Use https in the repository URL. See the <a href="/vcs/repo-with-http">list of crates</a> and the <a href="/about-repository#https">explanation</a></li>
             <li class="list-item">Remove the www from the repository URL. See the <a href="/vcs/github-with-www">list of crates</a> and the <a href="/about-repository#www">explanation</a></li>
             <li class="list-item">Add the repository URL. See the <a href="/no-homepage-no-repo">list of crates</a> that have not included a link to their repository and the <a href="/about-repository#no-repository">explanation</a></li>
+            <li class="list-item"><b>cargo fmt</b> can configured by either in rustfmt.toml or .rustfmt.toml. A few <a href="/has-both-rustfmt-toml">crates have both</a>. Probably by mistake. Alert the owner an help fixing that.</li>
         </div>
+
+      <h3>More involved contributions</h3>
 
         We also have some ideas for a more involved contribution.
         <div class="list">
-            <li class="list-item">Add GitHub Actions for Continuous Integration. See the <a href="/github-but-no-ci">list of crates</a> and the <a href="/about-ci">explanation</a></li>
+            <li class="list-item">Add Continuous Integration. See the list of crates <a href="/github-but-no-ci">on GitHub without CI</a> and <a href="/gitlab-but-no-ci">on GitLab without CI </a>. See also the <a href="/about-ci">explanation</a></li>            
+            <li class="list-item">Many projects have Travis-CI configured. Unfortunately Travis stopped providing their free service. These crate owners might have a false sense of security of having CI while in reality they don't. Help them set up GitHub Actions or some other CI system.</li>
+            <!--
             <li class="list-item">cargo fmt</li>
             <li class="list-item">cargo clippy</li>
+            <li class="list-item">cargo test</li>
+            -->
         </div>
-    </p>
+
+        <h3>Help the Rust Digger itself</h3>
+        
+        See our <a href="https://github.com/szabgab/rust-digger">repository</a> where you can open issues, solve existing ones, or donate some money.
+
     </div>
   </div>
 </section>
