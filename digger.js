@@ -59,12 +59,15 @@ function fetchJSONFile(path, callback) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetchJSONFile('/users.json', function(data){
-        users = data;
-        console.log("loaded");
-        //console.log(user);
-    });
+    let user_search_box = document.getElementById("user-search");
+    if (user_search_box) {
+        fetchJSONFile('/users.json', function(data){
+            users = data;
+            console.log("loaded");
+            //console.log(user);
+        });
 
-    document.getElementById("user-search").addEventListener('input', search_user);
+        user_search_box.addEventListener('input', search_user);
+    }
 });
 
