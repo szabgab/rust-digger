@@ -650,21 +650,21 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     let home_page_but_no_repo = render_filtered_crates(
         "has-homepage-but-no-repo",
         "Has homepage, but no repository",
-        |krate| has_homepage_no_repo(krate),
+        |krate| !krate.homepage.is_empty() && krate.repository.is_empty(),
         crates,
     )?;
 
     let no_homepage_no_repo_crates = render_filtered_crates(
         "no-homepage-no-repo",
         "No repository, no homepage",
-        |krate| no_homepage_no_repo(krate),
+        |krate| krate.homepage.is_empty() && krate.repository.is_empty(),
         crates,
     )?;
 
     let crates_without_owner_name = render_filtered_crates(
         "crates-without-owner-name",
         "Crates without owner name",
-        |krate| no_owner_name(krate),
+        |krate| krate.owner_name.is_empty(),
         crates,
     )
     .unwrap();
@@ -672,7 +672,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     let crates_without_owner = render_filtered_crates(
         "crates-without-owner",
         "Crates without owner",
-        |krate| crate_has_no_owner(krate),
+        |krate| krate.owner_name.is_empty() && krate.owner_gh_login.is_empty(),
         crates,
     )?;
 
@@ -715,14 +715,6 @@ fn render_filtered_crates(
     );
     render_list_page(filename, title, &filtered_crates)?;
     Ok(filtered_crates.len())
-}
-
-fn no_homepage_no_repo(krate: &Crate) -> bool {
-    krate.homepage.is_empty() && krate.repository.is_empty()
-}
-
-fn has_homepage_no_repo(krate: &Crate) -> bool {
-    !krate.homepage.is_empty() && krate.repository.is_empty()
 }
 
 // fn has_repo(w: &Crate) -> bool {
@@ -768,14 +760,6 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
     }
 
     true
-}
-
-fn no_owner_name(krate: &Crate) -> bool {
-    krate.owner_name.is_empty()
-}
-
-fn crate_has_no_owner(krate: &Crate) -> bool {
-    krate.owner_name.is_empty() && krate.owner_gh_login.is_empty()
 }
 
 fn get_repo_types() -> Vec<Repo> {
