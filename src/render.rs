@@ -717,9 +717,6 @@ fn render_filtered_crates(
     Ok(filtered_crates.len())
 }
 
-// fn has_repo(w: &Crate) -> bool {
-//     w.repository != ""
-// }
 fn on_github_but_no_ci(krate: &Crate) -> bool {
     if krate.repository.is_empty() {
         return false;
