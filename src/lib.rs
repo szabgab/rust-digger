@@ -26,6 +26,8 @@ pub struct Details {
     pub has_appveyor: bool,
     #[serde(default = "default_false")]
     pub has_azure_pipeline: bool,
+    #[serde(default = "default_false")]
+    pub has_bitbucket_pipeline: bool,
 
     pub commit_count: i32,
     pub cargo_toml_in_root: bool,
@@ -58,6 +60,7 @@ impl Details {
             has_jenkins: false,
             has_appveyor: false,
             has_azure_pipeline: false,
+            has_bitbucket_pipeline: false,
 
             commit_count: 0,
             cargo_toml_in_root: false,

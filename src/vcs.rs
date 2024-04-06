@@ -137,6 +137,7 @@ fn collect_data_about_ci(details: &mut Details) {
     details.has_appveyor =
         Path::new(".appveyor.yml").exists() || Path::new("appveyor.yml").exists();
     details.has_azure_pipeline = Path::new("azure-pipelines.yml").exists();
+    details.has_bitbucket_pipeline = Path::new("bitbucket-pipelines.yml").exists();
 }
 
 fn process_cargo_toml(details: &mut Details) {
