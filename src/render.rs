@@ -522,20 +522,20 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
     let no_repo_count = render_filtered_crates(
         "vcs/no-repo",
         "Crates without repository", // Crates in Has no repository
-        crates,
         |krate| krate.repository.is_empty(),
+        crates,
     )?;
 
     let other_repo_count = render_filtered_crates(
         "vcs/other-repos",
         "Crates with other repositories we don't recognize",
-        crates,
         |krate| {
             !(krate.repository.is_empty()
                 || repos
                     .iter()
                     .any(|repo| krate.repository.starts_with(&repo.url)))
         },
+        crates,
     )?;
 
     repos = repos
@@ -544,8 +544,8 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
             let count = render_filtered_crates(
                 &format!("vcs/{}", &repo.name),
                 &format!("Crates in {}", repo.display),
-                crates,
                 |krate| krate.repository.starts_with(&repo.url),
+                crates,
             )
             .unwrap();
 
@@ -596,84 +596,84 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
 
     let no_repo = collect_repos(crates)?;
 
-    let _all = render_filtered_crates("all", "Rust Digger", crates, |_krate| true)?;
+    let _all = render_filtered_crates("all", "Rust Digger", |_krate| true, crates)?;
 
     let has_cargo_toml_in_root = render_filtered_crates(
         "has-cargo-toml-in-root",
         "Has Cargo.toml file in the root",
-        crates,
         |krate| krate.details.cargo_toml_in_root,
+        crates,
     )?;
 
     let has_no_cargo_toml_in_root = render_filtered_crates(
         "has-no-cargo-toml-in-root",
         "Has no Cargo.toml file in the root",
-        crates,
         |krate| !krate.details.cargo_toml_in_root,
+        crates,
     )?;
 
     let has_rustfmt_toml = render_filtered_crates(
         "has-rustfmt-toml",
         "Has rustfmt.toml file",
-        crates,
         |krate| krate.details.has_rustfmt_toml,
+        crates,
     )?;
 
     let has_dot_rustfmt_toml = render_filtered_crates(
         "has-dot-rustfmt-toml",
         "Has .rustfmt.toml file",
-        crates,
         |krate| krate.details.has_dot_rustfmt_toml,
+        crates,
     )?;
 
     let has_both_rustfmt_toml = render_filtered_crates(
         "has-both-rustfmt-toml",
         "Has both rustfmt.toml and .rustfmt.toml file",
-        crates,
         |krate| krate.details.has_rustfmt_toml && krate.details.has_dot_rustfmt_toml,
+        crates,
     )?;
 
     let github_but_no_ci = render_filtered_crates(
         "github-but-no-ci",
         "On GitHub but has no CI",
-        crates,
         |krate| on_github_but_no_ci(krate),
+        crates,
     )?;
 
     let gitlab_but_no_ci = render_filtered_crates(
         "gitlab-but-no-ci",
         "On GitLab but has no CI",
-        crates,
         |krate| on_gitlab_but_no_ci(krate),
+        crates,
     )?;
 
     let home_page_but_no_repo = render_filtered_crates(
         "has-homepage-but-no-repo",
         "Has homepage, but no repository",
-        crates,
         |krate| has_homepage_no_repo(krate),
+        crates,
     )?;
 
     let no_homepage_no_repo_crates = render_filtered_crates(
         "no-homepage-no-repo",
         "No repository, no homepage",
-        crates,
         |krate| no_homepage_no_repo(krate),
+        crates,
     )?;
 
     let crates_without_owner_name = render_filtered_crates(
         "crates-without-owner-name",
         "Crates without owner name",
-        crates,
         |krate| no_owner_name(krate),
+        crates,
     )
     .unwrap();
 
     let crates_without_owner = render_filtered_crates(
         "crates-without-owner",
         "Crates without owner",
-        crates,
         |krate| crate_has_no_owner(krate),
+        crates,
     )?;
 
     let stats = HashMap::from([
@@ -701,8 +701,8 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
 fn render_filtered_crates(
     filename: &str,
     title: &str,
-    crates: &[Crate],
     cond: impl Fn(&&Crate) -> bool,
+    crates: &[Crate],
 ) -> Result<usize, Box<dyn Error>> {
     log::info!(
         "render_filtered_crates number of crates: {}, {filename}",
@@ -898,8 +898,8 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         render_filtered_crates(
             &format!("edition-{}", edition.1),
             &format!("Crates with edition field being '{}'", edition.0),
-            crates,
             |krate| krate.details.edition == edition.0,
+            crates,
         )?;
     }
 
@@ -907,8 +907,8 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         render_filtered_crates(
             &format!("rust-version-{}", rust_version.1),
             &format!("Crates with rust_version field being '{}'", rust_version.0),
-            crates,
             |krate| krate.details.edition == rust_version.0,
+            crates,
         )?;
     }
 
@@ -969,8 +969,8 @@ fn generate_rustfmt_pages(
         render_filtered_crates(
             &format!("rustfmt/{field}"),
             &format!("Crates using the {field} formatting option"),
-            crates,
             |krate| crate_names.contains(&&krate.name),
+            crates,
         )?;
     }
 
@@ -999,8 +999,8 @@ fn generate_rustfmt_pages(
         render_filtered_crates(
             &format!("rustfmt/{field}_{value}"),
             &format!("Crates using the {field} formatting option set to {value}"),
-            crates,
             |krate| crate_names.contains(&&krate.name),
+            crates,
         )?;
     }
 
