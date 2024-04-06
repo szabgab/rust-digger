@@ -88,7 +88,7 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
 
         process_cargo_toml(&mut details);
 
-        collect_data_about_ci(&host, &mut details);
+        collect_data_about_ci(&mut details);
 
         collect_data_about_rustfmt(&mut details, &mut rustfmt, krate);
 
@@ -116,25 +116,20 @@ fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, 
     }
 }
 
-fn collect_data_about_ci(host: &String, details: &mut Details) {
-    if *host == "github" {
-        details.has_github_action = false;
-        let workflows = Path::new(".github/workflows");
-        if workflows.exists() {
-            for entry in workflows
-                .read_dir()
-                .expect("read_dir call failed")
-                .flatten()
-            {
-                log::info!("workflows: {:?}", entry.path());
-                details.has_github_action = true;
-            }
+fn collect_data_about_ci(details: &mut Details) {
+    let workflows = Path::new(".github/workflows");
+    if workflows.exists() {
+        for entry in workflows
+            .read_dir()
+            .expect("read_dir call failed")
+            .flatten()
+        {
+            log::info!("workflows: {:?}", entry.path());
+            details.has_github_action = true;
         }
     }
-    if *host == "gitlab" {
-        let gitlab_ci_file = Path::new(".gitlab-ci.yml");
-        details.has_gitlab_pipeline = gitlab_ci_file.exists();
-    }
+
+    details.has_gitlab_pipeline = Path::new(".gitlab-ci.yml").exists();
     details.has_circle_ci = Path::new(".circleci").exists();
     details.has_cirrus_ci = Path::new(".cirrus.yaml").exists();
     details.has_travis_ci = Path::new(".travis.yaml").exists();
