@@ -731,7 +731,8 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    if krate.details.has_github_action {
+    if krate.details.has_github_action || krate.details.has_circle_ci || krate.details.has_cirrus_ci
+    {
         return false;
     }
 
