@@ -5,7 +5,6 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
-use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
@@ -47,19 +46,6 @@ pub fn render_list_of_repos(repos: &Vec<Repo>) {
     log::info!("render_list_of_repos end");
 }
 
-pub fn read_file(filename: &str) -> String {
-    let mut content = String::new();
-    match File::open(filename) {
-        Ok(mut file) => {
-            file.read_to_string(&mut content).unwrap();
-        }
-        Err(error) => {
-            log::error!("Error opening file {}: {}", filename, error);
-        }
-    }
-    content
-}
-
 pub fn load_templates() -> Result<Partials, Box<dyn Error>> {
     // log::info!("load_templates");
 
@@ -71,7 +57,7 @@ pub fn load_templates() -> Result<Partials, Box<dyn Error>> {
         "templates/incl/list_crates.html",
         "templates/incl/list_crate_errors.html",
     ] {
-        partials.add(filename, read_file(filename));
+        partials.add(filename, fs::read_to_string(filename).unwrap());
     }
 
     Ok(partials)
