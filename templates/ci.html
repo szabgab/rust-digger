@@ -1,0 +1,36 @@
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title">CI systems</h1>
+
+    <table class="table">
+      <thead>
+      <tr>
+       <th>name</th>
+       <th>value</th>
+      </tr>
+      </thead>
+    <tbody>
+
+      <tr>
+          <td><a href="/has-github-actions">GitHub Actions</a></td>
+          <td>{{count.has-github-actions | commafy}}</td>
+      </tr>
+
+      <tr>
+        <td><a href="/has-gitlab-pipeline">GitLab Pipeline</a></td>
+        <td>{{count.has-gitlab-pipeline | commafy}}</td>
+      </tr>
+
+      <tr>
+        <td><a href="/has-cirrus-ci">Cirrus CI</a></td>
+        <td>{{count.has-cirrus-ci | commafy}}</td>
+      </tr>
+
+     </tbody>
+    </table>
+  </div>
+</section>
+
+{% include 'templates/incl/footer.html' %}

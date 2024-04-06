@@ -694,6 +694,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     render_stats_page(crates.len(), &stats);
     generate_rustfmt_pages(crates.len(), &stats, crates)?;
     generate_msrv_pages(crates)?;
+    generate_ci_pages(crates)?;
 
     Ok(())
 }
@@ -796,6 +797,67 @@ fn load_collected_rustfmt() -> Vec<(String, String, String)> {
     }
 
     rustfmt
+}
+
+fn generate_ci_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_ci_pages start");
+
+    let mut count: HashMap<&str, usize> = HashMap::new();
+
+    count.insert(
+        "has-github-actions",
+        render_filtered_crates(
+            "has-github-actions",
+            "Crates with GitHub Actions",
+            |krate| krate.details.has_github_action,
+            crates,
+        )?,
+    );
+
+    count.insert(
+        "has-gitlab-pipeline",
+        render_filtered_crates(
+            "has-gitlab-pipeline",
+            "Crates with GitLab Pipeline",
+            |krate| krate.details.has_gitlab_pipeline,
+            crates,
+        )?,
+    );
+
+    count.insert(
+        "has-cirrus-ci",
+        render_filtered_crates(
+            "has-cirrus-ci",
+            "Crates with Cirrus CI",
+            |krate| krate.details.has_cirrus_ci,
+            crates,
+        )?,
+    );
+
+    let partials = load_templates().unwrap();
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/ci.html")
+        .unwrap();
+
+    let filename = get_site_folder().join("ci.html");
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "CI systems",
+        "count": count,
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
+
+    log::info!("generate_ci_pages end");
+    Ok(())
 }
 
 fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
