@@ -64,16 +64,15 @@ pub fn load_templates() -> Result<Partials, Box<dyn Error>> {
     // log::info!("load_templates");
 
     let mut partials = Partials::empty();
-    let filename = "templates/incl/header.html";
-    partials.add(filename, read_file(filename));
-    let filename = "templates/incl/footer.html";
-    partials.add(filename, read_file(filename));
-    let filename = "templates/incl/navigation.html";
-    partials.add(filename, read_file(filename));
-    let filename = "templates/incl/list_crates.html";
-    partials.add(filename, read_file(filename));
-    let filename = "templates/incl/list_crate_errors.html";
-    partials.add(filename, read_file(filename));
+    for filename in [
+        "templates/incl/header.html",
+        "templates/incl/footer.html",
+        "templates/incl/navigation.html",
+        "templates/incl/list_crates.html",
+        "templates/incl/list_crate_errors.html",
+    ] {
+        partials.add(filename, read_file(filename));
+    }
 
     Ok(partials)
 }
