@@ -10,8 +10,23 @@ use regex::Regex;
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct Details {
+    #[serde(default = "default_false")]
     pub has_github_action: bool,
+    #[serde(default = "default_false")]
     pub has_gitlab_pipeline: bool,
+    #[serde(default = "default_false")]
+    pub has_circle_ci: bool,
+    #[serde(default = "default_false")]
+    pub has_cirrus_ci: bool,
+    #[serde(default = "default_false")]
+    pub has_travis_ci: bool,
+    #[serde(default = "default_false")]
+    pub has_jenkins: bool,
+    #[serde(default = "default_false")]
+    pub has_appveyor: bool,
+    #[serde(default = "default_false")]
+    pub has_azure_pipeline: bool,
+
     pub commit_count: i32,
     pub cargo_toml_in_root: bool,
     pub cargo_fmt: String,
@@ -37,6 +52,13 @@ impl Details {
         Self {
             has_github_action: false,
             has_gitlab_pipeline: false,
+            has_circle_ci: false,
+            has_cirrus_ci: false,
+            has_travis_ci: false,
+            has_jenkins: false,
+            has_appveyor: false,
+            has_azure_pipeline: false,
+
             commit_count: 0,
             cargo_toml_in_root: false,
             cargo_fmt: String::new(),

@@ -135,6 +135,13 @@ fn collect_data_about_ci(host: &String, details: &mut Details) {
         let gitlab_ci_file = Path::new(".gitlab-ci.yml");
         details.has_gitlab_pipeline = gitlab_ci_file.exists();
     }
+    details.has_circle_ci = Path::new(".circleci").exists();
+    details.has_cirrus_ci = Path::new(".cirrus.yaml").exists();
+    details.has_travis_ci = Path::new(".travis.yaml").exists();
+    details.has_jenkins = Path::new("Jenkinsfile").exists();
+    details.has_appveyor =
+        Path::new(".appveyor.yml").exists() || Path::new("appveyor.yml").exists();
+    details.has_azure_pipeline = Path::new("azure-pipelines.yml").exists();
 }
 
 fn process_cargo_toml(details: &mut Details) {
