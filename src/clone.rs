@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::env;
+use std::error::Error;
 use std::fs;
 use std::path::Path;
 use std::process::Command;
@@ -64,17 +65,27 @@ fn main() {
     log::info!("Starting the clone process {}", args.limit);
 
     let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 2);
-    update_repositories(&crates, args.limit, args.recent, args.force);
+    match update_repositories(&crates, args.limit, args.recent, args.force) {
+        Ok(()) => {}
+        Err(err) => log::error!("Error: {err}"),
+    }
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the clone process");
 }
 
-fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool) {
+fn update_repositories(
+    crates: &Vec<Crate>,
+    limit: u32,
+    recent: u32,
+    force: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
     log::info!("start update repositories");
 
     let mut repo_reuse: HashMap<String, i32> = HashMap::new(); // number of times each repository is used for crates (monorepo)
     let now: DateTime<Utc> = Utc::now();
-    let before: DateTime<Utc> = now - Duration::try_days(recent as i64).unwrap();
+    let before: DateTime<Utc> = now
+        - Duration::try_days(recent as i64)
+            .ok_or_else(|| Box::<dyn Error>::from("Could not convert recent"))?;
     log::info!("before: {}", before);
 
     let mut count: u32 = 0;
@@ -131,13 +142,13 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
 
         log::info!("update ({count}/{limit}) repository '{}'", krate.repository);
         let owner_path = get_repos_folder().join(host).join(owner);
-        let current_dir = env::current_dir().unwrap();
+        let current_dir = env::current_dir()?;
         log::info!(
             "Creating owner_path {:?} while current_dir is {:?}",
             &owner_path,
             &current_dir
         );
-        fs::create_dir_all(&owner_path).unwrap();
+        fs::create_dir_all(&owner_path)?;
         let repo_path = owner_path.join(&repo);
         let status = check_url(&krate.repository);
         if status != 200 {
@@ -150,17 +161,19 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
         }
         if Path::new(&repo_path).exists() {
             log::info!("repo exist; cd to {:?}", &repo_path);
-            env::set_current_dir(&repo_path).unwrap();
+            env::set_current_dir(&repo_path)?;
             git_pull();
         } else {
             log::info!("new repo; cd to {:?}", &owner_path);
-            env::set_current_dir(owner_path).unwrap();
+            env::set_current_dir(owner_path)?;
             git_clone(&krate.repository, &repo);
         }
 
-        env::set_current_dir(current_dir).unwrap();
+        env::set_current_dir(current_dir)?;
         count += 1;
     }
+
+    Ok(())
 }
 
 fn git_clone(url: &str, path: &str) {
