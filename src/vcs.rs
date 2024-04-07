@@ -90,9 +90,9 @@ fn collect_data_from_vcs(
             log::warn!("Cloned path does not exist for {}", &krate.repository);
             continue;
         }
-        let current_dir = env::current_dir().unwrap();
-        env::set_current_dir(&repo_path).unwrap();
-        log::info!("in folder: {:?}", env::current_dir().unwrap());
+        let current_dir = env::current_dir()?;
+        env::set_current_dir(&repo_path)?;
+        log::info!("in folder: {:?}", env::current_dir()?);
 
         process_cargo_toml(&mut details);
 
@@ -104,7 +104,7 @@ fn collect_data_from_vcs(
             details.commit_count = git_get_count();
         }
 
-        env::set_current_dir(&current_dir).unwrap();
+        env::set_current_dir(&current_dir)?;
         save_details(&krate.repository, &details)?;
 
         count += 1;
