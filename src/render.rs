@@ -298,6 +298,18 @@ pub fn generate_user_pages(
                         })
                         .collect::<Vec<_>>(),
                 );
+
+                problems.insert(
+                    "vcs_with_www",
+                    selected_crates
+                        .iter()
+                        .filter(|krate| {
+                            !krate.repository.is_empty()
+                                && krate.repository.starts_with("https://www.github.com")
+                        })
+                        .collect::<Vec<_>>(),
+                );
+
                 problems.insert(
                     "both_rustfm_and_dot_rustfmt",
                     selected_crates
