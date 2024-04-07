@@ -12,6 +12,9 @@ fn main() {
     let data_dir = "./data";
     let db_archive = "./db-dump.tar.gz";
 
+    simple_logger::init_with_level(log::Level::Info).unwrap();
+    log::info!("Starting downloading");
+
     if fs::metadata(data_dir).is_ok() {
         fs::remove_dir_all(data_dir).expect("should remove previously extracted data");
     }
@@ -24,8 +27,9 @@ fn main() {
 
     let mut file = fs::File::create(path::Path::new(db_archive))
         .expect("should create new file to write database archive to");
-    let _ =
+    let total =
         io::copy(&mut response, &mut file).expect("should copy fetched response into created file");
+    log::info!("Total downloaded: {total}");
 
     let tar_gz = fs::File::open(db_archive).expect("should open new database archive file");
     let tar = GzDecoder::new(tar_gz);
@@ -44,4 +48,6 @@ fn main() {
         .expect("should find name of directory extracted from archive");
 
     fs::rename(extracted_dir, "data").expect("should rename extracted directory to 'data'");
+
+    log::info!("Extraction process ended");
 }
