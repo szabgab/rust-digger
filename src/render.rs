@@ -452,6 +452,7 @@ fn collect_paths(root: &Path) -> Vec<String> {
         //log::info!("{}", &format!("{}", entry.unwrap().path().display())[5..])
         //paths.push(format!("{}", entry.unwrap().path().display())[5..].to_string().clone());
         let path = entry.as_ref().unwrap().path();
+        #[allow(clippy::string_slice)]
         if path.is_file() && path.extension().unwrap() == "html" {
             let url_path =
                 format!("{}", path.display())[5..path.display().to_string().len() - 5].to_string();
