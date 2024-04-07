@@ -35,12 +35,20 @@ fn main() {
     log::info!("Starting the VCS processor {}", args.limit);
 
     let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 3);
-    collect_data_from_vcs(&crates, args.limit);
+    match collect_data_from_vcs(&crates, args.limit) {
+        Ok(()) => {}
+        Err(err) => {
+            log::error!("{err}");
+        }
+    }
 
     log::info!("Ending the VCS processor");
 }
 
-fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
+fn collect_data_from_vcs(
+    crates: &Vec<Crate>,
+    limit: u32,
+) -> Result<(), Box<dyn std::error::Error>> {
     log::info!("process collect_data_from_vcs start");
     log::info!("Total number of crates: {}", crates.len());
     if 0 < limit {
@@ -97,12 +105,14 @@ fn collect_data_from_vcs(crates: &Vec<Crate>, limit: u32) {
         }
 
         env::set_current_dir(&current_dir).unwrap();
-        save_details(&krate.repository, &details);
+        save_details(&krate.repository, &details)?;
 
         count += 1;
     }
 
     save_rustfm(&rustfmt);
+
+    Ok(())
 }
 
 fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, krate: &Crate) {

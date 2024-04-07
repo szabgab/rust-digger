@@ -306,20 +306,25 @@ pub fn load_details(repository: &str) -> Details {
     Details::new()
 }
 
-fn create_repo_details_folders() {
-    let _res = fs::create_dir_all(repo_details_root());
-    let _res = fs::create_dir_all(repo_details_root().join("github"));
-    let _res = fs::create_dir_all(repo_details_root().join("gitlab"));
+fn create_repo_details_folders() -> Result<(), Box<dyn std::error::Error>> {
+    fs::create_dir_all(repo_details_root())?;
+    fs::create_dir_all(repo_details_root().join("github"))?;
+    fs::create_dir_all(repo_details_root().join("gitlab"))?;
+
+    Ok(())
 }
 
-pub fn save_details(repository: &str, details: &Details) {
+/// # Errors
+///
+/// Will return Err if can't create folders.
+pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn std::error::Error>> {
     log::info!("save_details for '{repository}'");
 
-    create_repo_details_folders();
+    create_repo_details_folders()?;
 
     let (host, owner, repo) = get_owner_and_repo(repository);
     if owner.is_empty() {
-        return; // this should never happen
+        return Ok(()); // this should never happen
     }
 
     let _res = fs::create_dir_all(repo_details_root().join(&host).join(&owner));
@@ -333,6 +338,8 @@ pub fn save_details(repository: &str, details: &Details) {
     let content = serde_json::to_string(&details).unwrap();
     let mut file = File::create(details_path).unwrap();
     writeln!(&mut file, "{content}").unwrap();
+
+    Ok(())
 }
 
 /// # Errors
