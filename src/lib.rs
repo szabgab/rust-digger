@@ -251,8 +251,8 @@ pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
 }
 
 pub fn percentage(num: usize, total: usize) -> String {
-    let total = (10000.0 * num as f32 / total as f32).floor();
-    (total / 100.0).to_string()
+    let total_f32 = (10000.0 * num as f32 / total as f32).floor();
+    (total_f32 / 100.0).to_string()
 }
 
 pub fn repo_details_root() -> PathBuf {
