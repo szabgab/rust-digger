@@ -94,9 +94,9 @@ fn collect_data_from_vcs(
         env::set_current_dir(&repo_path)?;
         log::info!("in folder: {:?}", env::current_dir()?);
 
-        process_cargo_toml(&mut details);
+        process_cargo_toml(&mut details)?;
 
-        collect_data_about_ci(&mut details);
+        collect_data_about_ci(&mut details)?;
 
         collect_data_about_rustfmt(&mut details, &mut rustfmt, krate);
 
@@ -126,14 +126,10 @@ fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, 
     }
 }
 
-fn collect_data_about_ci(details: &mut Details) {
+fn collect_data_about_ci(details: &mut Details) -> Result<(), Box<dyn std::error::Error>> {
     let workflows = Path::new(".github/workflows");
     if workflows.exists() {
-        for entry in workflows
-            .read_dir()
-            .expect("read_dir call failed")
-            .flatten()
-        {
+        for entry in workflows.read_dir()?.flatten() {
             log::info!("workflows: {:?}", entry.path());
             details.has_github_action = true;
         }
@@ -148,9 +144,11 @@ fn collect_data_about_ci(details: &mut Details) {
         Path::new(".appveyor.yml").exists() || Path::new("appveyor.yml").exists();
     details.has_azure_pipeline = Path::new("azure-pipelines.yml").exists();
     details.has_bitbucket_pipeline = Path::new("bitbucket-pipelines.yml").exists();
+
+    Ok(())
 }
 
-fn process_cargo_toml(details: &mut Details) {
+fn process_cargo_toml(details: &mut Details) -> Result<(), Box<dyn std::error::Error>> {
     details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
 
     match load_cargo_toml() {
@@ -178,10 +176,12 @@ fn process_cargo_toml(details: &mut Details) {
         Err(err) => {
             log::error!(
                 "Could not load Cargo.toml in {:?} ({err})",
-                env::current_dir().unwrap()
+                env::current_dir()?
             );
         }
     };
+
+    Ok(())
 }
 
 fn save_rustfm(rustfmt: &[String]) {
