@@ -50,14 +50,14 @@ fn run_cargo_fmt(limit: u32) {
                     return;
                 }
 
-                if let Ok(repo) = repo {
+                if let Ok(repository) = repo {
                     count += 1;
-                    log::info!("repo {}: {:?}", count, repo.path());
+                    log::info!("repo {}: {:?}", count, repository.path());
 
                     let root_dir = env::current_dir().unwrap();
-                    env::set_current_dir(repo.path()).unwrap();
+                    env::set_current_dir(repository.path()).unwrap();
 
-                    if !run_fmt_on(repo.path().to_str().unwrap()) {
+                    if !run_fmt_on(repository.path().to_str().unwrap()) {
                         count -= 1;
                     }
 
