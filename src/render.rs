@@ -157,7 +157,12 @@ pub fn render_news_pages() {
     let utc: DateTime<Utc> = Utc::now();
 
     let path = Path::new("templates/news");
-    for entry in path.read_dir().expect("read_dir call failed").flatten() {
+    let Ok(dir_handle) = path.read_dir() else {
+        log::error!("Could not read directory {:?}", path);
+        return;
+    };
+
+    for entry in dir_handle.flatten() {
         let partials = load_templates().unwrap();
         if entry.path().extension().unwrap() != "html" {
             continue;
