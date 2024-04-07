@@ -44,8 +44,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //log::info!("Limit {args.limit}");
 
     // load crates information from CSV files
-    let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) =
-        read_crate_owners(args.limit)?;
+    let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners()?;
     let mut users = read_users(args.limit)?;
     read_teams(&mut users, args.limit)?;
     let mut crates: Vec<Crate> = ok_or_exit!(read_crates(args.limit), 1);

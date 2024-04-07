@@ -57,22 +57,16 @@ pub fn read_users(limit: u32) -> Result<Vec<User>, Box<dyn Error>> {
     Ok(users)
 }
 
-pub fn read_crate_owners(limit: u32) -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
+pub fn read_crate_owners() -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
     //crate_id,created_at,created_by,owner_id,owner_kind
     let mut owner_by_crate_id: Owners = HashMap::new();
     let mut crates_by_owner: CratesByOwner = HashMap::new();
     let filepath = "data/data/crate_owners.csv";
     log::info!("Start reading {}", filepath);
-    let mut count = 0;
 
     let file = File::open(filepath)?;
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
-        count += 1;
-        if limit > 0 && count >= limit {
-            log::info!("Limit of {limit} reached");
-            break;
-        }
         let record: CrateOwner = result?;
 
         owner_by_crate_id.insert(record.crate_id.clone(), record.owner_id.clone());
