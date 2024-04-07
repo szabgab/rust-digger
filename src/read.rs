@@ -71,7 +71,7 @@ pub fn read_crate_owners() -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
 
         owner_by_crate_id.insert(record.crate_id.clone(), record.owner_id.clone());
         crates_by_owner.entry(record.owner_id.clone()).or_default();
-        let _ = &crates_by_owner
+        crates_by_owner
             .get_mut(&record.owner_id)
             .ok_or(format!("Could not find owner {}", &record.owner_id))?
             .push(record.crate_id.clone());
