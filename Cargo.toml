@@ -68,6 +68,7 @@ implicit_return = "allow"         # We want to encourage implicit return in this
 question_mark_used = "allow"      # We like using ? as a way to shorten code.
 module_name_repetitions = "allow" # I don't mind it as it makes the functions more readable.
 absolute_paths = "allow"          # I like using absoulut paths in function calls.
+single_call_fn = "allow"          # We prefer to have shorter functions even if they are only used once.
 
 
 arithmetic_side_effects = "allow"
@@ -89,5 +90,4 @@ get_unwrap = "allow"
 ignored_unit_patterns = "allow"
 let_underscore_untyped = "allow"
 shadow_reuse = "allow"
-single_call_fn = "allow"
 unnecessary_wraps = "allow"
