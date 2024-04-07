@@ -859,7 +859,7 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     log::info!("editions {:#?}", editions);
     log::info!("rust_version {:#?}", rust_versions);
 
-    let mut editions = editions
+    let mut editions_vector = editions
         .iter()
         .map(|entry| {
             (
@@ -874,10 +874,10 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         })
         .collect::<Vec<(String, String, &u32)>>();
     #[allow(clippy::min_ident_chars)]
-    editions.sort_by_key(|f| f.2);
-    editions.reverse();
+    editions_vector.sort_by_key(|f| f.2);
+    editions_vector.reverse();
 
-    let mut rust_versions = rust_versions
+    let mut rust_versions_vector = rust_versions
         .iter()
         .map(|entry| {
             (
@@ -893,8 +893,8 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         .collect::<Vec<(String, String, &u32)>>();
 
     #[allow(clippy::min_ident_chars)]
-    rust_versions.sort_by(|a, b| a.0.cmp(&b.0));
-    rust_versions.reverse();
+    rust_versions_vector.sort_by(|a, b| a.0.cmp(&b.0));
+    rust_versions_vector.reverse();
 
     let partials = load_templates().unwrap();
 
@@ -912,8 +912,8 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
             "version": format!("{VERSION}"),
             "utc":     format!("{}", utc),
             "title":   "Rust MSRV Stats",
-            "editions": editions,
-            "rust_versions": rust_versions,
+            "editions": editions_vector,
+            "rust_versions": rust_versions_vector,
             //"user":    user,
             //"crate":   krate,
     //        "total": crates,
@@ -924,7 +924,7 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{html}").unwrap();
 
-    for edition in editions {
+    for edition in editions_vector {
         render_filtered_crates(
             &format!("edition-{}", edition.1),
             &format!("Crates with edition field being '{}'", edition.0),
@@ -933,7 +933,7 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         )?;
     }
 
-    for rust_version in rust_versions {
+    for rust_version in rust_versions_vector {
         render_filtered_crates(
             &format!("rust-version-{}", rust_version.1),
             &format!("Crates with rust_version field being '{}'", rust_version.0),
@@ -965,24 +965,24 @@ fn generate_rustfmt_pages(
             .entry((key.to_owned(), value.to_owned()))
             .or_insert(0) += 1;
     }
-    let mut count_by_key = count_by_key
+    let mut count_by_key_vector = count_by_key
         .iter()
         //.map(|pair| pair)
         .collect::<Vec<(&String, &u32)>>();
     #[allow(clippy::min_ident_chars)]
-    count_by_key.sort_by_key(|f| f.1);
-    count_by_key.reverse();
+    count_by_key_vector.sort_by_key(|f| f.1);
+    count_by_key_vector.reverse();
 
-    let mut count_by_pair = count_by_pair
+    let mut count_by_pair_vector = count_by_pair
         .iter()
         .map(|pair| (&pair.0 .0, &pair.0 .1, pair.1))
         .collect::<Vec<(&String, &String, &u32)>>();
     #[allow(clippy::min_ident_chars)]
-    count_by_pair.sort_by(|a, b| a.0.partial_cmp(b.0).unwrap());
+    count_by_pair_vector.sort_by(|a, b| a.0.partial_cmp(b.0).unwrap());
     //count_by_pair.reverse();
 
     #[allow(clippy::pattern_type_mismatch)] // TODO
-    for (field, _count) in &count_by_key {
+    for (field, _count) in &count_by_key_vector {
         match RE_KEY.captures(field) {
             None => {
                 log::error!("Invalid fmt key: {field}");
@@ -1005,7 +1005,7 @@ fn generate_rustfmt_pages(
     }
 
     #[allow(clippy::pattern_type_mismatch)] // TODO
-    for (field, value, _count) in &count_by_pair {
+    for (field, value, _count) in &count_by_pair_vector {
         match RE_KEY.captures(field) {
             None => {
                 log::error!("Invalid fmt key: {field}");
@@ -1050,8 +1050,8 @@ fn generate_rustfmt_pages(
         "version": format!("{VERSION}"),
         "utc":     format!("{}", utc),
         "title":   "Rustfmt Stats",
-        "count_by_key": count_by_key,
-        "count_by_pair": count_by_pair,
+        "count_by_key": count_by_key_vector,
+        "count_by_pair": count_by_pair_vector,
         "stats": stats,
         "number_of_crates": number_of_crates,
         "with_rustfmt": stats["has_rustfmt_toml"] + stats["has_dot_rustfmt_toml"],
