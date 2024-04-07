@@ -156,28 +156,35 @@ pub fn render_news_pages() {
     log::info!("render_news_pages");
     let utc: DateTime<Utc> = Utc::now();
 
-    let path = Path::new("templates/news");
-    let Ok(dir_handle) = path.read_dir() else {
-        log::error!("Could not read directory {:?}", path);
+    let news_path = Path::new("templates/news");
+    let Ok(dir_handle) = news_path.read_dir() else {
+        log::error!("Could not read directory {:?}", news_path);
         return;
     };
 
     for entry in dir_handle.flatten() {
         let partials = load_templates().unwrap();
-        if entry.path().extension().unwrap() != "html" {
+        let path = entry.path();
+        let Some(extension) = path.extension() else {
+            log::warn!("file without extension: {:?}", &path);
+            continue;
+        };
+
+        if extension != std::ffi::OsStr::new("html") {
+            log::warn!("file with invalid extension: {:?} (not html)", &path);
             continue;
         }
 
-        log::info!("news file: {:?}", entry.path());
-        log::info!("{:?}", entry.path().strip_prefix("templates/"));
+        log::info!("news file: {:?}", path);
+        log::info!("{:?}", path.strip_prefix("templates/"));
         let output_path =
-            get_site_folder().join(entry.path().strip_prefix("templates/").unwrap().as_os_str());
+            get_site_folder().join(path.strip_prefix("templates/").unwrap().as_os_str());
         let template = liquid::ParserBuilder::with_stdlib()
             .filter(Commafy)
             .partials(partials)
             .build()
             .unwrap()
-            .parse_file(entry.path())
+            .parse_file(path)
             .unwrap();
 
         let globals = liquid::object!({
