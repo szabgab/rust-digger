@@ -111,10 +111,13 @@ fn update_repositories(crates: &Vec<Crate>, limit: u32, recent: u32, force: bool
         }
 
         let repository = krate.repository.to_lowercase();
-        *repo_reuse.entry(repository.clone()).or_insert(0) += 1;
-        if *repo_reuse.get(&repository as &str).unwrap() > 1 {
-            continue;
-        }
+        match repo_reuse.get(&repository as &str) {
+            Some(value) => {
+                repo_reuse.insert(repository.clone(), value + 1);
+                continue;
+            }
+            None => repo_reuse.insert(repository.clone(), 1),
+        };
 
         let (host, owner, repo) = get_owner_and_repo(&repository);
         if owner.is_empty() {
