@@ -148,19 +148,19 @@ fn process_cargo_toml(details: &mut Details) {
             if let Some(package) = cargo_toml.get("package") {
                 //log::info!("cargo_toml: {:#?}", package);
                 if let Some(edition) = package.get("edition") {
-                    if let Some(edition) = edition.as_str() {
-                        details.edition = edition.to_owned();
+                    if let Some(edition_str) = edition.as_str() {
+                        details.edition = edition_str.to_owned();
                     }
                 };
                 if let Some(rust_version) = package.get("rust_version") {
-                    if let Some(rust_version) = rust_version.as_str() {
-                        details.rust_version = rust_version.to_owned();
+                    if let Some(rust_version_str) = rust_version.as_str() {
+                        details.rust_version = rust_version_str.to_owned();
                     }
                 };
                 // TODO should we report if both fields exist?
                 if let Some(rust_version) = package.get("rust-version") {
-                    if let Some(rust_version) = rust_version.as_str() {
-                        details.rust_version = rust_version.to_owned();
+                    if let Some(rust_version_str) = rust_version.as_str() {
+                        details.rust_version = rust_version_str.to_owned();
                     }
                 };
             }
