@@ -240,9 +240,7 @@ pub fn get_repos_folder() -> PathBuf {
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
     static RE: Lazy<Regex> =
         Lazy::new(|| Regex::new("^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());
-    let repo_url = if let Some(value) = RE.captures(repository) {
-        value
-    } else {
+    let Some(repo_url) = RE.captures(repository) else {
         log::warn!("No match for repo in '{}'", &repository);
         return (String::new(), String::new(), String::new());
     };
@@ -279,9 +277,8 @@ pub fn get_details_path(repository: &str) -> Option<PathBuf> {
 pub fn load_details(repository: &str) -> Details {
     log::info!("Load details started for {}", repository);
 
-    let details_path = match get_details_path(repository) {
-        Some(val) => val,
-        None => return Details::new(),
+    let Some(details_path) = get_details_path(repository) else {
+        return Details::new();
     };
 
     if !details_path.exists() {
