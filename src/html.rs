@@ -71,40 +71,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// fn save_repo_details(crates: &Vec<Crate>) {
-//     log::info!("start saving details");
-
-//     let _res = fs::create_dir_all("repos"); // get_repos_folder()
-//     let _res = fs::create_dir_all("repos/github");
-//     let _res = fs::create_dir_all("repos/gitlab");
-
-//     for krate in crates {
-//         if krate.repository == "" {
-//             continue;
-//         }
-
-//         let repository = krate.repository.to_lowercase();
-//         *repo_reuse.entry(repository.clone()).or_insert(0) += 1;
-//         if *repo_reuse.get(&repository as &str).unwrap() > 1 {
-//             continue;
-//         }
-
-//         let (host, owner, repo) = get_owner_and_repo(&repository);
-//         if owner == "" {
-//             continue;
-//         }
-
-//         log::info!(
-//             "update ({}/{}) repository '{}'",
-//             count,
-//             pull,
-//             krate.repository
-//         );
-//         let owner_path = format!("repos/{host}/{owner}");
-//         let _res = fs::create_dir_all(&owner_path);
-//     }
-// }
-
 fn load_details_for_all_the_crates(crates: &mut [Crate]) {
     for krate in crates.iter_mut() {
         krate.details = load_details(&krate.repository);
