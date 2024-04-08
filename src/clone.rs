@@ -133,7 +133,7 @@ fn update_repositories(
             continue;
         }
 
-        log::info!("update ({count}/{limit}) repository '{}'", krate.repository);
+        log::info!("update ({count}/{limit}) repository '{}'", &repository);
         let owner_path = get_repos_folder().join(host).join(owner);
         let current_dir = env::current_dir()?;
         log::info!(
@@ -143,7 +143,7 @@ fn update_repositories(
         );
         fs::create_dir_all(&owner_path)?;
         let repo_path = owner_path.join(&repo);
-        let status = check_url(&krate.repository);
+        let status = check_url(&repository);
         if status != 200 {
             log::error!(
                 "Error accessing the repository '{}' status: {}",
@@ -159,7 +159,7 @@ fn update_repositories(
         } else {
             log::info!("new repo; cd to {:?}", &owner_path);
             env::set_current_dir(owner_path)?;
-            git_clone(&krate.repository, &repo);
+            git_clone(&repository, &repo);
         }
 
         env::set_current_dir(current_dir)?;
