@@ -134,6 +134,7 @@ fn update_repositories(
         }
 
         log::info!("update ({count}/{limit}) repository '{}'", &repository);
+
         let owner_path = get_repos_folder().join(host).join(owner);
         let current_dir = env::current_dir()?;
         log::info!(
@@ -147,7 +148,7 @@ fn update_repositories(
         if status != 200 {
             log::error!(
                 "Error accessing the repository '{}' status: {}",
-                &krate.repository,
+                &repository,
                 status
             );
             continue;
@@ -163,6 +164,7 @@ fn update_repositories(
         }
 
         env::set_current_dir(current_dir)?;
+
         count += 1;
     }
 
