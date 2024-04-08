@@ -99,7 +99,7 @@ fn update_repositories(
             continue;
         }
 
-        let repository = if !krate.repository.is_empty() {
+        let repository_url = if !krate.repository.is_empty() {
             krate.repository.to_lowercase()
         } else if !krate.homepage.is_empty() {
             log::info!(
@@ -111,29 +111,39 @@ fn update_repositories(
             String::new()
         };
 
-        if repository.is_empty() {
+        if repository_url.is_empty() {
             continue;
         }
 
-        match repo_reuse.get(&repository as &str) {
+        match repo_reuse.get(&repository_url as &str) {
             Some(value) => {
-                repo_reuse.insert(repository.clone(), value + 1);
+                repo_reuse.insert(repository_url.clone(), value + 1);
                 continue;
             }
-            None => repo_reuse.insert(repository.clone(), 1),
+            None => repo_reuse.insert(repository_url.clone(), 1),
         };
 
-        let (host, owner, repo) = get_owner_and_repo(&repository);
+        let (host, owner, repo) = get_owner_and_repo(&repository_url);
         if owner.is_empty() {
             continue;
         }
 
-        let details = load_details(&repository);
+        let details = load_details(&repository_url);
         if !details.git_clone_error.is_empty() && !force {
             continue;
         }
 
-        log::info!("update ({count}/{limit}) repository '{}'", &repository);
+        log::info!("update ({count}/{limit}) repository '{}'", &repository_url);
+
+        let status = check_url(&repository_url);
+        if status != 200 {
+            log::error!(
+                "Error accessing the repository '{}' status: {}",
+                &repository_url,
+                status
+            );
+            continue;
+        }
 
         let owner_path = get_repos_folder().join(host).join(owner);
         let current_dir = env::current_dir()?;
@@ -144,15 +154,6 @@ fn update_repositories(
         );
         fs::create_dir_all(&owner_path)?;
         let repo_path = owner_path.join(&repo);
-        let status = check_url(&repository);
-        if status != 200 {
-            log::error!(
-                "Error accessing the repository '{}' status: {}",
-                &repository,
-                status
-            );
-            continue;
-        }
         if Path::new(&repo_path).exists() {
             log::info!("repo exist; cd to {:?}", &repo_path);
             env::set_current_dir(&repo_path)?;
@@ -160,7 +161,7 @@ fn update_repositories(
         } else {
             log::info!("new repo; cd to {:?}", &owner_path);
             env::set_current_dir(owner_path)?;
-            git_clone(&repository, &repo);
+            git_clone(&repository_url, &repo);
         }
 
         env::set_current_dir(current_dir)?;
