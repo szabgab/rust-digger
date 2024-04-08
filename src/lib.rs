@@ -94,6 +94,8 @@ pub enum RepoPlatform {
     Gogs,      // https://gogs.io/
 }
 
+const REPO_FOLDERS: [&str; 2] = ["github", "gitlab"];
+
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Repo {
@@ -308,8 +310,9 @@ pub fn load_details(repository: &str) -> Details {
 
 fn create_repo_details_folders() -> Result<(), Box<dyn std::error::Error>> {
     fs::create_dir_all(repo_details_root())?;
-    fs::create_dir_all(repo_details_root().join("github"))?;
-    fs::create_dir_all(repo_details_root().join("gitlab"))?;
+    for folder in REPO_FOLDERS {
+        fs::create_dir_all(repo_details_root().join(folder))?;
+    }
 
     Ok(())
 }
