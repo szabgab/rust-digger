@@ -99,11 +99,22 @@ fn update_repositories(
             continue;
         }
 
-        if krate.repository.is_empty() {
+        let repository = if !krate.repository.is_empty() {
+            krate.repository.to_lowercase()
+        } else if !krate.homepage.is_empty() {
+            log::info!(
+                "Trying to use homepage field '{}' as a repository link to clone the project",
+                krate.homepage
+            );
+            krate.homepage.to_lowercase()
+        } else {
+            String::new()
+        };
+
+        if repository.is_empty() {
             continue;
         }
 
-        let repository = krate.repository.to_lowercase();
         match repo_reuse.get(&repository as &str) {
             Some(value) => {
                 repo_reuse.insert(repository.clone(), value + 1);
