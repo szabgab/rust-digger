@@ -70,10 +70,10 @@ module_name_repetitions = "allow" # I don't mind it as it makes the functions mo
 absolute_paths = "allow"          # I like using absoulut paths in function calls.
 single_call_fn = "allow"          # We prefer to have shorter functions even if they are only used once.
 float_arithmetic = "allow"        # In this application it is fine to have float arithmetic
+cast_precision_loss = "allow"     # Not an issue for this application
 
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
-cast_precision_loss = "allow"
 exhaustive_structs = "allow"
 indexing_slicing = "allow"
 missing_docs_in_private_items = "allow"
