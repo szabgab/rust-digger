@@ -145,30 +145,39 @@ fn update_repositories(
             continue;
         }
 
-        let owner_path = get_repos_folder().join(host).join(owner);
-        let current_dir = env::current_dir()?;
-        log::info!(
-            "Creating owner_path {:?} while current_dir is {:?}",
-            &owner_path,
-            &current_dir
-        );
-        fs::create_dir_all(&owner_path)?;
-        let repo_path = owner_path.join(&repo);
-        if Path::new(&repo_path).exists() {
-            log::info!("repo exist; cd to {:?}", &repo_path);
-            env::set_current_dir(&repo_path)?;
-            git_pull();
-        } else {
-            log::info!("new repo; cd to {:?}", &owner_path);
-            env::set_current_dir(owner_path)?;
-            git_clone(&repository_url, &repo);
-        }
-
-        env::set_current_dir(current_dir)?;
+        update_single_repository(&host, &owner, &repo, &repository_url)?;
 
         count += 1;
     }
 
+    Ok(())
+}
+
+fn update_single_repository(
+    host: &str,
+    owner: &str,
+    repo: &str,
+    repository_url: &str,
+) -> Result<(), Box<dyn Error>> {
+    let owner_path = get_repos_folder().join(host).join(owner);
+    let current_dir = env::current_dir()?;
+    log::info!(
+        "Creating owner_path {:?} while current_dir is {:?}",
+        &owner_path,
+        &current_dir
+    );
+    fs::create_dir_all(&owner_path)?;
+    let repo_path = owner_path.join(repo);
+    if Path::new(&repo_path).exists() {
+        log::info!("repo exist; cd to {:?}", &repo_path);
+        env::set_current_dir(&repo_path)?;
+        git_pull();
+    } else {
+        log::info!("new repo; cd to {:?}", &owner_path);
+        env::set_current_dir(owner_path)?;
+        git_clone(repository_url, repo);
+    }
+    env::set_current_dir(current_dir)?;
     Ok(())
 }
 
