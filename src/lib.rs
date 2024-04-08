@@ -4,7 +4,6 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
-use once_cell::sync::Lazy;
 use regex::Regex;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -95,6 +94,10 @@ pub enum RepoPlatform {
 }
 
 const REPO_FOLDERS: [&str; 2] = ["github", "gitlab"];
+const URL_REGEXES: [&str; 2] = [
+    "^https://(github).com/([^/]+)/([^/]+)/?.*$",
+    "^https://(gitlab).com/([^/]+)/([^/]+)/?.*$",
+];
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -240,16 +243,18 @@ pub fn get_repos_folder() -> PathBuf {
 }
 
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
-    static RE: Lazy<Regex> =
-        Lazy::new(|| Regex::new("^https://(github|gitlab).com/([^/]+)/([^/]+)/?.*$").unwrap());
-    let Some(repo_url) = RE.captures(repository) else {
-        log::warn!("No match for repo in '{}'", &repository);
-        return (String::new(), String::new(), String::new());
-    };
-    let host = repo_url[1].to_lowercase();
-    let owner = repo_url[2].to_lowercase();
-    let repo = repo_url[3].to_lowercase();
-    (host, owner, repo)
+    for reg in URL_REGEXES {
+        let re = Regex::new(reg).unwrap();
+        if let Some(repo_url) = re.captures(repository) {
+            let host = repo_url[1].to_lowercase();
+            let owner = repo_url[2].to_lowercase();
+            let repo = repo_url[3].to_lowercase();
+            return (host, owner, repo);
+        }
+    }
+
+    log::warn!("No match for repo in '{}'", &repository);
+    (String::new(), String::new(), String::new())
 }
 
 pub fn percentage(num: usize, total: usize) -> String {
