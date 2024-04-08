@@ -95,26 +95,8 @@ fn update_repositories(
         }
         //log::info!("update_at {}", krate.updated_at); // 2023-09-18 01:44:10.299066
         log::info!("Crate {} updated_at: {}", krate.name, krate.updated_at);
-        if 0 < recent {
-            let updated_at =
-                match NaiveDateTime::parse_from_str(&krate.updated_at, "%Y-%m-%d %H:%M:%S.%f") {
-                    Ok(ts) => ts,
-                    Err(err) => {
-                        // TODO there are some crates, eg. one called cargo-script where the
-                        // updated_at field has no microseconds and it looks like this: 2023-09-18 01:44:10
-                        log::error!(
-                            "Error parsing timestamp '{}' of the crate {} ({})",
-                            &krate.updated_at,
-                            &krate.name,
-                            err
-                        );
-                        //std::process::exit(1);
-                        continue;
-                    }
-                };
-            if updated_at < before.naive_utc() {
-                continue;
-            }
+        if 0 < recent && crate_too_old(krate, before) {
+            continue;
         }
 
         if krate.repository.is_empty() {
@@ -174,6 +156,30 @@ fn update_repositories(
     }
 
     Ok(())
+}
+
+fn crate_too_old(krate: &Crate, before: DateTime<Utc>) -> bool {
+    let updated_at = match NaiveDateTime::parse_from_str(&krate.updated_at, "%Y-%m-%d %H:%M:%S.%f")
+    {
+        Ok(ts) => ts,
+        Err(err) => {
+            // TODO there are some crates, eg. one called cargo-script where the
+            // updated_at field has no microseconds and it looks like this: 2023-09-18 01:44:10
+            log::error!(
+                "Error parsing timestamp '{}' of the crate {} ({})",
+                &krate.updated_at,
+                &krate.name,
+                err
+            );
+            //std::process::exit(1);
+            return true;
+        }
+    };
+    if updated_at < before.naive_utc() {
+        return true;
+    }
+
+    false
 }
 
 fn git_clone(url: &str, path: &str) {
