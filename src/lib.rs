@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
+use once_cell::sync::Lazy;
 use regex::Regex;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -243,8 +244,14 @@ pub fn get_repos_folder() -> PathBuf {
 }
 
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
-    for reg in URL_REGEXES {
-        let re = Regex::new(reg).unwrap();
+    static REGS: Lazy<Vec<Regex>> = Lazy::new(|| {
+        URL_REGEXES
+            .iter()
+            .map(|reg| Regex::new(reg).unwrap())
+            .collect::<Vec<Regex>>()
+    });
+
+    for re in REGS.iter() {
         if let Some(repo_url) = re.captures(repository) {
             let host = repo_url[1].to_lowercase();
             let owner = repo_url[2].to_lowercase();
