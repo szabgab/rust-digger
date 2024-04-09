@@ -10,5 +10,5 @@
 db-dump.tar.gz
 *.swp
 
-/out
-/err
+/*.out
+/*.err
