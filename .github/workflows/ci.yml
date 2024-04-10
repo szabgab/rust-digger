@@ -43,7 +43,7 @@ jobs:
       - name: Download data
         if: ${{ github.event_name != 'pull_request' }}
         run: |
-          cargo run --bin rust-digger-download
+          cargo run --bin rust-digger-download-db-dump
 
       - name: Create pages
         if: ${{ github.event_name != 'pull_request' }}
