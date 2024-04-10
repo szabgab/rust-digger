@@ -47,6 +47,9 @@ pub struct Details {
 
     #[serde(default = "empty_string")]
     pub rust_version: String,
+
+    #[serde(default = "empty_string")]
+    pub rust_dash_version: String,
 }
 
 impl Details {
@@ -71,6 +74,7 @@ impl Details {
             git_clone_error: String::new(),
             edition: String::new(),
             rust_version: String::new(),
+            rust_dash_version: String::new(),
         }
     }
 }

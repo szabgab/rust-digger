@@ -166,9 +166,9 @@ fn process_cargo_toml(details: &mut Details) -> Result<(), Box<dyn std::error::E
                     }
                 };
                 // TODO should we report if both fields exist?
-                if let Some(rust_version) = package.get("rust-version") {
-                    if let Some(rust_version_str) = rust_version.as_str() {
-                        details.rust_version = rust_version_str.to_owned();
+                if let Some(rust_dash_version) = package.get("rust-version") {
+                    if let Some(rust_dash_version_str) = rust_dash_version.as_str() {
+                        details.rust_dash_version = rust_dash_version_str.to_owned();
                     }
                 };
             }

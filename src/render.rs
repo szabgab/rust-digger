@@ -115,6 +115,7 @@ pub fn render_list_page(
 
     let mut filepath = get_site_folder().join(filename);
     filepath.set_extension("html");
+    log::info!("render_file: {filepath:?}");
 
     let partials = load_templates().unwrap();
 
@@ -267,7 +268,7 @@ pub fn generate_user_pages(
             if let Some(crate_ids) = crates_by_owner.get(&user.id) {
                 //dbg!(crate_ids);
                 for crate_id in crate_ids {
-                    log::info!("crate_id: {}", &crate_id);
+                    //log::debug!("crate_id: {}", &crate_id);
                     //log::info!("crate_by_id: {:#?}", crate_by_id);
                     //log::info!("crate_by_id: {:#?}", crate_by_id.keys());
                     //dbg!(&crate_id);
@@ -870,55 +871,67 @@ fn generate_ci_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn vectorize_editions(editions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
+    let mut editions_vector = vectorize(editions);
+
+    #[allow(clippy::min_ident_chars)]
+    editions_vector.sort_by_key(|f| f.2);
+    editions_vector.reverse();
+    editions_vector
+}
+
+fn vectorize_rust_versions(versions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
+    let mut rust_versions_vector = vectorize(versions);
+    #[allow(clippy::min_ident_chars)]
+    rust_versions_vector.sort_by(|a, b| a.0.cmp(&b.0));
+    rust_versions_vector.reverse();
+
+    rust_versions_vector
+}
+
+fn vectorize(editions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
+    let editions_vector = editions
+        .iter()
+        .map(|entry| {
+            (
+                entry.0.clone(),
+                if entry.0.is_empty() {
+                    String::from("na")
+                } else {
+                    entry.0.clone()
+                },
+                *entry.1,
+            )
+        })
+        .collect::<Vec<(String, String, u32)>>();
+
+    editions_vector
+}
+
 fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
+    log::info!("start generate_msrv_pages");
+
     let mut editions: HashMap<String, u32> = HashMap::new();
     let mut rust_versions: HashMap<String, u32> = HashMap::new();
+    let mut rust_dash_versions: HashMap<String, u32> = HashMap::new();
     for krate in crates {
         *editions.entry(krate.details.edition.clone()).or_insert(0) += 1;
         *rust_versions
             .entry(krate.details.rust_version.clone())
             .or_insert(0) += 1;
+        *rust_dash_versions
+            .entry(krate.details.rust_dash_version.clone())
+            .or_insert(0) += 1;
     }
 
     log::info!("editions {:#?}", editions);
     log::info!("rust_version {:#?}", rust_versions);
+    log::info!("rust_dash_version {:#?}", rust_dash_versions);
 
-    let mut editions_vector = editions
-        .iter()
-        .map(|entry| {
-            (
-                entry.0.clone(),
-                if entry.0.is_empty() {
-                    String::from("na")
-                } else {
-                    entry.0.clone()
-                },
-                entry.1,
-            )
-        })
-        .collect::<Vec<(String, String, &u32)>>();
-    #[allow(clippy::min_ident_chars)]
-    editions_vector.sort_by_key(|f| f.2);
-    editions_vector.reverse();
+    let editions_vector = vectorize_editions(&editions);
 
-    let mut rust_versions_vector = rust_versions
-        .iter()
-        .map(|entry| {
-            (
-                entry.0.clone(),
-                if entry.0.is_empty() {
-                    String::from("na")
-                } else {
-                    entry.0.clone()
-                },
-                entry.1,
-            )
-        })
-        .collect::<Vec<(String, String, &u32)>>();
-
-    #[allow(clippy::min_ident_chars)]
-    rust_versions_vector.sort_by(|a, b| a.0.cmp(&b.0));
-    rust_versions_vector.reverse();
+    let rust_versions_vector = vectorize_rust_versions(&rust_versions);
+    let rust_dash_versions_vector = vectorize_rust_versions(&rust_dash_versions);
 
     let partials = load_templates().unwrap();
 
@@ -933,17 +946,13 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     let filename = get_site_folder().join("msrv.html");
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
-            "version": format!("{VERSION}"),
-            "utc":     format!("{}", utc),
-            "title":   "Rust MSRV Stats",
-            "editions": editions_vector,
-            "rust_versions": rust_versions_vector,
-            //"user":    user,
-            //"crate":   krate,
-    //        "total": crates,
-    //        "percentage": perc,
-    //        "stats": stats,
-        });
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "Rust MSRV Stats",
+        "editions": editions_vector,
+        "rust_versions": rust_versions_vector,
+        "rust_dash_versions": rust_dash_versions_vector,
+    });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{html}").unwrap();
@@ -961,11 +970,25 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         render_filtered_crates(
             &format!("rust-version-{}", rust_version.1),
             &format!("Crates with rust_version field being '{}'", rust_version.0),
-            |krate| krate.details.edition == rust_version.0,
+            |krate| krate.details.rust_version == rust_version.0,
             crates,
         )?;
     }
 
+    for rust_dash_version in rust_dash_versions_vector {
+        log::info!("rust_dash_version: {:?}", rust_dash_version.0);
+        render_filtered_crates(
+            &format!("rust-dash-version-{}", rust_dash_version.1),
+            &format!(
+                "Crates with rust-version field being '{}'",
+                rust_dash_version.0
+            ),
+            |krate| krate.details.rust_dash_version == rust_dash_version.0,
+            crates,
+        )?;
+    }
+
+    log::info!("end generate_msrv_pages");
     Ok(())
 }
 

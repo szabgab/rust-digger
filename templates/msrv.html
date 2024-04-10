@@ -2,7 +2,7 @@
 
 <section class="section">
   <div class="container">
-    <h1 class="title">MSRV Stats</h1>
+    <h1 class="title">MSRV - Minimum Supported Rust Version Stats</h1>
 
     <h2 class="title">package.edition</h2>
 
@@ -37,6 +37,26 @@
       {% for version in rust_versions %}
         <tr>
             <td><a href="/rust-version-{{ version[1] }}">{{ version[1] }}</a></td>
+            <td>{{ version[2] | commafy }}</td>
+        </tr>
+      {% endfor %}
+     </tbody>
+    </table>
+
+
+    <h2 class="title">package.rust-version</h2>
+
+    <table class="table">
+      <thead>
+      <tr>
+       <th>rust-version</th>
+       <th>count</th>
+      </tr>
+      </thead>
+    <tbody>
+      {% for version in rust_dash_versions %}
+        <tr>
+            <td><a href="/rust-dash-version-{{ version[1] }}">{{ version[1] }}</a></td>
             <td>{{ version[2] | commafy }}</td>
         </tr>
       {% endfor %}
