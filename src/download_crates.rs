@@ -88,9 +88,9 @@ fn download_crates(
         filtered_versions.sort_by_cached_key(|ver| &ver.created_at);
         filtered_versions.reverse();
 
-        for ver in &filtered_versions[0..core::cmp::min(5, filtered_versions.len())] {
-            log::info!("Crate {} version: {}", krate.name, ver.num);
-        }
+        // for ver in &filtered_versions[0..core::cmp::min(5, filtered_versions.len())] {
+        //     log::info!("Crate {} version: {}", krate.name, ver.num);
+        // }
 
         // if filtered_versions.len() > 1 {
         //     log::error!("More than 1 version of {} were found {}", krate.name, filtered_versions.len());
