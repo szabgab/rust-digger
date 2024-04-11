@@ -3,6 +3,7 @@
 /_site/
 /repos/
 /repos
+/crates/
 /repo-details/
 /collected-data/
 /logs/

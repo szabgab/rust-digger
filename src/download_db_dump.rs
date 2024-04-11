@@ -13,7 +13,7 @@ fn main() {
     let db_archive = "./db-dump.tar.gz";
 
     simple_logger::init_with_level(log::Level::Info).unwrap();
-    log::info!("Starting downloading");
+    log::info!("Start downloading db-dump.tar.gz");
 
     if fs::metadata(data_dir).is_ok() {
         fs::remove_dir_all(data_dir).expect("should remove previously extracted data");

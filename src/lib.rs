@@ -136,6 +136,24 @@ fn get_default_percentage() -> String {
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+pub struct CrateVersion {
+    pub checksum: String,
+    pub crate_id: String,
+    pub crate_size: String,
+    pub created_at: String,
+    pub downloads: String,
+    pub features: String,
+    pub id: String,
+    pub license: String,
+    pub links: String,
+    pub num: String,
+    pub published_by: String,
+    pub rust_version: String,
+    pub updated_at: String,
+    pub yanked: String,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Crate {
     pub created_at: String,
     pub description: String,
@@ -273,6 +291,10 @@ pub fn percentage(num: usize, total: usize) -> String {
     (total_f32 / 100.0).to_string()
 }
 
+pub fn crates_root() -> PathBuf {
+    PathBuf::from("crates")
+}
+
 pub fn repo_details_root() -> PathBuf {
     PathBuf::from("repo-details")
 }
@@ -359,6 +381,32 @@ pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn s
     writeln!(&mut file, "{content}").unwrap();
 
     Ok(())
+}
+
+/// # Errors
+/// TODO
+pub fn read_versions() -> Result<Vec<CrateVersion>, String> {
+    let filepath = "data/data/versions.csv";
+    log::info!("Start reading {}", filepath);
+
+    let mut versions: Vec<CrateVersion> = vec![];
+    match File::open(filepath) {
+        Ok(file) => {
+            let mut rdr = csv::Reader::from_reader(file);
+            for result in rdr.deserialize() {
+                let record: CrateVersion = match result {
+                    Ok(value) => value,
+                    Err(error) => return Err(format!("error: {error}")),
+                };
+                versions.push(record);
+            }
+        }
+        Err(error) => return Err(format!("Error opening file {filepath}: {error}")),
+    }
+
+    log::info!("Finished reading {filepath}");
+
+    Ok(versions)
 }
 
 /// # Errors
