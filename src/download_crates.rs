@@ -38,7 +38,7 @@ fn main() {
         log::info!("We currently don't support downloading all the crates. Use --limit 10");
         return;
     }
-
+    fs::create_dir_all("temp").unwrap();
     fs::create_dir_all(crates_root()).unwrap();
     // load list of crates with version numbers
     let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 2);
@@ -70,12 +70,14 @@ fn download_crates(
 
         //log::info!("update_at {}", krate.updated_at); // 2023-09-18 01:44:10.299066
         log::info!(
-            "Crate {} updated_at: {}   {}",
+            "Crate: {} updated_at: {}  id: {}",
             krate.name,
             krate.updated_at,
             krate.id
         );
         // TODO Maybe crate a HashMap for faster lookup, though we are downloading from the internet so local CPU and runtime is probably not an issue
+        // Well it seems it is an issue when trying to skip the already downloaded crates. This takes about 0.13 seconds while the checing on the filesystem
+        // does not seem to register at all.
         let mut filtered_versions = versions
             .iter()
             .filter(|version| version.crate_id == krate.id)
@@ -113,7 +115,7 @@ fn download_crates(
             krate.name, filtered_versions[0].num
         );
 
-        log::info!("url {url}");
+        log::info!("downloading url {url}");
 
         let downloaded_file = download_crate(&url).unwrap();
         extract_file(&downloaded_file).unwrap();
@@ -156,7 +158,7 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
 fn extract_file(file: &std::path::PathBuf) -> Result<(), Box<dyn Error>> {
     let tar_gz = fs::File::open(file)?;
     let tar = GzDecoder::new(tar_gz);
-    let tmp_dir = TempDir::new("example").unwrap();
+    let tmp_dir = TempDir::new_in("temp", "example").unwrap();
     log::info!("tempdir: {:?}", tmp_dir);
 
     let mut archive = Archive::new(tar);
