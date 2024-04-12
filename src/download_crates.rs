@@ -1,3 +1,5 @@
+use core::cmp::Ordering;
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 
@@ -62,47 +64,35 @@ fn download_crates(
 ) -> Result<(), Box<dyn std::error::Error>> {
     log::info!("start update repositories");
 
+    // TODO maybe we should not include the versions that are not in the standard format e.g. only accept  0.3.0 and not  0.3.0-beta-dev.30 ?
+    let mut latest: HashMap<String, CrateVersion> = HashMap::new();
+    for version in versions {
+        match latest.get(&version.crate_id) {
+            Some(current_version) => {
+                if current_version.created_at.cmp(&version.created_at) == Ordering::Less {
+                    latest.insert(version.crate_id.clone(), version.clone());
+                }
+            }
+            None => {
+                latest.insert(version.crate_id.clone(), version.clone());
+            }
+        };
+    }
+
     let mut count = 0;
     for krate in crates {
         if 0 < limit && limit <= count {
             break;
         }
 
-        //log::info!("update_at {}", krate.updated_at); // 2023-09-18 01:44:10.299066
         log::info!(
             "Crate: {} updated_at: {}  id: {}",
             krate.name,
             krate.updated_at,
             krate.id
         );
-        // TODO Maybe crate a HashMap for faster lookup, though we are downloading from the internet so local CPU and runtime is probably not an issue
-        // Well it seems it is an issue when trying to skip the already downloaded crates. This takes about 0.13 seconds while the checing on the filesystem
-        // does not seem to register at all.
-        let mut filtered_versions = versions
-            .iter()
-            .filter(|version| version.crate_id == krate.id)
-            .collect::<Vec<_>>();
-        if filtered_versions.is_empty() {
-            log::error!("No version of {} could be found", krate.name);
-            continue;
-        }
 
-        filtered_versions.sort_by_cached_key(|ver| &ver.created_at);
-        filtered_versions.reverse();
-
-        // for ver in &filtered_versions[0..core::cmp::min(5, filtered_versions.len())] {
-        //     log::info!("Crate {} version: {}", krate.name, ver.num);
-        // }
-
-        // if filtered_versions.len() > 1 {
-        //     log::error!("More than 1 version of {} were found {}", krate.name, filtered_versions.len());
-        //     continue;
-        // }
-
-        // TODO maybe we should not include the versions that are not in the standard format e.g. only accept  0.3.0 and not  0.3.0-beta-dev.30 ?
-        //log::info!("version of {}: {:#?}", krate.name, filtered_versions[0]);
-
-        let folder = crates_root().join(format!("{}-{}", krate.name, filtered_versions[0].num));
+        let folder = crates_root().join(format!("{}-{}", krate.name, latest[&krate.id].num));
         log::info!("Checking {:?}", folder);
         if folder.exists() {
             log::info!("{:?} already exists. Skipping download", folder);
@@ -112,7 +102,7 @@ fn download_crates(
         // "https://crates.io/api/v1/crates/serde/1.0.0/download
         let url = format!(
             "https://crates.io/api/v1/crates/{}/{}/download",
-            krate.name, filtered_versions[0].num
+            krate.name, latest[&krate.id].num
         );
 
         log::info!("downloading url {url}");
