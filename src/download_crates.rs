@@ -28,6 +28,7 @@ struct Cli {
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
     log::info!("Start downloading crates");
+    let start_time = std::time::Instant::now();
 
     let args = Cli::parse();
 
@@ -48,10 +49,9 @@ fn main() {
         Err(err) => log::error!("Error: {err}"),
     }
 
-    // download crates
-    // extract crates
     // remove old versions of the same crates??
 
+    log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("End downloading crates");
 }
 
