@@ -22,13 +22,14 @@ fn main() {
     };
 
     let mut crates: Vec<RealCrate> = vec![];
+    let mut errors: Vec<String> = vec![];
     for entry in dir_handle.flatten() {
         let path = entry.path();
         log::info!("Processing {:?}", path);
 
         match process_cargo_toml(&path.join("Cargo.toml")) {
             Ok(cargo) => crates.push(RealCrate { cargo }),
-            Err(err) => log::error!("{err}"),
+            Err(err) => errors.push(format!("Crate {path:?} Cargo.toml: {err}")),
         }
     }
 
@@ -36,6 +37,9 @@ fn main() {
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{}", serde_json::to_string(&crates).unwrap()).unwrap();
 
+    for error in errors {
+        log::error!("{error}");
+    }
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("End analyzing crates");
 }

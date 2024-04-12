@@ -3,15 +3,51 @@ use serde::Deserialize;
 use toml::Value;
 
 #[derive(Deserialize, Debug)]
+#[serde(deny_unknown_fields)]
 pub struct Package {
     pub name: String,
     pub version: String,
     pub edition: Option<String>,
+    pub authors: Option<Vec<String>>,
+    pub description: String,
+    pub readme: Option<String>,
+    pub license: Option<String>,
+    pub repository: Option<String>,
+    pub homepage: Option<String>,
+    pub documentation: Option<String>,
+    pub build: Option<Value>,
+    //pub build: Option<String>,
+    //pub build: Option<bool>,
+    pub resolver: Option<String>,
+    pub links: Option<String>,
 
-    pub rust_version: Option<String>,
+    #[serde(alias = "default-run")]
+    pub default_dash_run: Option<String>,
 
+    // Some Crates use rust_version some crates use rust-version:
     #[serde(alias = "rust-version")]
     pub rust_dash_version: Option<String>,
+    pub rust_version: Option<String>,
+
+    #[serde(alias = "license-file")]
+    pub license_dash_file: Option<String>,
+
+    #[serde(alias = "licenseFile")]
+    pub license_capital_file: Option<String>,
+
+    pub autobins: Option<bool>,
+    pub autotests: Option<bool>,
+    pub autoexamples: Option<bool>,
+    pub autobenches: Option<bool>,
+
+    pub publish: Option<Value>,
+    //pub publish: Option<bool>,
+    //pub publish: Option<Vec<String>>,
+    pub metadata: Option<Value>,
+    pub keywords: Option<Vec<String>>,
+    pub categories: Option<Vec<String>>,
+    pub exclude: Option<Vec<String>>,
+    pub include: Option<Vec<String>>,
 }
 
 #[derive(Deserialize, Debug)]
