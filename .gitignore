@@ -13,3 +13,4 @@ db-dump.tar.gz
 
 /*.out
 /*.err
+/crates.json
