@@ -107,9 +107,20 @@ fn download_crates(
 
         log::info!("downloading url {url}");
 
-        let downloaded_file = download_crate(&url).unwrap();
-        extract_file(&downloaded_file).unwrap();
-        std::fs::remove_file(downloaded_file).unwrap();
+        match download_crate(&url) {
+            Ok(downloaded_file) => {
+                match extract_file(&downloaded_file) {
+                    Ok(()) => log::info!("extracted"),
+                    Err(err) => log::error!("{err}"),
+                };
+
+                match std::fs::remove_file(downloaded_file) {
+                    Ok(()) => log::info!("removed"),
+                    Err(err) => log::error!("{err}"),
+                };
+            }
+            Err(err) => log::error!("{err}"),
+        }
 
         count += 1;
     }
@@ -132,7 +143,11 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
     };
 
     if response.status() != 200 {
-        log::error!("status was {:?} when fetching {}", response.status(), url);
+        return Err(Box::<dyn Error>::from(format!(
+            "status was {:?} when fetching {}",
+            response.status(),
+            url
+        )));
     }
 
     let download_file = std::path::Path::new("download.tar.gz");
