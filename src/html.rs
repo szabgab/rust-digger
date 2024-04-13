@@ -973,26 +973,8 @@ fn generate_ci_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn vectorize_editions(editions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
-    let mut editions_vector = vectorize(editions);
-
-    #[allow(clippy::min_ident_chars)]
-    editions_vector.sort_by_key(|f| f.2);
-    editions_vector.reverse();
-    editions_vector
-}
-
-fn vectorize_rust_versions(versions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
-    let mut rust_versions_vector = vectorize(versions);
-    #[allow(clippy::min_ident_chars)]
-    rust_versions_vector.sort_by(|a, b| a.0.cmp(&b.0));
-    rust_versions_vector.reverse();
-
-    rust_versions_vector
-}
-
 fn vectorize(editions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
-    let editions_vector = editions
+    let mut editions_vector = editions
         .iter()
         .map(|entry| {
             (
@@ -1006,6 +988,10 @@ fn vectorize(editions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
             )
         })
         .collect::<Vec<(String, String, u32)>>();
+
+    #[allow(clippy::min_ident_chars)]
+    editions_vector.sort_by(|a, b| a.0.cmp(&b.0));
+    editions_vector.reverse();
 
     editions_vector
 }
@@ -1036,10 +1022,10 @@ fn generate_msrv_pages(crates: &[Crate], released_crates: &[Cargo]) -> Result<()
     log::info!("rust_version {:#?}", rust_versions);
     log::info!("rust_dash_version {:#?}", rust_dash_versions);
 
-    let editions_vector = vectorize_editions(&editions);
+    let editions_vector = vectorize(&editions);
 
-    let rust_versions_vector = vectorize_rust_versions(&rust_versions);
-    let rust_dash_versions_vector = vectorize_rust_versions(&rust_dash_versions);
+    let rust_versions_vector = vectorize(&rust_versions);
+    let rust_dash_versions_vector = vectorize(&rust_dash_versions);
 
     let partials = load_templates().unwrap();
 
