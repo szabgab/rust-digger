@@ -35,6 +35,9 @@ pub struct Package {
     #[serde(alias = "licenseFile")]
     pub license_capital_file: Option<String>,
 
+    #[serde(alias = "forced-target")]
+    pub forced_dash_target: Option<String>,
+
     pub autobins: Option<bool>,
     pub autotests: Option<bool>,
     pub autoexamples: Option<bool>,
