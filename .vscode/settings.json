@@ -16,6 +16,8 @@
         "**/data/**": true,
         "**/repos/**": true,
         "**/repo-details/**": true,
-        "**/crates/**": true
+        "**/crates/**": true,
+        "*.out": true,
+        "*.log": true
   }
 }
