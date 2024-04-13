@@ -1007,16 +1007,22 @@ fn generate_msrv_pages(crates: &[Crate], released_crates: &[Cargo]) -> Result<()
             .package
             .edition
             .as_ref()
-            .map_or_else(|| String::from("NA"), core::clone::Clone::clone);
+            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
         *editions.entry(key).or_insert(0) += 1;
-    }
-    for krate in crates {
-        *rust_versions
-            .entry(krate.details.rust_version.clone())
-            .or_insert(0) += 1;
-        *rust_dash_versions
-            .entry(krate.details.rust_dash_version.clone())
-            .or_insert(0) += 1;
+
+        let key = krate
+            .package
+            .rust_version
+            .as_ref()
+            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
+        *rust_versions.entry(key).or_insert(0) += 1;
+
+        let key = krate
+            .package
+            .rust_dash_version
+            .as_ref()
+            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
+        *rust_dash_versions.entry(key).or_insert(0) += 1;
     }
     log::info!("editions {:#?}", editions);
     log::info!("rust_version {:#?}", rust_versions);
