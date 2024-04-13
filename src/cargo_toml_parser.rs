@@ -1,4 +1,8 @@
 #![allow(dead_code)]
+
+use std::error::Error;
+use std::path::PathBuf;
+
 use serde::Deserialize;
 use toml::Value;
 
@@ -57,4 +61,10 @@ pub struct Package {
 pub struct Cargo {
     pub package: Package,
     pub dependencies: Option<Value>,
+}
+
+pub fn load_cargo_toml(path: &PathBuf) -> Result<Cargo, Box<dyn Error>> {
+    let content = std::fs::read_to_string(path)?;
+    let parsed: Cargo = toml::from_str(&content)?;
+    Ok(parsed)
 }

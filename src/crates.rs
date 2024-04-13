@@ -1,4 +1,3 @@
-use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -7,7 +6,7 @@ use std::path::PathBuf;
 use rust_digger::{crates_root, RealCargo, RealCrate};
 
 mod cargo_toml_parser;
-use cargo_toml_parser::Cargo;
+use cargo_toml_parser::load_cargo_toml;
 
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -67,9 +66,3 @@ fn process_cargo_toml(path: &PathBuf) -> Result<RealCargo, Box<dyn std::error::E
 // println!("rust-version: {:?}", parsed.package.rust_dash_version);
 
 // println!("dependencies: {:?}", parsed.dependencies);
-
-fn load_cargo_toml(path: &PathBuf) -> Result<Cargo, Box<dyn Error>> {
-    let content = std::fs::read_to_string(path)?;
-    let parsed: Cargo = toml::from_str(&content)?;
-    Ok(parsed)
-}
