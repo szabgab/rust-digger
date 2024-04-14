@@ -1003,26 +1003,26 @@ fn generate_msrv_pages(crates: &[Crate], released_crates: &[Cargo]) -> Result<()
     let mut rust_versions: HashMap<String, u32> = HashMap::new();
     let mut rust_dash_versions: HashMap<String, u32> = HashMap::new();
     for krate in released_crates {
-        let key = krate
+        let key1 = krate
             .package
             .edition
             .as_ref()
             .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-        *editions.entry(key).or_insert(0) += 1;
+        *editions.entry(key1).or_insert(0) += 1;
 
-        let key = krate
+        let key2 = krate
             .package
             .rust_version
             .as_ref()
             .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-        *rust_versions.entry(key).or_insert(0) += 1;
+        *rust_versions.entry(key2).or_insert(0) += 1;
 
-        let key = krate
+        let key3 = krate
             .package
             .rust_dash_version
             .as_ref()
             .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-        *rust_dash_versions.entry(key).or_insert(0) += 1;
+        *rust_dash_versions.entry(key3).or_insert(0) += 1;
     }
     log::info!("editions {:#?}", editions);
     log::info!("rust_version {:#?}", rust_versions);
