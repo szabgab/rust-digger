@@ -431,23 +431,16 @@ pub fn load_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
 
 /// # Errors
 /// TODO
-pub fn read_versions() -> Result<Vec<CrateVersion>, String> {
+pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/versions.csv");
     log::info!("Start reading {filepath:?}");
 
     let mut versions: Vec<CrateVersion> = vec![];
-    match File::open(&filepath) {
-        Ok(file) => {
-            let mut rdr = csv::Reader::from_reader(file);
-            for result in rdr.deserialize() {
-                let record: CrateVersion = match result {
-                    Ok(value) => value,
-                    Err(error) => return Err(format!("error: {error}")),
-                };
-                versions.push(record);
-            }
-        }
-        Err(error) => return Err(format!("Error opening file {filepath:?}: {error}")),
+    let file = File::open(&filepath)?;
+    let mut rdr = csv::Reader::from_reader(file);
+    for result in rdr.deserialize() {
+        let record: CrateVersion = result?;
+        versions.push(record);
     }
 
     log::info!("Finished reading {filepath:?}");
@@ -459,31 +452,24 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, String> {
 ///
 /// Will return `Err` if can't open `crates.csv` or if it is not a
 /// proper CSV file.
-pub fn read_crates(limit: u32) -> Result<Vec<Crate>, String> {
+pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/crates.csv");
     log::info!("Start reading {filepath:?}");
     let mut crates: Vec<Crate> = vec![];
     let mut count = 0;
-    match File::open(&filepath) {
-        Ok(file) => {
-            let mut rdr = csv::Reader::from_reader(file);
-            for result in rdr.deserialize() {
-                count += 1;
-                if limit > 0 && count >= limit {
-                    log::info!("Limit of {limit} reached");
-                    break;
-                }
-                let krate: Crate = match result {
-                    Ok(value) => value,
-                    Err(error) => return Err(format!("error: {error}")),
-                };
-                crates.push(krate);
-            }
-            #[allow(clippy::min_ident_chars)]
-            crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+    let file = File::open(&filepath)?;
+    let mut rdr = csv::Reader::from_reader(file);
+    for result in rdr.deserialize() {
+        count += 1;
+        if limit > 0 && count >= limit {
+            log::info!("Limit of {limit} reached");
+            break;
         }
-        Err(error) => return Err(format!("Error opening file {filepath:?}: {error}")),
+        let krate: Crate = result?;
+        crates.push(krate);
     }
+    #[allow(clippy::min_ident_chars)]
+    crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
 
     log::info!("Finished reading {filepath:?}");
     Ok(crates)
