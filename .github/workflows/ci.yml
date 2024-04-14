@@ -48,6 +48,7 @@ jobs:
       - name: Download crates
         if: ${{ github.event_name != 'pull_request' }}
         run: |
+          mkdir -p temp
           cargo run --bin rust-digger-download-crates -- --limit 10
 
       - name: Create pages
