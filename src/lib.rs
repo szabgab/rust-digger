@@ -424,11 +424,11 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, String> {
                     log::info!("Limit of {limit} reached");
                     break;
                 }
-                let record: Crate = match result {
+                let krate: Crate = match result {
                     Ok(value) => value,
                     Err(error) => return Err(format!("error: {error}")),
                 };
-                crates.push(record);
+                crates.push(krate);
             }
             #[allow(clippy::min_ident_chars)]
             crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
