@@ -64,7 +64,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
     load_details_for_all_the_crates(&mut crates);
-    create_folders()?;
+    create_html_folders()?;
 
     std::thread::scope(|scope| {
         scope.spawn(|| generate_pages(&crates).unwrap());
@@ -563,7 +563,7 @@ fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>) {
     writeln!(&mut file, "{html}").unwrap();
 }
 
-fn create_folders() -> Result<(), Box<dyn Error>> {
+fn create_html_folders() -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(get_site_folder())?;
     for folder in ["crates", "users", "news", "vcs", "rustfmt"] {
         fs::create_dir_all(get_site_folder().join(folder))?;
