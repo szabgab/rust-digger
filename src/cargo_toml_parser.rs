@@ -3,10 +3,10 @@
 use std::error::Error;
 use std::path::PathBuf;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use toml::Value;
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Package {
     pub name: String,
@@ -57,7 +57,7 @@ pub struct Package {
     pub include: Option<Vec<String>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Cargo {
     pub package: Package,
     pub dependencies: Option<Value>,
