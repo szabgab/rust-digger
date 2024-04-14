@@ -1,6 +1,5 @@
 {
     "rust-analyzer.linkedProjects": [
-        "./Cargo.toml",
         "./Cargo.toml"
     ],
     "rust-analyzer.files.excludeDirs": [
@@ -10,17 +9,12 @@
     "search.exclude": {
         "target/": true,
         "_site/": true,
-        "db-dump.tar.gz": true,
         "data/": true
     },
     "files.watcherExclude": {
         "**/.git/**": true,
         "**/target/**": true,
-        "**/_site/**": true,
         "**/data/**": true,
-        "**/repos/**": true,
-        "**/repo-details/**": true,
-        "**/crates/**": true,
         "*.out": true,
         "*.log": true
   }
