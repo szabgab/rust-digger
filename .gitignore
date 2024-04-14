@@ -11,6 +11,7 @@
 db-dump.tar.gz
 *.swp
 
+/temp
 /*.out
 /*.err
 /crates.json
