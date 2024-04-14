@@ -264,12 +264,13 @@ pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(get_repos_folder())?;
     fs::create_dir_all(get_db_dump_folder())?;
     fs::create_dir_all(get_temp_folder())?;
+    fs::create_dir_all(crates_root()).unwrap();
 
     Ok(())
 }
 
 pub fn get_repos_folder() -> PathBuf {
-    PathBuf::from("repos")
+    PathBuf::from("data/repos")
 }
 
 pub fn get_db_dump_folder() -> PathBuf {
@@ -278,6 +279,18 @@ pub fn get_db_dump_folder() -> PathBuf {
 
 pub fn get_temp_folder() -> PathBuf {
     PathBuf::from("data/temp")
+}
+
+pub fn crates_root() -> PathBuf {
+    PathBuf::from("data/crates")
+}
+
+pub fn repo_details_root() -> PathBuf {
+    PathBuf::from("data/repo-details")
+}
+
+pub fn collected_data_root() -> PathBuf {
+    PathBuf::from("data/collected-data")
 }
 
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
@@ -304,18 +317,6 @@ pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
 pub fn percentage(num: usize, total: usize) -> String {
     let total_f32 = (10000.0 * num as f32 / total as f32).floor();
     (total_f32 / 100.0).to_string()
-}
-
-pub fn crates_root() -> PathBuf {
-    PathBuf::from("crates")
-}
-
-pub fn repo_details_root() -> PathBuf {
-    PathBuf::from("repo-details")
-}
-
-pub fn collected_data_root() -> PathBuf {
-    PathBuf::from("collected-data")
 }
 
 pub fn get_details_path(repository: &str) -> Option<PathBuf> {
@@ -401,11 +402,11 @@ pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn s
 /// # Errors
 /// TODO
 pub fn read_versions() -> Result<Vec<CrateVersion>, String> {
-    let filepath = "data/data/versions.csv";
-    log::info!("Start reading {}", filepath);
+    let filepath = get_db_dump_folder().join("data/versions.csv");
+    log::info!("Start reading {filepath:?}");
 
     let mut versions: Vec<CrateVersion> = vec![];
-    match File::open(filepath) {
+    match File::open(&filepath) {
         Ok(file) => {
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {
@@ -416,10 +417,10 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, String> {
                 versions.push(record);
             }
         }
-        Err(error) => return Err(format!("Error opening file {filepath}: {error}")),
+        Err(error) => return Err(format!("Error opening file {filepath:?}: {error}")),
     }
 
-    log::info!("Finished reading {filepath}");
+    log::info!("Finished reading {filepath:?}");
 
     Ok(versions)
 }
@@ -429,11 +430,11 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, String> {
 /// Will return `Err` if can't open `crates.csv` or if it is not a
 /// proper CSV file.
 pub fn read_crates(limit: u32) -> Result<Vec<Crate>, String> {
-    let filepath = "data/data/crates.csv";
-    log::info!("Start reading {}", filepath);
+    let filepath = get_db_dump_folder().join("data/crates.csv");
+    log::info!("Start reading {filepath:?}");
     let mut crates: Vec<Crate> = vec![];
     let mut count = 0;
-    match File::open(filepath) {
+    match File::open(&filepath) {
         Ok(file) => {
             let mut rdr = csv::Reader::from_reader(file);
             for result in rdr.deserialize() {
@@ -451,10 +452,10 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, String> {
             #[allow(clippy::min_ident_chars)]
             crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
         }
-        Err(error) => return Err(format!("Error opening file {filepath}: {error}")),
+        Err(error) => return Err(format!("Error opening file {filepath:?}: {error}")),
     }
 
-    log::info!("Finished reading {filepath}");
+    log::info!("Finished reading {filepath:?}");
     Ok(crates)
 }
 

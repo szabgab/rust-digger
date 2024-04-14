@@ -43,8 +43,6 @@ fn main() {
         return;
     }
     create_data_folders().unwrap();
-    //fs::create_dir_all("temp").unwrap();
-    fs::create_dir_all(crates_root()).unwrap();
     // load list of crates with version numbers
     let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 2);
     let versions: Vec<CrateVersion> = ok_or_exit!(read_versions(), 2);
