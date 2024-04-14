@@ -116,8 +116,8 @@ fn download_crates(
                     Err(err) => log::error!("{err}"),
                 };
 
-                match std::fs::remove_file(downloaded_file) {
-                    Ok(()) => log::info!("removed"),
+                match std::fs::remove_file(&downloaded_file) {
+                    Ok(()) => log::info!("file {downloaded_file:?} removed"),
                     Err(err) => log::error!("{err}"),
                 };
             }
@@ -165,7 +165,7 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
 fn extract_file(file: &std::path::PathBuf) -> Result<(), Box<dyn Error>> {
     let tar_gz = fs::File::open(file)?;
     let tar = GzDecoder::new(tar_gz);
-    let tmp_dir = TempDir::new_in("temp", "example").unwrap();
+    let tmp_dir = TempDir::new_in(get_temp_folder(), "example")?;
     log::info!("tempdir: {:?}", tmp_dir);
 
     let mut archive = Archive::new(tar);
@@ -173,8 +173,7 @@ fn extract_file(file: &std::path::PathBuf) -> Result<(), Box<dyn Error>> {
 
     let extracted_dir = fs::read_dir(std::path::Path::new(tmp_dir.path()))?
         .next()
-        .unwrap()
-        .unwrap();
+        .ok_or("Could not extract file")??;
     log::info!("extract dir: {:?}", extracted_dir);
     log::info!("extract filename {:?}", extracted_dir.file_name());
 
