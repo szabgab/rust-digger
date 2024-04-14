@@ -293,7 +293,9 @@ pub fn collected_data_root() -> PathBuf {
 }
 
 pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
-    fs::create_dir_all(get_data_folder())?;
+    if !get_data_folder().exists() {
+        fs::create_dir_all(get_data_folder())?;
+    }
     fs::create_dir_all(get_repos_folder())?;
     fs::create_dir_all(get_db_dump_folder())?;
     fs::create_dir_all(get_temp_folder())?;
