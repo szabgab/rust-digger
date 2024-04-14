@@ -30,7 +30,7 @@ Optionally install [pre-commit](https://pre-commit.com/) and then run `pre-commi
 Download the data from static.crates.io
 
 ```
-cargo run --bin rust-digger-download
+cargo run --bin rust-digger-download-db-dump
 ```
 
 Clone 15 repositories of the crates that were release in the last 10 days:
