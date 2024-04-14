@@ -2,6 +2,8 @@ use flate2::read::GzDecoder;
 use std::{fs, io, path};
 use tar::Archive;
 
+use rust_digger::{create_data_folders, get_db_dump_folder, get_temp_folder};
+
 fn year_of_yesterday() -> String {
     let now = chrono::Local::now();
     let yesterday = now - chrono::Duration::try_days(1).unwrap();
@@ -9,28 +11,48 @@ fn year_of_yesterday() -> String {
 }
 
 fn main() {
-    let data_dir = "./data";
-    let db_archive = "./db-dump.tar.gz";
-
     simple_logger::init_with_level(log::Level::Info).unwrap();
-    log::info!("Start downloading db-dump.tar.gz");
 
-    if fs::metadata(data_dir).is_ok() {
-        fs::remove_dir_all(data_dir).expect("should remove previously extracted data");
-    }
-    if fs::metadata(path::Path::new(db_archive)).is_ok() {
-        fs::remove_file(db_archive).expect("should remove previous database archive");
+    download();
+    extract();
+}
+
+fn download() {
+    log::info!("Start downloading db-dump.tar.gz");
+    let start_time = std::time::Instant::now();
+
+    let db_archive = get_temp_folder().join("db-dump.tar.gz");
+    create_data_folders().unwrap();
+
+    //if fs::metadata(&data_dir).is_ok() {
+    //    fs::remove_dir_all(&data_dir).expect("should remove previously extracted data");
+    //}
+    if fs::metadata(&db_archive).is_ok() {
+        fs::remove_file(&db_archive).expect("should remove previous database archive");
     }
 
     let mut response = reqwest::blocking::get("https://static.crates.io/db-dump.tar.gz")
         .expect("should fetch new database archive from static.crates.io");
 
-    let mut file = fs::File::create(path::Path::new(db_archive))
-        .expect("should create new file to write database archive to");
+    log::info!("db_archive: {:?}", &db_archive);
+    let mut file =
+        fs::File::create(&db_archive).expect("should create new file to write database archive to");
     let total =
         io::copy(&mut response, &mut file).expect("should copy fetched response into created file");
     log::info!("Total downloaded: {total}");
+    log::info!(
+        "Elapsed time for download: {} sec.",
+        start_time.elapsed().as_secs()
+    );
+}
 
+fn extract() {
+    log::info!("Start extracting db-dump.tar.gz");
+    let start_time = std::time::Instant::now();
+
+    let data_dir = get_db_dump_folder();
+
+    let db_archive = get_temp_folder().join("db-dump.tar.gz");
     let tar_gz = fs::File::open(db_archive).expect("should open new database archive file");
     let tar = GzDecoder::new(tar_gz);
     let mut archive = Archive::new(tar);
@@ -47,7 +69,11 @@ fn main() {
         .next()
         .expect("should find name of directory extracted from archive");
 
-    fs::rename(extracted_dir, "data").expect("should rename extracted directory to 'data'");
+    fs::rename(extracted_dir, data_dir).expect("should rename extracted directory to 'data'");
 
+    log::info!(
+        "Elapsed time for extraction: {} sec.",
+        start_time.elapsed().as_secs()
+    );
     log::info!("Extraction process ended");
 }

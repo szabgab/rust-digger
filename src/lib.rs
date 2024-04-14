@@ -262,12 +262,22 @@ pub type CratesByOwner = HashMap<String, Vec<String>>;
 pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
     fs::create_dir_all("data")?;
     fs::create_dir_all(get_repos_folder())?;
+    fs::create_dir_all(get_db_dump_folder())?;
+    fs::create_dir_all(get_temp_folder())?;
 
     Ok(())
 }
 
 pub fn get_repos_folder() -> PathBuf {
     PathBuf::from("repos")
+}
+
+pub fn get_db_dump_folder() -> PathBuf {
+    PathBuf::from("data/db-dump")
+}
+
+pub fn get_temp_folder() -> PathBuf {
+    PathBuf::from("data/temp")
 }
 
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
