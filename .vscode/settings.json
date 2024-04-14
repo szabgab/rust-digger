@@ -3,6 +3,10 @@
         "./Cargo.toml",
         "./Cargo.toml"
     ],
+    "rust-analyzer.files.excludeDirs": [
+        "data",
+        "_site"
+    ],
     "search.exclude": {
         "target/": true,
         "_site/": true,
