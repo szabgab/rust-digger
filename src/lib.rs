@@ -264,32 +264,36 @@ const fn default_false() -> bool {
     false
 }
 
+pub fn get_data_folder() -> PathBuf {
+    PathBuf::from("data")
+}
+
 pub fn get_repos_folder() -> PathBuf {
-    PathBuf::from("data/repos")
+    get_data_folder().join("repos")
 }
 
 pub fn get_db_dump_folder() -> PathBuf {
-    PathBuf::from("data/db-dump")
+    get_data_folder().join("db-dump")
 }
 
 pub fn get_temp_folder() -> PathBuf {
-    PathBuf::from("data/temp")
+    get_data_folder().join("temp")
 }
 
 pub fn crates_root() -> PathBuf {
-    PathBuf::from("data/crates")
+    get_data_folder().join("crates")
 }
 
 pub fn repo_details_root() -> PathBuf {
-    PathBuf::from("data/repo-details")
+    get_data_folder().join("repo-details")
 }
 
 pub fn collected_data_root() -> PathBuf {
-    PathBuf::from("data/collected-data")
+    get_data_folder().join("collected-data")
 }
 
 pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
-    fs::create_dir_all("data")?;
+    fs::create_dir_all(get_data_folder())?;
     fs::create_dir_all(get_repos_folder())?;
     fs::create_dir_all(get_db_dump_folder())?;
     fs::create_dir_all(get_temp_folder())?;
