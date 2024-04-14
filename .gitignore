@@ -1,18 +1,9 @@
 /target
 /data/
 /_site/
-/repos/
-/repos
-/crates/
-/repo-details/
-/collected-data/
 /logs/
 *.bak
-db-dump.tar.gz
 *.swp
 
-/temp
 /*.out
 /*.err
-/crates.json
-/download.tar.gz
