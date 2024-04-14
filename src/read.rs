@@ -2,14 +2,14 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fs::File;
 
-use rust_digger::{CrateOwner, CratesByOwner, Owners, Team, User};
+use rust_digger::{get_db_dump_folder, CrateOwner, CratesByOwner, Owners, Team, User};
 
 pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error>> {
-    let filepath = "data/data/teams.csv";
-    log::info!("Start reading {}", filepath);
+    let filepath = get_db_dump_folder().join("data/teams.csv");
+    log::info!("Start reading {filepath:?}");
     let mut count = 0;
 
-    let file = File::open(filepath)?;
+    let file = File::open(&filepath)?;
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
         count += 1;
@@ -31,17 +31,17 @@ pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error
         users.push(user);
     }
 
-    log::info!("Finished reading {filepath}");
+    log::info!("Finished reading {filepath:?}");
     Ok(())
 }
 
 pub fn read_users(limit: u32) -> Result<Vec<User>, Box<dyn Error>> {
     let mut users: Vec<User> = vec![];
-    let filepath = "data/data/users.csv";
-    log::info!("Start reading {}", filepath);
+    let filepath = get_db_dump_folder().join("data/users.csv");
+    log::info!("Start reading {filepath:?}");
     let mut count = 0;
 
-    let file = File::open(filepath)?;
+    let file = File::open(&filepath)?;
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
         count += 1;
@@ -53,7 +53,7 @@ pub fn read_users(limit: u32) -> Result<Vec<User>, Box<dyn Error>> {
         users.push(record);
     }
 
-    log::info!("Finished reading {filepath}");
+    log::info!("Finished reading {filepath:?}");
     Ok(users)
 }
 
@@ -61,10 +61,10 @@ pub fn read_crate_owners() -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
     //crate_id,created_at,created_by,owner_id,owner_kind
     let mut owner_by_crate_id: Owners = HashMap::new();
     let mut crates_by_owner: CratesByOwner = HashMap::new();
-    let filepath = "data/data/crate_owners.csv";
-    log::info!("Start reading {}", filepath);
+    let filepath = get_db_dump_folder().join("data/crate_owners.csv");
+    log::info!("Start reading {filepath:?}");
 
-    let file = File::open(filepath)?;
+    let file = File::open(&filepath)?;
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
         let record: CrateOwner = result?;
@@ -78,7 +78,7 @@ pub fn read_crate_owners() -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
         //dbg!(&crates_by_owner[&record.owner_id]);
     }
 
-    log::info!("Finished reading {filepath}");
+    log::info!("Finished reading {filepath:?}");
 
     Ok((owner_by_crate_id, crates_by_owner))
 }
