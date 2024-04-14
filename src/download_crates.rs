@@ -13,7 +13,8 @@ mod macros;
 use macros::ok_or_exit;
 
 use rust_digger::{
-    crates_root, create_data_folders, read_crates, read_versions, Crate, CrateVersion,
+    crates_root, create_data_folders, get_temp_folder, read_crates, read_versions, Crate,
+    CrateVersion,
 };
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -151,14 +152,14 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
         )));
     }
 
-    let download_file = std::path::Path::new("temp/download.tar.gz");
-    let mut file = fs::File::create(download_file).unwrap();
+    let download_file = get_temp_folder().join("download.tar.gz");
+    let mut file = fs::File::create(&download_file).unwrap();
 
     let total = std::io::copy(&mut response, &mut file)
         .expect("should copy fetched response into created file");
     log::info!("Total downloaded: {total}");
 
-    Ok(download_file.to_path_buf())
+    Ok(download_file)
 }
 
 fn extract_file(file: &std::path::PathBuf) -> Result<(), Box<dyn Error>> {

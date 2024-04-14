@@ -13,6 +13,25 @@ use regex::Regex;
 mod cargo_toml_parser;
 pub use cargo_toml_parser::{load_cargo_toml, Cargo};
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[non_exhaustive]
+pub enum RepoPlatform {
+    GitHub,    // https://github.com/
+    GitLab,    // https://gitlab.com/
+    Gitea,     // https://about.gitea.com/
+    Cgit,      // https://git.zx2c4.com/cgit/about/
+    Forgejo,   // https://forgejo.org/
+    Fossil,    // https://fossil-scm.org/
+    Mercurial, // https://www.mercurial-scm.org/
+    Gogs,      // https://gogs.io/
+}
+
+const REPO_FOLDERS: [&str; 2] = ["github", "gitlab"];
+const URL_REGEXES: [&str; 2] = [
+    "^https://(github).com/([^/]+)/([^/]+)/?.*$",
+    "^https://(gitlab).com/([^/]+)/([^/]+)/?.*$",
+];
+
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct Details {
@@ -92,25 +111,6 @@ impl Default for Details {
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
-#[non_exhaustive]
-pub enum RepoPlatform {
-    GitHub,    // https://github.com/
-    GitLab,    // https://gitlab.com/
-    Gitea,     // https://about.gitea.com/
-    Cgit,      // https://git.zx2c4.com/cgit/about/
-    Forgejo,   // https://forgejo.org/
-    Fossil,    // https://fossil-scm.org/
-    Mercurial, // https://www.mercurial-scm.org/
-    Gogs,      // https://gogs.io/
-}
-
-const REPO_FOLDERS: [&str; 2] = ["github", "gitlab"];
-const URL_REGEXES: [&str; 2] = [
-    "^https://(github).com/([^/]+)/([^/]+)/?.*$",
-    "^https://(gitlab).com/([^/]+)/([^/]+)/?.*$",
-];
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Repo {
     pub display: String,
@@ -127,18 +127,6 @@ pub struct Repo {
 
     #[serde(default = "get_default_bold")]
     pub bold: bool,
-}
-
-const fn get_default_bold() -> bool {
-    false
-}
-
-const fn get_default_count() -> usize {
-    0
-}
-
-fn get_default_percentage() -> String {
-    String::from("0")
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -184,53 +172,6 @@ pub struct Crate {
     pub details: Details,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct User {
-    pub gh_avatar: String,
-    pub gh_id: String,
-    pub gh_login: String,
-    pub id: String,
-    pub name: String,
-
-    #[serde(default = "get_zero")]
-    pub count: usize,
-}
-
-fn empty_details() -> Details {
-    Details::new()
-}
-
-const fn empty_string() -> String {
-    String::new()
-}
-
-const fn get_zero() -> usize {
-    0
-}
-
-const fn default_false() -> bool {
-    false
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct Team {
-    pub avatar: String,
-    pub github_id: String,
-    pub login: String,
-    pub id: String,
-    pub name: String,
-    pub org_id: String,
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct CrateOwner {
-    pub crate_id: String,
-    pub created_at: String,
-    pub created_by: String,
-    pub owner_id: String,
-    pub owner_kind: String,
-}
-
 impl Crate {
     pub fn new() -> Self {
         Self {
@@ -259,19 +200,68 @@ impl Default for Crate {
     }
 }
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct User {
+    pub gh_avatar: String,
+    pub gh_id: String,
+    pub gh_login: String,
+    pub id: String,
+    pub name: String,
+
+    #[serde(default = "get_zero")]
+    pub count: usize,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Team {
+    pub avatar: String,
+    pub github_id: String,
+    pub login: String,
+    pub id: String,
+    pub name: String,
+    pub org_id: String,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct CrateOwner {
+    pub crate_id: String,
+    pub created_at: String,
+    pub created_by: String,
+    pub owner_id: String,
+    pub owner_kind: String,
+}
+
 //type RepoPercentage<'a> = HashMap<&'a str, String>;
 pub type Owners = HashMap<String, String>;
 pub type CratesByOwner = HashMap<String, Vec<String>>;
 // type Users = HashMap<String, User>;
 
-pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
-    fs::create_dir_all("data")?;
-    fs::create_dir_all(get_repos_folder())?;
-    fs::create_dir_all(get_db_dump_folder())?;
-    fs::create_dir_all(get_temp_folder())?;
-    fs::create_dir_all(crates_root()).unwrap();
+const fn get_default_bold() -> bool {
+    false
+}
 
-    Ok(())
+const fn get_default_count() -> usize {
+    0
+}
+
+fn get_default_percentage() -> String {
+    String::from("0")
+}
+
+fn empty_details() -> Details {
+    Details::new()
+}
+
+const fn empty_string() -> String {
+    String::new()
+}
+
+const fn get_zero() -> usize {
+    0
+}
+
+const fn default_false() -> bool {
+    false
 }
 
 pub fn get_repos_folder() -> PathBuf {
@@ -296,6 +286,16 @@ pub fn repo_details_root() -> PathBuf {
 
 pub fn collected_data_root() -> PathBuf {
     PathBuf::from("data/collected-data")
+}
+
+pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
+    fs::create_dir_all("data")?;
+    fs::create_dir_all(get_repos_folder())?;
+    fs::create_dir_all(get_db_dump_folder())?;
+    fs::create_dir_all(get_temp_folder())?;
+    fs::create_dir_all(crates_root()).unwrap();
+
+    Ok(())
 }
 
 pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
