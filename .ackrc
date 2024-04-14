@@ -1,2 +1,6 @@
 --ignore-dir=data
+--ignore-dir=repos
+--ignore-dir=crates
+--ignore-dir=repo-details
+--ignore-dir=collected-data
 --ignore-dir=_site
