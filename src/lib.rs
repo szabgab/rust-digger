@@ -7,18 +7,6 @@ use std::path::PathBuf;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-// The RealCargo and RealCrate structs are used for parsing the files downloaded from Crates.io
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
-pub struct RealCargo {
-    pub name: String,
-    pub version: String,
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
-pub struct RealCrate {
-    pub cargo: RealCargo,
-}
-
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct Details {

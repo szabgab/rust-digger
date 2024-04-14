@@ -49,11 +49,6 @@ name = "rust-digger-clone"
 path = "src/clone.rs"
 
 [[bin]]
-name = "rust-digger-crates"
-path = "src/crates.rs"
-
-
-[[bin]]
 name = "rust-digger-download-db-dump"
 path = "src/download_db_dump.rs"
 
