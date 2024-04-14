@@ -1,5 +1,5 @@
 use flate2::read::GzDecoder;
-use std::{fs, io, path};
+use std::{fs, io};
 use tar::Archive;
 
 use rust_digger::{create_data_folders, get_db_dump_folder, get_temp_folder};
@@ -57,10 +57,10 @@ fn extract() {
     let tar = GzDecoder::new(tar_gz);
     let mut archive = Archive::new(tar);
     archive
-        .unpack(".")
+        .unpack(get_temp_folder())
         .expect("should unpack archive file into current directory");
 
-    let extracted_dir = fs::read_dir(path::Path::new("."))
+    let extracted_dir = fs::read_dir(get_temp_folder())
         .expect("should read directory extracted from archive")
         .filter_map(Result::ok)
         .map(|entry| entry.file_name().to_str().unwrap().to_owned())
@@ -69,7 +69,10 @@ fn extract() {
         .next()
         .expect("should find name of directory extracted from archive");
 
-    fs::rename(extracted_dir, data_dir).expect("should rename extracted directory to 'data'");
+    let extracted_folder = get_temp_folder().join(extracted_dir);
+
+    log::info!("rename {extracted_folder:?} to {data_dir:?}");
+    fs::rename(extracted_folder, data_dir).expect("should rename extracted directory to 'data'");
 
     log::info!(
         "Elapsed time for extraction: {} sec.",
