@@ -14,12 +14,9 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 
 use rust_digger::{
-    build_path, collected_data_root, crates_root, get_owner_and_repo, load_details, percentage,
-    read_crates, Crate, CratesByOwner, Owners, Repo, User,
+    build_path, collected_data_root, get_owner_and_repo, load_details, load_released_crates,
+    percentage, read_crates, Cargo, Crate, CratesByOwner, Owners, Repo, User,
 };
-
-mod cargo_toml_parser;
-use cargo_toml_parser::{load_cargo_toml, Cargo};
 
 const URL: &str = "https://rust-digger.code-maven.com";
 
@@ -1212,27 +1209,6 @@ fn generate_rustfmt_pages(
     writeln!(&mut file, "{html}").unwrap();
 
     Ok(())
-}
-
-fn load_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
-    let dir_handle = crates_root().read_dir()?;
-
-    let released_crates = dir_handle
-        .flatten()
-        .filter_map(|entry| {
-            let path = entry.path().join("Cargo.toml");
-            log::info!("Processing {:?}", path);
-            match load_cargo_toml(&path) {
-                Ok(cargo) => Some(cargo),
-                Err(err) => {
-                    log::error!("Reading {path:?} failed: {err}");
-                    None
-                }
-            }
-        })
-        .collect::<Vec<Cargo>>();
-
-    Ok(released_crates)
 }
 
 #[test]
