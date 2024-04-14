@@ -78,7 +78,7 @@ fn update_repositories(
     limit: u32,
     recent: u32,
     force: bool,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn Error>> {
     log::info!("start update repositories");
 
     let mut repo_reuse: HashMap<String, i32> = HashMap::new(); // number of times each repository is used for crates (monorepo)

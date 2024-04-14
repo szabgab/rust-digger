@@ -126,7 +126,7 @@ fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, 
     }
 }
 
-fn collect_data_about_ci(details: &mut Details) -> Result<(), Box<dyn std::error::Error>> {
+fn collect_data_about_ci(details: &mut Details) -> Result<(), Box<dyn Error>> {
     let workflows = Path::new(".github/workflows");
     if workflows.exists() {
         for entry in workflows.read_dir()?.flatten() {
@@ -148,7 +148,7 @@ fn collect_data_about_ci(details: &mut Details) -> Result<(), Box<dyn std::error
     Ok(())
 }
 
-fn process_cargo_toml(details: &mut Details) -> Result<(), Box<dyn std::error::Error>> {
+fn process_cargo_toml(details: &mut Details) -> Result<(), Box<dyn Error>> {
     details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
 
     match load_cargo_toml() {

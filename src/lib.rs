@@ -371,7 +371,7 @@ pub fn load_details(repository: &str) -> Details {
     Details::new()
 }
 
-fn create_repo_details_folders() -> Result<(), Box<dyn std::error::Error>> {
+fn create_repo_details_folders() -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(repo_details_root())?;
     for folder in REPO_FOLDERS {
         fs::create_dir_all(repo_details_root().join(folder))?;
@@ -383,7 +383,7 @@ fn create_repo_details_folders() -> Result<(), Box<dyn std::error::Error>> {
 /// # Errors
 ///
 /// Will return Err if can't create folders.
-pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn std::error::Error>> {
+pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn Error>> {
     log::info!("save_details for '{repository}'");
 
     create_repo_details_folders()?;

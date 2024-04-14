@@ -63,7 +63,7 @@ fn download_crates(
     crates: &[Crate],
     versions: &[CrateVersion],
     limit: u32,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn Error>> {
     log::info!("start update repositories");
 
     // TODO maybe we should not include the versions that are not in the standard format e.g. only accept  0.3.0 and not  0.3.0-beta-dev.30 ?
