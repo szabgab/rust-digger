@@ -40,7 +40,7 @@ fn main() {
         log::info!("We currently don't support downloading all the crates. Use --limit 10");
         return;
     }
-    fs::create_dir_all("temp").unwrap();
+    //fs::create_dir_all("temp").unwrap();
     fs::create_dir_all(crates_root()).unwrap();
     // load list of crates with version numbers
     let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 2);
@@ -150,7 +150,7 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
         )));
     }
 
-    let download_file = std::path::Path::new("download.tar.gz");
+    let download_file = std::path::Path::new("temp/download.tar.gz");
     let mut file = fs::File::create(download_file).unwrap();
 
     let total = std::io::copy(&mut response, &mut file)
@@ -173,8 +173,8 @@ fn extract_file(file: &std::path::PathBuf) -> Result<(), Box<dyn Error>> {
         .next()
         .unwrap()
         .unwrap();
-    log::info!("extra: {:?}", extracted_dir);
-    log::info!("extra: {:?}", extracted_dir.file_name());
+    log::info!("extract dir: {:?}", extracted_dir);
+    log::info!("extract filename {:?}", extracted_dir.file_name());
 
     fs::rename(
         extracted_dir.path(),
