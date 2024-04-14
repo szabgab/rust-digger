@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -257,6 +258,13 @@ impl Default for Crate {
 pub type Owners = HashMap<String, String>;
 pub type CratesByOwner = HashMap<String, Vec<String>>;
 // type Users = HashMap<String, User>;
+
+pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
+    fs::create_dir_all("data")?;
+    fs::create_dir_all(get_repos_folder())?;
+
+    Ok(())
+}
 
 pub fn get_repos_folder() -> PathBuf {
     PathBuf::from("repos")

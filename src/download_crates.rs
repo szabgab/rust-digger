@@ -12,7 +12,9 @@ use tempdir::TempDir;
 mod macros;
 use macros::ok_or_exit;
 
-use rust_digger::{crates_root, read_crates, read_versions, Crate, CrateVersion};
+use rust_digger::{
+    crates_root, create_data_folders, read_crates, read_versions, Crate, CrateVersion,
+};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -40,6 +42,7 @@ fn main() {
         log::info!("We currently don't support downloading all the crates. Use --limit 10");
         return;
     }
+    create_data_folders().unwrap();
     //fs::create_dir_all("temp").unwrap();
     fs::create_dir_all(crates_root()).unwrap();
     // load list of crates with version numbers
