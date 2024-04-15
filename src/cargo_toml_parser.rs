@@ -36,6 +36,9 @@ pub struct Package {
     #[serde(alias = "license-file")]
     pub license_dash_file: Option<String>,
 
+    #[serde(alias = "license_file")]
+    pub license_file: Option<String>,
+
     #[serde(alias = "licenseFile")]
     pub license_capital_file: Option<String>,
 
