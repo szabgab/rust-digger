@@ -9,9 +9,6 @@ use clap::Parser;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
-mod macros;
-use macros::ok_or_exit;
-
 use rust_digger::{get_owner_and_repo, get_repos_folder, load_details, read_crates, Crate};
 
 #[derive(Parser, Debug)]
@@ -58,19 +55,26 @@ struct Cli {
 ///
 ///     (if the data collection takes too long we might need to separate it from the cloning)
 fn main() {
-    let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
     let start_time = std::time::Instant::now();
 
-    log::info!("Starting the clone process {}", args.limit);
-
-    let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 2);
-    match update_repositories(&crates, args.limit, args.recent, args.force) {
+    match run() {
         Ok(()) => {}
         Err(err) => log::error!("Error: {err}"),
     }
+
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the clone process");
+}
+
+fn run() -> Result<(), Box<dyn Error>> {
+    let args = Cli::parse();
+    log::info!("Starting the clone process for max {} crates.", args.limit);
+
+    let crates: Vec<Crate> = read_crates(0)?;
+    update_repositories(&crates, args.limit, args.recent, args.force)?;
+
+    Ok(())
 }
 
 fn update_repositories(

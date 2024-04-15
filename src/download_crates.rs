@@ -36,6 +36,7 @@ fn main() {
         Ok(()) => {}
         Err(err) => log::error!("Error: {err}"),
     }
+
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("End downloading crates");
 }
