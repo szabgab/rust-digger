@@ -14,8 +14,8 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 
 use rust_digger::{
-    build_path, collected_data_root, get_owner_and_repo, load_details, load_released_crates,
-    percentage, read_crates, Cargo, Crate, CratesByOwner, Owners, Repo, User,
+    build_path, collected_data_root, get_owner_and_repo, load_details, percentage, read_crates,
+    Crate, CratesByOwner, Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -706,7 +706,6 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     fs::copy("digger.js", get_site_folder().join("digger.js"))?;
 
     let no_repo = collect_repos(crates)?;
-    let released_crates = load_released_crates()?;
 
     let _all = render_filtered_crates("all", "Rust Digger", |_krate| true, crates)?;
 
@@ -805,7 +804,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
 
     render_stats_page(crates.len(), &stats);
     generate_rustfmt_pages(crates.len(), &stats, crates)?;
-    generate_msrv_pages(crates, &released_crates)?;
+    generate_msrv_pages(crates)?;
     generate_ci_pages(crates)?;
 
     Ok(())
@@ -995,34 +994,39 @@ fn vectorize(editions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
     editions_vector
 }
 
-fn generate_msrv_pages(crates: &[Crate], released_crates: &[Cargo]) -> Result<(), Box<dyn Error>> {
+fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     log::info!("start generate_msrv_pages");
 
     let mut editions: HashMap<String, u32> = HashMap::new();
     let mut rust_versions: HashMap<String, u32> = HashMap::new();
     let mut rust_dash_versions: HashMap<String, u32> = HashMap::new();
-    for krate in released_crates {
-        let key1 = krate
-            .package
-            .edition
-            .as_ref()
-            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-        *editions.entry(key1).or_insert(0) += 1;
 
-        let key2 = krate
-            .package
-            .rust_version
-            .as_ref()
-            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-        *rust_versions.entry(key2).or_insert(0) += 1;
+    for krate in crates {
+        #[allow(clippy::pattern_type_mismatch)]
+        if let Some(cargo) = &krate.cargo {
+            let key1 = cargo
+                .package
+                .edition
+                .as_ref()
+                .map_or_else(|| String::from("na"), core::clone::Clone::clone);
+            *editions.entry(key1).or_insert(0) += 1;
 
-        let key3 = krate
-            .package
-            .rust_dash_version
-            .as_ref()
-            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-        *rust_dash_versions.entry(key3).or_insert(0) += 1;
+            let key2 = cargo
+                .package
+                .rust_version
+                .as_ref()
+                .map_or_else(|| String::from("na"), core::clone::Clone::clone);
+            *rust_versions.entry(key2).or_insert(0) += 1;
+
+            let key3 = cargo
+                .package
+                .rust_dash_version
+                .as_ref()
+                .map_or_else(|| String::from("na"), core::clone::Clone::clone);
+            *rust_dash_versions.entry(key3).or_insert(0) += 1;
+        };
     }
+
     log::info!("editions {:#?}", editions);
     log::info!("rust_version {:#?}", rust_versions);
     log::info!("rust_dash_version {:#?}", rust_dash_versions);
@@ -1049,7 +1053,6 @@ fn generate_msrv_pages(crates: &[Crate], released_crates: &[Cargo]) -> Result<()
         "utc":     format!("{}", utc),
         "title":   "Rust MSRV Stats",
         "total_crates": crates.len(),
-        "total_released_crates": released_crates.len(),
         "editions": editions_vector,
         "rust_versions": rust_versions_vector,
         "rust_dash_versions": rust_dash_versions_vector,

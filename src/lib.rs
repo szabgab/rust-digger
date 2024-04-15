@@ -170,6 +170,8 @@ pub struct Crate {
 
     #[serde(default = "empty_details")]
     pub details: Details,
+
+    pub cargo: Option<Cargo>,
 }
 
 impl Crate {
@@ -191,6 +193,7 @@ impl Crate {
             owner_name: String::new(),
 
             details: Details::new(),
+            cargo: None,
         }
     }
 }
@@ -457,6 +460,13 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
 pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/crates.csv");
     log::info!("Start reading {filepath:?}");
+
+    let released_crates = load_released_crates()?;
+    let cargo_of_crate: HashMap<String, Cargo> = released_crates
+        .iter()
+        .map(|krate| (krate.package.name.clone(), krate.clone()))
+        .collect::<HashMap<_, _>>();
+
     let mut crates: Vec<Crate> = vec![];
     let mut count = 0;
     let file = File::open(&filepath)?;
@@ -467,7 +477,13 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
             log::info!("Limit of {limit} reached");
             break;
         }
-        let krate: Crate = result?;
+
+        let mut krate: Crate = result?;
+
+        krate.cargo = cargo_of_crate
+            .contains_key(&krate.name)
+            .then(|| cargo_of_crate[&krate.name].clone());
+
         crates.push(krate);
     }
     #[allow(clippy::min_ident_chars)]
