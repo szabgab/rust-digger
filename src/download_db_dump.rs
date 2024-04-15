@@ -24,9 +24,6 @@ fn download() {
     let db_archive = get_temp_folder().join("db-dump.tar.gz");
     create_data_folders().unwrap();
 
-    //if fs::metadata(&data_dir).is_ok() {
-    //    fs::remove_dir_all(&data_dir).expect("should remove previously extracted data");
-    //}
     if fs::metadata(&db_archive).is_ok() {
         fs::remove_file(&db_archive).expect("should remove previous database archive");
     }
@@ -51,6 +48,10 @@ fn extract() {
     let start_time = std::time::Instant::now();
 
     let data_dir = get_db_dump_folder();
+
+    if fs::metadata(&data_dir).is_ok() {
+        fs::remove_dir_all(&data_dir).expect("should remove previously extracted data");
+    }
 
     let db_archive = get_temp_folder().join("db-dump.tar.gz");
     let tar_gz = fs::File::open(db_archive).expect("should open new database archive file");
