@@ -13,7 +13,7 @@ pub struct Package {
     pub version: String,
     pub edition: Option<String>,
     pub authors: Option<Vec<String>>,
-    pub description: String,
+    pub description: Option<String>,
     pub readme: Option<String>,
     pub license: Option<String>,
     pub repository: Option<String>,
