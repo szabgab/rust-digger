@@ -40,9 +40,9 @@ fn main() {
     if args.limit > 0 {
         log::info!("Download {} crates.", args.limit);
     } else {
-        log::info!("We currently don't support downloading all the crates. Use --limit 10");
-        return;
+        log::info!("Downloading all the crates.");
     }
+
     create_data_folders().unwrap();
     // load list of crates with version numbers
     let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 2);

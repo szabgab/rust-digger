@@ -64,6 +64,7 @@ pub struct Cargo {
 }
 
 pub fn load_cargo_toml(path: &PathBuf) -> Result<Cargo, Box<dyn Error>> {
+    log::debug!("load_cargo_toml {:?}", path);
     let content = std::fs::read_to_string(path)?;
     let parsed: Cargo = toml::from_str(&content)?;
     Ok(parsed)

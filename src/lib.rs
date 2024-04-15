@@ -414,13 +414,13 @@ pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn E
 }
 
 pub fn load_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
+    log::info!("start load_released_crates");
     let dir_handle = crates_root().read_dir()?;
 
     let released_crates = dir_handle
         .flatten()
         .filter_map(|entry| {
             let path = entry.path().join("Cargo.toml");
-            log::info!("Processing {:?}", path);
             match load_cargo_toml(&path) {
                 Ok(cargo) => Some(cargo),
                 Err(err) => {
@@ -431,6 +431,7 @@ pub fn load_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
         })
         .collect::<Vec<Cargo>>();
 
+    log::info!("end load_released_crates");
     Ok(released_crates)
 }
 
