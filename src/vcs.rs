@@ -15,9 +15,6 @@ use rust_digger::{
     save_details, Crate, Details,
 };
 
-mod macros;
-use macros::ok_or_exit;
-
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
@@ -30,19 +27,27 @@ struct Cli {
 }
 
 fn main() {
-    let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
-    log::info!("Starting the VCS processor {}", args.limit);
+    log::info!("Starting the VCS processor.");
+    let start_time = std::time::Instant::now();
 
-    let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 3);
-    match collect_data_from_vcs(&crates, args.limit) {
+    match run() {
         Ok(()) => {}
-        Err(err) => {
-            log::error!("{err}");
-        }
+        Err(err) => log::error!("Error: {err}"),
     }
 
+    log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the VCS processor");
+}
+
+fn run() -> Result<(), Box<dyn Error>> {
+    let args = Cli::parse();
+    log::info!("Limit: {}", args.limit);
+
+    let crates: Vec<Crate> = read_crates(0)?;
+    collect_data_from_vcs(&crates, args.limit)?;
+
+    Ok(())
 }
 
 fn collect_data_from_vcs(
