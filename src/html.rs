@@ -20,9 +20,6 @@ use rust_digger::{
 
 const URL: &str = "https://rust-digger.code-maven.com";
 
-mod macros;
-use macros::ok_or_exit;
-
 pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -55,7 +52,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners()?;
     let mut users = read_users(args.limit)?;
     read_teams(&mut users, args.limit)?;
-    let mut crates: Vec<Crate> = ok_or_exit!(read_crates(args.limit), 1);
+    let mut crates: Vec<Crate> = read_crates(args.limit)?;
 
     //dbg!(&crates_by_owner);
 
