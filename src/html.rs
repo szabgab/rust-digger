@@ -1032,7 +1032,6 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     log::info!("rust_dash_version {:#?}", rust_dash_versions);
 
     let editions_vector = vectorize(&editions);
-
     let rust_versions_vector = vectorize(&rust_versions);
     let rust_dash_versions_vector = vectorize(&rust_dash_versions);
 
@@ -1061,38 +1060,97 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{html}").unwrap();
 
-    for edition in editions_vector {
-        render_filtered_crates(
-            &format!("edition-{}", edition.1),
-            &format!("Crates with edition field being '{}'", edition.0),
-            |krate| krate.details.edition == edition.0,
-            crates,
-        )?;
-    }
+    list_crates_with_edition(editions_vector, crates)?;
+    list_crates_with_rust_version(rust_versions_vector, crates)?;
+    list_crates_with_rust_dash_version(rust_dash_versions_vector, crates)?;
 
-    for rust_version in rust_versions_vector {
-        render_filtered_crates(
-            &format!("rust-version-{}", rust_version.1),
-            &format!("Crates with rust_version field being '{}'", rust_version.0),
-            |krate| krate.details.rust_version == rust_version.0,
-            crates,
-        )?;
-    }
+    log::info!("end generate_msrv_pages");
+    Ok(())
+}
 
+fn list_crates_with_rust_dash_version(
+    rust_dash_versions_vector: Vec<(String, String, u32)>,
+    crates: &[Crate],
+) -> Result<(), Box<dyn Error>> {
     for rust_dash_version in rust_dash_versions_vector {
-        log::info!("rust_dash_version: {:?}", rust_dash_version.0);
         render_filtered_crates(
-            &format!("rust-dash-version-{}", rust_dash_version.1),
+            &format!("rust-version-{}", rust_dash_version.1),
             &format!(
                 "Crates with rust-version field being '{}'",
                 rust_dash_version.0
             ),
-            |krate| krate.details.rust_dash_version == rust_dash_version.0,
+            |krate| {
+                #[allow(clippy::pattern_type_mismatch)]
+                if let Some(cargo) = &krate.cargo {
+                    rust_dash_version.0
+                        == cargo
+                            .package
+                            .rust_dash_version
+                            .as_ref()
+                            .map_or_else(|| String::from("na"), core::clone::Clone::clone)
+                } else {
+                    false
+                }
+            },
+            crates,
+        )?;
+    }
+    Ok(())
+}
+
+fn list_crates_with_rust_version(
+    rust_versions_vector: Vec<(String, String, u32)>,
+    crates: &[Crate],
+) -> Result<(), Box<dyn Error>> {
+    for rust_version in rust_versions_vector {
+        render_filtered_crates(
+            &format!("rust-version-{}", rust_version.1),
+            &format!("Crates with rust_version field being '{}'", rust_version.0),
+            |krate| {
+                #[allow(clippy::pattern_type_mismatch)]
+                if let Some(cargo) = &krate.cargo {
+                    rust_version.0
+                        == cargo
+                            .package
+                            .rust_version
+                            .as_ref()
+                            .map_or_else(|| String::from("na"), core::clone::Clone::clone)
+                } else {
+                    false
+                }
+            },
             crates,
         )?;
     }
 
-    log::info!("end generate_msrv_pages");
+    Ok(())
+}
+
+fn list_crates_with_edition(
+    editions_vector: Vec<(String, String, u32)>,
+    crates: &[Crate],
+) -> Result<(), Box<dyn Error>> {
+    for edition in editions_vector {
+        render_filtered_crates(
+            &format!("edition-{}", edition.1),
+            &format!("Crates with edition field being '{}'", edition.0),
+            |krate| {
+                #[allow(clippy::pattern_type_mismatch)]
+                if let Some(cargo) = &krate.cargo {
+                    edition.0
+                        == cargo
+                            .package
+                            .edition
+                            .as_ref()
+                            .map_or_else(|| String::from("na"), core::clone::Clone::clone)
+                } else {
+                    false
+                }
+            },
+            crates,
+        )?;
+    }
+
     Ok(())
 }
 
