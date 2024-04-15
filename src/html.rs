@@ -1071,7 +1071,7 @@ fn list_crates_with_rust_dash_version(
 ) -> Result<(), Box<dyn Error>> {
     for rust_dash_version in rust_dash_versions_vector {
         render_filtered_crates(
-            &format!("rust-version-{}", rust_dash_version.1),
+            &format!("rust-dash-version-{}", rust_dash_version.1),
             &format!(
                 "Crates with rust-version field being '{}'",
                 rust_dash_version.0
