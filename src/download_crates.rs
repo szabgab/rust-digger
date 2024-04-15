@@ -1,6 +1,8 @@
 use core::cmp::Ordering;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::error::Error;
+use std::ffi::OsString;
 use std::fs;
 
 use clap::Parser;
@@ -51,14 +53,38 @@ fn run() -> Result<(), Box<dyn Error>> {
     }
 
     create_data_folders()?;
-    // load list of crates with version numbers
+
     let crates: Vec<Crate> = read_crates(0)?;
     let versions: Vec<CrateVersion> = read_versions()?;
 
-    download_crates(&crates, &versions, args.limit)?;
+    let newest_crates = download_crates(&crates, &versions, args.limit)?;
 
-    // remove old versions of the same crates??
+    remove_old_versions_of_the_crates(&newest_crates)?;
 
+    Ok(())
+}
+
+fn remove_old_versions_of_the_crates(
+    newest_versions: &HashSet<OsString>,
+) -> Result<(), Box<dyn Error>> {
+    log::info!("start remove_old_versions_of_the_crates");
+
+    for entry in crates_root().read_dir()?.flatten() {
+        //log::info!("entry: {:?}", entry.file_name());
+
+        if !newest_versions.contains(&entry.file_name()) {
+            log::info!("removing old crate: {:?}", entry.path());
+
+            match std::fs::remove_dir_all(entry.path()) {
+                Ok(()) => log::info!("file {:?} removed", entry.path()),
+                Err(err) => log::error!("{err}"),
+            };
+        }
+    }
+
+    // check each one of them in the list of most recent crates
+    // remove the ones that are not in the most recent list
+    log::info!("end remove_old_versions_of_the_crates");
     Ok(())
 }
 
@@ -66,8 +92,10 @@ fn download_crates(
     crates: &[Crate],
     versions: &[CrateVersion],
     limit: u32,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<HashSet<OsString>, Box<dyn Error>> {
     log::info!("start update repositories");
+
+    let mut newest_versions: HashSet<OsString> = HashSet::new();
 
     // TODO maybe we should not include the versions that are not in the standard format e.g. only accept  0.3.0 and not  0.3.0-beta-dev.30 ?
     let mut latest: HashMap<String, CrateVersion> = HashMap::new();
@@ -97,8 +125,12 @@ fn download_crates(
             krate.id
         );
 
-        let folder = crates_root().join(format!("{}-{}", krate.name, latest[&krate.id].num));
+        let krate_name_version = format!("{}-{}", krate.name, latest[&krate.id].num);
+        newest_versions.insert(OsString::from(&krate_name_version));
+
+        let folder = crates_root().join(krate_name_version);
         log::info!("Checking {:?}", folder);
+
         if folder.exists() {
             log::info!("{:?} already exists. Skipping download", folder);
             continue;
@@ -115,7 +147,7 @@ fn download_crates(
         match download_crate(&url) {
             Ok(downloaded_file) => {
                 match extract_file(&downloaded_file) {
-                    Ok(()) => log::info!("extracted"),
+                    Ok(filename) => log::info!("extracted {filename:?}"),
                     Err(err) => log::error!("{err}"),
                 };
 
@@ -130,7 +162,7 @@ fn download_crates(
         count += 1;
     }
 
-    Ok(())
+    Ok(newest_versions)
 }
 
 fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
@@ -165,7 +197,7 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
     Ok(download_file)
 }
 
-fn extract_file(file: &std::path::PathBuf) -> Result<(), Box<dyn Error>> {
+fn extract_file(file: &std::path::PathBuf) -> Result<OsString, Box<dyn Error>> {
     let tar_gz = fs::File::open(file)?;
     let tar = GzDecoder::new(tar_gz);
     let tmp_dir = TempDir::new_in(get_temp_folder(), "example")?;
@@ -185,5 +217,5 @@ fn extract_file(file: &std::path::PathBuf) -> Result<(), Box<dyn Error>> {
         crates_root().join(extracted_dir.file_name()),
     )?;
 
-    Ok(())
+    Ok(extracted_dir.file_name())
 }
