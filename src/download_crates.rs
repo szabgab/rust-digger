@@ -9,9 +9,6 @@ use reqwest::header::USER_AGENT;
 use tar::Archive;
 use tempdir::TempDir;
 
-mod macros;
-use macros::ok_or_exit;
-
 use rust_digger::{
     crates_root, create_data_folders, get_temp_folder, read_crates, read_versions, Crate,
     CrateVersion,
@@ -35,6 +32,15 @@ fn main() {
     log::info!("Start downloading crates");
     let start_time = std::time::Instant::now();
 
+    match run() {
+        Ok(()) => {}
+        Err(err) => log::error!("Error: {err}"),
+    }
+    log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
+    log::info!("End downloading crates");
+}
+
+fn run() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
 
     if args.limit > 0 {
@@ -43,20 +49,16 @@ fn main() {
         log::info!("Downloading all the crates.");
     }
 
-    create_data_folders().unwrap();
+    create_data_folders()?;
     // load list of crates with version numbers
-    let crates: Vec<Crate> = ok_or_exit!(read_crates(0), 2);
-    let versions: Vec<CrateVersion> = ok_or_exit!(read_versions(), 2);
+    let crates: Vec<Crate> = read_crates(0)?;
+    let versions: Vec<CrateVersion> = read_versions()?;
 
-    match download_crates(&crates, &versions, args.limit) {
-        Ok(()) => {}
-        Err(err) => log::error!("Error: {err}"),
-    }
+    download_crates(&crates, &versions, args.limit)?;
 
     // remove old versions of the same crates??
 
-    log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
-    log::info!("End downloading crates");
+    Ok(())
 }
 
 fn download_crates(
