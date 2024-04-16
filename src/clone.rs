@@ -85,6 +85,8 @@ fn update_repositories(
 ) -> Result<(), Box<dyn Error>> {
     log::info!("start update repositories");
 
+    std::env::set_var("GIT_TERMINAL_PROMPT", "0");
+
     let mut repo_reuse: HashMap<String, i32> = HashMap::new(); // number of times each repository is used for crates (monorepo)
     let now: DateTime<Utc> = Utc::now();
     let before: DateTime<Utc> = now
