@@ -8,16 +8,17 @@
     <tbody>
 
     {% if problems["vcs_with_www"].size > 0 %}
-        <h2 class="title">VCS URL <b>www.github.com</b> instead of <b>github.com</b></h2>
+        <tr><td colspan="2">
+            <h2 class="title">VCS URL <b>www.github.com</b> instead of <b>github.com</b></h2>
+            See <a href="/about-repository#www">explanation</a>.
+        </td></tr>
 
-        See <a href="/about-repository#www">explanation</a>.
-
-        {% for crate in problems["vcs_with_www"] %}
-        <tr>
-            <td><a href="/crates/{{crate.name}}">{{crate.name}}</a></td>
-            <td><a href="{{crate.repository}}"><span class="tag is-danger is-light">repo</span></a></td>
-        </tr>
-        {% endfor %}
+            {% for crate in problems["vcs_with_www"] %}
+            <tr>
+                <td><a href="/crates/{{crate.name}}">{{crate.name}}</a></td>
+                <td><a href="{{crate.repository}}"><span class="tag is-danger is-light">repo</span></a></td>
+            </tr>
+            {% endfor %}
     {% endif %}
 
 
