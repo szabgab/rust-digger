@@ -238,6 +238,7 @@ pub struct CrateOwner {
 pub type Owners = HashMap<String, String>;
 pub type CratesByOwner = HashMap<String, Vec<String>>;
 pub type CrateErrors = HashMap<String, String>;
+pub type CargoTomlErrors = HashMap<String, String>;
 // type Users = HashMap<String, User>;
 
 const fn get_default_bold() -> bool {
@@ -414,10 +415,12 @@ pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn E
     Ok(())
 }
 
-pub fn load_cargo_toml_released_crates() -> Result<(Vec<Cargo>, CrateErrors), Box<dyn Error>> {
+pub fn load_cargo_toml_released_crates(
+) -> Result<(Vec<Cargo>, CrateErrors, CargoTomlErrors), Box<dyn Error>> {
     log::info!("start load_cargo_toml_released_crates");
     let dir_handle = crates_root().read_dir()?;
     let mut released_cargo_toml_errors: CrateErrors = HashMap::new();
+    let mut released_cargo_toml_errors_nameless: CargoTomlErrors = HashMap::new();
 
     let released_crates = dir_handle
         .flatten()
@@ -431,10 +434,11 @@ pub fn load_cargo_toml_released_crates() -> Result<(Vec<Cargo>, CrateErrors), Bo
                     match load_name_version_toml(&path) {
                         Ok((name, _version)) => {
                             released_cargo_toml_errors.insert(name, format!("{err}"));
-                        }
-                        Err(err2) => log::error!(
-                            "Can't load the name and version of the crate {path:?} failed: {err2}"
-                        ),
+                        },
+                        Err(err2) => {
+                            released_cargo_toml_errors_nameless.insert(format!("{:?}", &entry.file_name()), format!("{err2}"));
+                            log::error!("Can't load the name and version of the crate {path:?} failed: {err2}");
+                        },
                     };
 
                     None
@@ -444,7 +448,11 @@ pub fn load_cargo_toml_released_crates() -> Result<(Vec<Cargo>, CrateErrors), Bo
         .collect::<Vec<Cargo>>();
 
     log::info!("end load_cargo_toml_released_crates");
-    Ok((released_crates, released_cargo_toml_errors))
+    Ok((
+        released_crates,
+        released_cargo_toml_errors,
+        released_cargo_toml_errors_nameless,
+    ))
 }
 
 /// # Errors
@@ -468,8 +476,9 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
 
 pub fn add_cargo_toml_to_crates(
     crates: Vec<Crate>,
-) -> Result<(Vec<Crate>, CrateErrors), Box<dyn Error>> {
-    let (released_crates, released_cargo_toml_errors) = load_cargo_toml_released_crates()?;
+) -> Result<(Vec<Crate>, CrateErrors, CargoTomlErrors), Box<dyn Error>> {
+    let (released_crates, released_cargo_toml_errors, released_cargo_toml_errors_nameless) =
+        load_cargo_toml_released_crates()?;
     let cargo_of_crate: HashMap<String, Cargo> = released_crates
         .iter()
         .map(|krate| (krate.package.name.clone(), krate.clone()))
@@ -485,7 +494,11 @@ pub fn add_cargo_toml_to_crates(
         })
         .collect::<Vec<Crate>>();
 
-    Ok((updated_crates, released_cargo_toml_errors))
+    Ok((
+        updated_crates,
+        released_cargo_toml_errors,
+        released_cargo_toml_errors_nameless,
+    ))
 }
 
 /// # Errors

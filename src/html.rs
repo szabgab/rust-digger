@@ -15,7 +15,8 @@ use regex::Regex;
 
 use rust_digger::{
     add_cargo_toml_to_crates, build_path, collected_data_root, get_owner_and_repo, load_details,
-    percentage, read_crates, Crate, CrateErrors, CratesByOwner, Owners, Repo, User,
+    percentage, read_crates, CargoTomlErrors, Crate, CrateErrors, CratesByOwner, Owners, Repo,
+    User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -52,7 +53,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners()?;
     let mut users = read_users(args.limit)?;
     read_teams(&mut users, args.limit)?;
-    let (mut crates, released_cargo_toml_errors) =
+    let (mut crates, released_cargo_toml_errors, released_cargo_toml_errors_nameless) =
         add_cargo_toml_to_crates(read_crates(args.limit)?)?;
 
     //dbg!(&crates_by_owner);
@@ -63,6 +64,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     std::thread::scope(|scope| {
         scope.spawn(|| generate_pages(&crates, &released_cargo_toml_errors).unwrap());
+        scope.spawn(|| generate_errors_page(&released_cargo_toml_errors_nameless).unwrap());
         scope.spawn(render_news_pages);
         scope.spawn(|| render_static_pages().unwrap());
         scope.spawn(|| generate_crate_pages(&crates, &released_cargo_toml_errors).unwrap());
@@ -720,6 +722,35 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
 
     log::info!("collect_repos end");
     Ok(no_repo_count)
+}
+
+pub fn generate_errors_page(
+    released_cargo_toml_errors_nameless: &CargoTomlErrors,
+) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_errors_page");
+    let partials = load_templates().unwrap();
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/errors.html")
+        .unwrap();
+
+    let filename = get_site_folder().join("errors.html");
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "Errors",
+        "released_cargo_toml_errors_nameless": released_cargo_toml_errors_nameless,
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
+
+    Ok(())
 }
 
 /// Generate various lists of crates:

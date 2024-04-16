@@ -1,0 +1,34 @@
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title">{{title}}</h1>
+
+    {% if released_cargo_toml_errors_nameless.size > 0 %}
+        <h2 class="title">Has error in the released Cargo.toml file</h2>
+
+        <table class="table">
+            <thead>
+            <tr>
+             <th>name</th>
+             <th>value</th>
+            </tr>
+            </thead>
+            <tbody>
+      
+                {% for error in released_cargo_toml_errors_nameless %}
+                <tr>
+                    <td>{{ error[0] }}</td>
+                    <td>{{ error[1] }}</td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    {% endif %}
+
+
+  </div>
+</section>
+
+{% include 'templates/incl/footer.html' %}
