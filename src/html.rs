@@ -14,8 +14,8 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 
 use rust_digger::{
-    build_path, collected_data_root, get_owner_and_repo, load_details, percentage, read_crates,
-    Crate, CratesByOwner, Owners, Repo, User,
+    add_cargo_toml_to_crates, build_path, collected_data_root, get_owner_and_repo, load_details,
+    percentage, read_crates, Crate, CratesByOwner, Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -52,7 +52,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners()?;
     let mut users = read_users(args.limit)?;
     read_teams(&mut users, args.limit)?;
-    let mut crates: Vec<Crate> = read_crates(args.limit)?;
+    let mut crates: Vec<Crate> = add_cargo_toml_to_crates(read_crates(args.limit)?)?;
 
     //dbg!(&crates_by_owner);
 

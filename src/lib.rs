@@ -454,6 +454,26 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
     Ok(versions)
 }
 
+pub fn add_cargo_toml_to_crates(crates: Vec<Crate>) -> Result<Vec<Crate>, Box<dyn Error>> {
+    let released_crates = load_cargo_toml_released_crates()?;
+    let cargo_of_crate: HashMap<String, Cargo> = released_crates
+        .iter()
+        .map(|krate| (krate.package.name.clone(), krate.clone()))
+        .collect::<HashMap<_, _>>();
+
+    let updated_crates = crates
+        .into_iter()
+        .map(|mut krate| {
+            krate.cargo = cargo_of_crate
+                .contains_key(&krate.name)
+                .then(|| cargo_of_crate[&krate.name].clone());
+            krate
+        })
+        .collect::<Vec<Crate>>();
+
+    Ok(updated_crates)
+}
+
 /// # Errors
 ///
 /// Will return `Err` if can't open `crates.csv` or if it is not a
@@ -461,12 +481,6 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
 pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/crates.csv");
     log::info!("Start reading {filepath:?}");
-
-    let released_crates = load_cargo_toml_released_crates()?;
-    let cargo_of_crate: HashMap<String, Cargo> = released_crates
-        .iter()
-        .map(|krate| (krate.package.name.clone(), krate.clone()))
-        .collect::<HashMap<_, _>>();
 
     let mut crates: Vec<Crate> = vec![];
     let mut count = 0;
@@ -479,11 +493,7 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
             break;
         }
 
-        let mut krate: Crate = result?;
-
-        krate.cargo = cargo_of_crate
-            .contains_key(&krate.name)
-            .then(|| cargo_of_crate[&krate.name].clone());
+        let krate: Crate = result?;
 
         crates.push(krate);
     }
