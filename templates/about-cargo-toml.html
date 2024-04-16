@@ -1,0 +1,35 @@
+{% include 'templates/incl/header.html' %}
+
+
+<section class="section">
+  <div class="container">
+    <div class="content">
+    <h2>About Cargo.toml</h2>
+    <p>
+    Each crate from <a href="https://crates.io/">Crates.io</a> comes with a file called <b>Cargo.toml</b> (there are a few exception that are probably old).
+    As I understand this file is generated from the Cargo.toml that is in the repository which is included as <b>Cargo.toml.orig</b>.
+    </p>
+
+    The fields are described as the <a href="https://doc.rust-lang.org/cargo/reference/manifest.html">Manifest Format</a>.
+    
+
+      <h2 id="msrv">MSRV - Minimum Supported Rust Version</h2>
+      <p>
+        There are two fields that help with the version requirements. The older <b>package/edition</b> field and the newer <b>package/rust-version</b> field.
+
+        See the <a href="/msrv">MSRV report</a>.
+
+        <ul>
+            <li>See the related <a href="https://gribnau.dev/cargo-msrv/index.html">The cargo-msrv Book</a>.</li>
+            <li><a href="https://dev.to/pnehrer/whats-your-crates-minimum-supported-rust-version-28mh">What's your crate's Minimum Supported Rust Version?</a></li>
+            <li><a href="https://users.rust-lang.org/t/crate-edition-msrv/97744">Crate Edition / MSRV</a></li>
+        </ul>        
+      </p>
+      
+    </div>
+  </div>
+</section>
+
+
+{% include 'templates/incl/footer.html' %}
+

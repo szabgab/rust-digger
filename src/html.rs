@@ -180,6 +180,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
             "About Public Version Control for Rust projects",
         ),
         ("about-fmt", "About cargo fmt"),
+        ("about-cargo-toml", "About Cargo.toml"),
         ("about", "About Rust Digger"),
         ("support", "Support Rust Digger"),
         ("training", "Training courses"),
