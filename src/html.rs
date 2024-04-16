@@ -756,6 +756,7 @@ pub fn generate_errors_page(
 /// Generate various lists of crates:
 /// Filter the crates according to various rules and render them using `render_filtered_crates`.
 /// Then using the numbers returned by that function generate the stats page.
+#[allow(clippy::too_many_lines)]
 pub fn generate_pages(
     crates: &[Crate],
     released_cargo_toml_errors: &CrateErrors,
@@ -853,7 +854,22 @@ pub fn generate_pages(
         crates,
     )?;
 
+    let crates_without_edition_or_rust_version = render_filtered_crates(
+        "crates-without-edition-or-rust-version",
+        "Crates without edition and rust-version",
+        |krate| {
+            krate.cargo.as_ref().map_or(false, |cargo| {
+                cargo.package.edition.is_none() && cargo.package.rust_dash_version.is_none()
+            })
+        },
+        crates,
+    )?;
+
     let stats = HashMap::from([
+        (
+            "crates_without_edition_or_rust_version",
+            crates_without_edition_or_rust_version,
+        ),
         ("has_cargo_toml_errors", has_cargo_toml_errors),
         ("crates_without_owner", crates_without_owner),
         ("crates_without_owner_name", crates_without_owner_name),

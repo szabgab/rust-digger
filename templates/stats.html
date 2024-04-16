@@ -78,15 +78,24 @@
         <td>{{stats.has_no_cargo_toml_in_root | commafy}}</td>
         <td>{{percentage.has_no_cargo_toml_in_root}}%</td>
       </tr>
+
       <tr>
         <td><a href="/has-cargo-toml-errors">Has errors in the released Cargo.toml file</a></td>
         <td>{{stats.has_cargo_toml_errors | commafy}}</td>
         <td>{{percentage.has_cargo_toml_errors}}%</td>
       </tr>
-     </tbody>
+    
+      <tr>
+        <td><a href="/crates-without-edition-or-rust-version">Crates without edition and without rust-version in the Cargo.toml</a></td>
+        <td>{{stats.crates_without_edition_or_rust_version | commafy}}</td>
+        <td>{{percentage.crates_without_edition_or_rust_version}}%</td>
+      </tr>
+
+    </tbody>
     </table>
 
   </div>
 </section>
 
 {% include 'templates/incl/footer.html' %}
+G
