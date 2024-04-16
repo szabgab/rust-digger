@@ -156,7 +156,7 @@ fn collect_data_about_ci(details: &mut Details) -> Result<(), Box<dyn Error>> {
 fn process_cargo_toml(details: &mut Details) -> Result<(), Box<dyn Error>> {
     details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
 
-    match load_cargo_toml() {
+    match load_cargo_toml_from_source() {
         Ok(cargo_toml) => {
             if let Some(package) = cargo_toml.get("package") {
                 //log::info!("cargo_toml: {:#?}", package);
@@ -243,8 +243,8 @@ fn read_rustfmt(rustfmt: &mut Vec<String>, filename: &str, name: &str) {
     }
 }
 
-fn load_cargo_toml() -> Result<Table, Box<dyn Error>> {
-    log::info!("load_cargo_toml");
+fn load_cargo_toml_from_source() -> Result<Table, Box<dyn Error>> {
+    log::info!("load_cargo_toml_from_source");
     let path = PathBuf::from("Cargo.toml");
     if !path.exists() {
         return Err(Box::<dyn Error>::from("Cargo.toml does not exist"));
