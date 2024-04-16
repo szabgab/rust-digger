@@ -208,8 +208,10 @@ pub fn render_list_page(
 ) -> Result<(), Box<dyn Error>> {
     log::info!("render_list_page: {filename:?}");
 
-    let mut filepath = get_site_folder().join(filename);
-    filepath.set_extension("html");
+    let filepath = std::path::PathBuf::from(format!(
+        "{}.html",
+        get_site_folder().join(filename).display()
+    ));
     log::info!("render_file: {filepath:?}");
 
     let partials = load_templates().unwrap();
