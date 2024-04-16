@@ -856,7 +856,7 @@ pub fn generate_pages(
 
     let crates_without_edition_or_rust_version = render_filtered_crates(
         "crates-without-edition-or-rust-version",
-        "Crates without edition and rust-version",
+        "Crates without edition or rust-version",
         |krate| {
             krate.cargo.as_ref().map_or(false, |cargo| {
                 cargo.package.edition.is_none() && cargo.package.rust_dash_version.is_none()
@@ -865,7 +865,22 @@ pub fn generate_pages(
         crates,
     )?;
 
+    let crates_with_both_edition_and_rust_version = render_filtered_crates(
+        "crates-with-both-edition-and-rust-version",
+        "Crates with both edition and rust-version",
+        |krate| {
+            krate.cargo.as_ref().map_or(false, |cargo| {
+                cargo.package.edition.is_some() && cargo.package.rust_dash_version.is_some()
+            })
+        },
+        crates,
+    )?;
+
     let stats = HashMap::from([
+        (
+            "crates_with_both_edition_and_rust_version",
+            crates_with_both_edition_and_rust_version,
+        ),
         (
             "crates_without_edition_or_rust_version",
             crates_without_edition_or_rust_version,
