@@ -1,0 +1,758 @@
+{% assign title = "Rust Digger: 7.53% of crates have both 'edition' and 'rust-version', 11.21% have neither" %}
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+  <h1 class="title is-3">{{title}}</h1>
+  <div class="content">
+    <p>
+      Date: 2024.04.16
+    </p>
+    <p>
+      In the past two weeks I was struggling with the <a href="/msrv">MSRV - Minimum Supported Rust Version</a> numbers, but finally I think I got it right.
+    </p>
+    <p>
+      First of all I had to realized that because roughly 20% of the crates don't indicate their repository, it would be better to collect this information from the
+      <b>Cargo.toml</b> file of the already released crates. For this I had to copy all the crates from <a href="https://crates.io/">Crates.io</a> and I had to make sure 
+      that I remove the old downloads once a new version of the crate appears.  
+    </p>
+    <p>
+      Then I had to write some code that will read the <b>Cargo.toml</b> file. I could not figure out how to use the source code of Cargo for this. I found the 
+      <a href="https://crates.io/crates/cargo_toml">cargo_toml</a> crate which is used by <a href="https://lib.rs/">lib.rs</a>, but it panicked on the Cargo.toml files 
+      I threw at it. This was probably due to the fact that back then I was still using the Cargo.toml files that came from the cloned repositories. I files some issues
+      but I figured it is a good opportunity for me to understand TOML better so I wrote my own little code.
+    </p>
+
+    <p>
+      The last major issue that drove me crazy was the fact that some crates had a <b>rust-version</b> field that looked like this: "1.79.0". When I crated the appropriate
+      HTML file I used <b>set_extension</b> that replaced the last "0" by "html" yielding a filename "1.79.html". However on the page listing all the version "1.79" was
+      already linking to "1.79.html" which now contained the list of "1.79.0". I was totally confused for quite some time.
+      Eventually I figured out how to <a href="https://rust.code-maven.com/set-file-extension">set the file extension</a>.
+    </p>
+    <p>
+      <ul>
+        <li>65 crates use 2015 as "edition", 16,102 has no "edition".</li>
+        <li>143,234-132,182 = 11,052 of the crates have "rust-version"</li>
+        <li>10,788 crates (7.53%) has both "edition" and "rust-version"</li>
+        <li>16,055 crates (11.2%) have neither.</li>
+      </ul>
+    </p>
+
+    <p>
+    <h2>Number of crates</h2>
+    There are now 143,234 crates (1,252  more than two weeks ago).
+    </p>
+
+
+    <h2>MSRV - Minimum Supported Rust Version Stats from the <a href="/msrv">MSRV page</a></h2>
+
+    <h2 class="title">package.edition</h2>
+
+    <table class="table">
+      <thead>
+      <tr>
+       <th>edition</th>
+       <th>count</th>
+      </tr>
+      </thead>
+    <tbody>
+      
+        <tr>
+            <td><a href="/edition-na">na</a></td>
+            <td>16,102</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/edition-2021">2021</a></td>
+            <td>79,580</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/edition-2018">2018</a></td>
+            <td>47,270</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/edition-2015">2015</a></td>
+            <td>65</td>
+        </tr>
+      
+     </tbody>
+    </table>
+
+
+    <h2 class="title">package.rust-version</h2>
+
+    <table class="table">
+      <thead>
+      <tr>
+       <th>rust-version</th>
+       <th>count</th>
+      </tr>
+      </thead>
+    <tbody>
+      
+        <tr>
+            <td><a href="/rust-dash-version-na">na</a></td>
+            <td>132,182</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.79.0">1.79.0</a></td>
+            <td>2</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.79">1.79</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.78.0">1.78.0</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.78">1.78</a></td>
+            <td>19</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.77.2">1.77.2</a></td>
+            <td>3</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.77.1">1.77.1</a></td>
+            <td>13</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.77.0">1.77.0</a></td>
+            <td>30</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.77">1.77</a></td>
+            <td>44</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.76.0">1.76.0</a></td>
+            <td>73</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.76">1.76</a></td>
+            <td>126</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.75.0">1.75.0</a></td>
+            <td>220</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.75">1.75</a></td>
+            <td>373</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.74.1">1.74.1</a></td>
+            <td>57</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.74.0">1.74.0</a></td>
+            <td>158</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.74">1.74</a></td>
+            <td>258</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.73.0">1.73.0</a></td>
+            <td>140</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.73">1.73</a></td>
+            <td>153</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.72.1">1.72.1</a></td>
+            <td>19</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.72.0">1.72.0</a></td>
+            <td>51</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.72">1.72</a></td>
+            <td>167</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.71.1">1.71.1</a></td>
+            <td>88</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.71.0">1.71.0</a></td>
+            <td>53</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.71">1.71</a></td>
+            <td>143</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.70.0">1.70.0</a></td>
+            <td>600</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.70">1.70</a></td>
+            <td>806</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.69.0">1.69.0</a></td>
+            <td>53</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.69">1.69</a></td>
+            <td>169</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.68.2">1.68.2</a></td>
+            <td>40</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.68.1">1.68.1</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.68.0">1.68.0</a></td>
+            <td>61</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.68">1.68</a></td>
+            <td>92</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.67.1">1.67.1</a></td>
+            <td>73</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.67.0">1.67.0</a></td>
+            <td>140</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.67">1.67</a></td>
+            <td>247</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.66.1">1.66.1</a></td>
+            <td>82</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.66.0">1.66.0</a></td>
+            <td>82</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.66">1.66</a></td>
+            <td>190</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.65.0">1.65.0</a></td>
+            <td>326</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.65">1.65</a></td>
+            <td>762</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.64.0">1.64.0</a></td>
+            <td>502</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.64">1.64</a></td>
+            <td>403</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.63.0">1.63.0</a></td>
+            <td>127</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.63">1.63</a></td>
+            <td>325</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.62.1">1.62.1</a></td>
+            <td>70</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.62.0">1.62.0</a></td>
+            <td>28</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.62">1.62</a></td>
+            <td>142</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.61.0">1.61.0</a></td>
+            <td>157</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.61">1.61</a></td>
+            <td>174</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.60.0">1.60.0</a></td>
+            <td>226</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.60">1.60</a></td>
+            <td>554</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.6.0">1.6.0</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.6">1.6</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.59.0">1.59.0</a></td>
+            <td>110</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.59">1.59</a></td>
+            <td>132</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.58.1">1.58.1</a></td>
+            <td>50</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.58.0">1.58.0</a></td>
+            <td>64</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.58">1.58</a></td>
+            <td>101</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.57.0">1.57.0</a></td>
+            <td>69</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.57">1.57</a></td>
+            <td>147</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.56.1">1.56.1</a></td>
+            <td>186</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.56.0">1.56.0</a></td>
+            <td>242</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.56">1.56</a></td>
+            <td>738</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.55">1.55</a></td>
+            <td>4</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.54.0">1.54.0</a></td>
+            <td>6</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.54">1.54</a></td>
+            <td>11</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.53.0">1.53.0</a></td>
+            <td>3</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.53">1.53</a></td>
+            <td>28</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.52.0">1.52.0</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.52">1.52</a></td>
+            <td>7</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.51.0">1.51.0</a></td>
+            <td>10</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.51">1.51</a></td>
+            <td>20</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.50">1.50</a></td>
+            <td>3</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.49.0">1.49.0</a></td>
+            <td>8</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.49">1.49</a></td>
+            <td>14</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.48.0">1.48.0</a></td>
+            <td>14</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.48">1.48</a></td>
+            <td>13</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.47.0">1.47.0</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.47">1.47</a></td>
+            <td>13</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.46.0">1.46.0</a></td>
+            <td>40</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.46">1.46</a></td>
+            <td>5</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.45.2">1.45.2</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.45.0">1.45.0</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.45">1.45</a></td>
+            <td>5</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.44">1.44</a></td>
+            <td>2</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.43.1">1.43.1</a></td>
+            <td>4</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.43.0">1.43.0</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.43">1.43</a></td>
+            <td>3</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.42.0">1.42.0</a></td>
+            <td>7</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.42">1.42</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.41.1">1.41.1</a></td>
+            <td>4</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.41">1.41</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.40">1.40</a></td>
+            <td>4</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.39.0">1.39.0</a></td>
+            <td>3</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.39">1.39</a></td>
+            <td>7</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.38">1.38</a></td>
+            <td>10</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.37.0">1.37.0</a></td>
+            <td>2</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.37">1.37</a></td>
+            <td>6</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.36.0">1.36.0</a></td>
+            <td>4</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.36">1.36</a></td>
+            <td>27</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.34.2">1.34.2</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.34">1.34</a></td>
+            <td>4</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.33">1.33</a></td>
+            <td>3</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.31.0">1.31.0</a></td>
+            <td>9</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.31">1.31</a></td>
+            <td>46</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.30.0">1.30.0</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.30">1.30</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.19">1.19</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.17">1.17</a></td>
+            <td>3</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.13">1.13</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.1">1.1</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.0.0">1.0.0</a></td>
+            <td>1</td>
+        </tr>
+      
+        <tr>
+            <td><a href="/rust-dash-version-1.0">1.0</a></td>
+            <td>4</td>
+        </tr>
+      
+     </tbody>
+    </table>
+
+
+    <h2>Rust Digger Stats from the <a href="/stats">stats page</a></h2>
+
+    <tr>
+      <td><a href="/all">total</a></td>
+      <td>143,234</td>
+      <td>100%</td>
+  </tr>
+  <tr>
+    <td><a href="/vcs/no-repo">No repository</a></td>
+    <td>27,784</td>
+    <td>19.39%</td>
+  </tr>
+  <tr>
+      <td><a href="/has-homepage-but-no-repo">Has homepage but no repository</a></td>
+      <td>3,330</td>
+      <td>2.32%</td>
+  </tr>
+  <tr>
+      <td><a href="/no-homepage-no-repo">No homepage and no repository</a></td>
+      <td>24,454</td>
+      <td>17.07%</td>
+  </tr>
+  <tr>
+    <td><a href="/github-but-no-ci">On GitHub but no CI</a></td>
+    <td>56,857</td>
+    <td>39.69%</td>
+  </tr>
+  <tr>
+    <td><a href="/gitlab-but-no-ci">On GitLab but no CI</a></td>
+    <td>1,864</td>
+    <td>1.3%</td>
+  </tr>
+  <tr>
+    <td><a href="/crates-without-owner-name">Crates without owner name</a></td>
+    <td>21,309</td>
+    <td>14.87%</td>
+  </tr>
+  <tr>
+    <td><a href="/crates-without-owner">Crates without owner</a></td>
+    <td>11</td>
+    <td>0%</td>
+  </tr>
+  <tr>
+    <td><a href="/has-rustfmt-toml">Has rustfmt.toml</a></td>
+    <td>15,182</td>
+    <td>10.59%</td>
+  </tr>
+  <tr>
+    <td><a href="/has-dot-rustfmt-toml">Has .rustfmt.toml</a></td>
+    <td>5,524</td>
+    <td>3.85%</td>
+  </tr>
+  <tr>
+    <td><a href="/has-both-rustfmt-toml">Has both rustfmt.toml and .rustfmt.toml</a></td>
+    <td>35</td>
+    <td>0.02%</td>
+  </tr>
+  <tr>
+    <td><a href="/has-cargo-toml-in-root">Has Cargo.toml in root</a></td>
+    <td>95,441</td>
+    <td>66.63%</td>
+  </tr>
+  <tr>
+    <td><a href="/has-no-cargo-toml-in-root">Has no Cargo.toml in root</a></td>
+    <td>47,793</td>
+    <td>33.36%</td>
+  </tr>
+
+  <tr>
+    <td><a href="/has-cargo-toml-errors">Has errors in the released Cargo.toml file</a></td>
+    <td>83</td>
+    <td>0.05%</td>
+  </tr>
+
+  <tr>
+    <td><a href="/crates-without-edition-or-rust-version">Crates without edition and without rust-version in the Cargo.toml</a></td>
+    <td>16,055</td>
+    <td>11.2%</td>
+  </tr>
+
+  <tr>
+    <td><a href="/crates-with-both-edition-and-rust-version">Crates with both edition rust-version in the Cargo.toml</a></td>
+    <td>10,788</td>
+    <td>7.53%</td>
+  </tr>
+
+    </tbody>
+    </table>
+
+
+   </div>
+  </div>
+</section>
+
+{% include 'templates/incl/footer.html' %}
