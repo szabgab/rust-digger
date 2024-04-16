@@ -413,8 +413,8 @@ pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn E
     Ok(())
 }
 
-pub fn load_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
-    log::info!("start load_released_crates");
+pub fn load_cargo_toml_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
+    log::info!("start load_cargo_toml_released_crates");
     let dir_handle = crates_root().read_dir()?;
 
     let released_crates = dir_handle
@@ -431,7 +431,7 @@ pub fn load_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
         })
         .collect::<Vec<Cargo>>();
 
-    log::info!("end load_released_crates");
+    log::info!("end load_cargo_toml_released_crates");
     Ok(released_crates)
 }
 
@@ -462,7 +462,7 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/crates.csv");
     log::info!("Start reading {filepath:?}");
 
-    let released_crates = load_released_crates()?;
+    let released_crates = load_cargo_toml_released_crates()?;
     let cargo_of_crate: HashMap<String, Cargo> = released_crates
         .iter()
         .map(|krate| (krate.package.name.clone(), krate.clone()))
