@@ -15,7 +15,7 @@ use regex::Regex;
 
 use rust_digger::{
     add_cargo_toml_to_crates, build_path, collected_data_root, get_owner_and_repo, load_details,
-    percentage, read_crates, Crate, CratesByOwner, Owners, Repo, User,
+    percentage, read_crates, Crate, CrateErrors, CratesByOwner, Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -52,7 +52,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners()?;
     let mut users = read_users(args.limit)?;
     read_teams(&mut users, args.limit)?;
-    let mut crates: Vec<Crate> = add_cargo_toml_to_crates(read_crates(args.limit)?)?;
+    let (mut crates, released_cargo_toml_errors) =
+        add_cargo_toml_to_crates(read_crates(args.limit)?)?;
 
     //dbg!(&crates_by_owner);
 
@@ -61,11 +62,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     create_html_folders()?;
 
     std::thread::scope(|scope| {
-        scope.spawn(|| generate_pages(&crates).unwrap());
+        scope.spawn(|| generate_pages(&crates, &released_cargo_toml_errors).unwrap());
         scope.spawn(render_news_pages);
         scope.spawn(|| render_static_pages().unwrap());
-        scope.spawn(|| generate_crate_pages(&crates).unwrap());
-        scope.spawn(|| generate_user_pages(&crates, users, &crates_by_owner).unwrap());
+        scope.spawn(|| generate_crate_pages(&crates, &released_cargo_toml_errors).unwrap());
+        scope.spawn(|| {
+            generate_user_pages(
+                &crates,
+                users,
+                &crates_by_owner,
+                &released_cargo_toml_errors,
+            )
+            .unwrap();
+        });
     });
 
     generate_sitemap();
@@ -303,7 +312,10 @@ pub fn render_news_pages() {
     //    }
 }
 
-pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
+pub fn generate_crate_pages(
+    crates: &Vec<Crate>,
+    released_cargo_toml_errors: &CrateErrors,
+) -> Result<(), Box<dyn Error>> {
     log::info!("generate_crate_pages start");
     let partials = load_templates().unwrap();
 
@@ -320,11 +332,16 @@ pub fn generate_crate_pages(crates: &Vec<Crate>) -> Result<(), Box<dyn Error>> {
         let utc: DateTime<Utc> = Utc::now();
         //log::info!("{:?}", krate);
         //std::process::exit(1);
+
+        let def = String::new();
+        let cargo_toml_error = released_cargo_toml_errors.get(&krate.name).unwrap_or(&def);
+
         let globals = liquid::object!({
             "version": format!("{VERSION}"),
             "utc":     format!("{}", utc),
             "title":   &krate.name,
             "crate":   krate,
+            "cargo_toml_error": cargo_toml_error,
         });
         let html = template.render(&globals).unwrap();
         let mut file = File::create(filename).unwrap();
@@ -338,6 +355,7 @@ pub fn generate_user_pages(
     crates: &Vec<Crate>,
     users: Vec<User>,
     crates_by_owner: &CratesByOwner,
+    released_cargo_toml_errors: &CrateErrors,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("generate_user_pages start");
 
@@ -415,6 +433,14 @@ pub fn generate_user_pages(
                         .filter(|krate| {
                             krate.details.has_rustfmt_toml && krate.details.has_dot_rustfmt_toml
                         })
+                        .collect::<Vec<_>>(),
+                );
+
+                problems.insert(
+                    "has_cargo_toml_errors",
+                    selected_crates
+                        .iter()
+                        .filter(|krate| released_cargo_toml_errors.contains_key(&krate.name))
                         .collect::<Vec<_>>(),
                 );
 
@@ -699,7 +725,10 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
 /// Generate various lists of crates:
 /// Filter the crates according to various rules and render them using `render_filtered_crates`.
 /// Then using the numbers returned by that function generate the stats page.
-pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
+pub fn generate_pages(
+    crates: &[Crate],
+    released_cargo_toml_errors: &CrateErrors,
+) -> Result<(), Box<dyn Error>> {
     log::info!("generate_pages");
 
     fs::copy("digger.js", get_site_folder().join("digger.js"))?;
@@ -707,6 +736,13 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     let no_repo = collect_repos(crates)?;
 
     let _all = render_filtered_crates("all", "Rust Digger", |_krate| true, crates)?;
+
+    let has_cargo_toml_errors = render_filtered_crates(
+        "has-cargo-toml-errors",
+        "Has errors in the released Cargo.toml file",
+        |krate| released_cargo_toml_errors.contains_key(&krate.name),
+        crates,
+    )?;
 
     let has_cargo_toml_in_root = render_filtered_crates(
         "has-cargo-toml-in-root",
@@ -787,6 +823,7 @@ pub fn generate_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     )?;
 
     let stats = HashMap::from([
+        ("has_cargo_toml_errors", has_cargo_toml_errors),
         ("crates_without_owner", crates_without_owner),
         ("crates_without_owner_name", crates_without_owner_name),
         ("home_page_but_no_repo", home_page_but_no_repo),

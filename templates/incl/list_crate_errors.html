@@ -48,6 +48,18 @@
         {% endfor %}
     {% endif %}
 
+    {% if problems["has_cargo_toml_errors"].size > 0 %}
+        <h2 class="title">Has error in the released Cargo.toml file</h2>
+
+        {% for crate in problems["has_cargo_toml_errors"] %}
+        <tr>
+            <td><a href="/crates/{{crate.name}}">{{crate.name}}</a></td>
+            <td><a href="{{crate.repository}}"><span class="tag is-danger is-light">repo</span></a></td>
+        </tr>
+        {% endfor %}
+    {% endif %}
+
+   
     </tbody>
     </table>
 

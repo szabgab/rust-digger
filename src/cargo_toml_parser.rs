@@ -66,9 +66,28 @@ pub struct Cargo {
     pub dependencies: Option<Value>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SimplePackage {
+    pub name: String,
+    pub version: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SimpleCargo {
+    pub package: SimplePackage,
+    pub dependencies: Option<Value>,
+}
+
 pub fn load_cargo_toml(path: &PathBuf) -> Result<Cargo, Box<dyn Error>> {
     log::debug!("load_cargo_toml {:?}", path);
     let content = std::fs::read_to_string(path)?;
     let parsed: Cargo = toml::from_str(&content)?;
     Ok(parsed)
+}
+
+pub fn load_name_version_toml(path: &PathBuf) -> Result<(String, String), Box<dyn Error>> {
+    log::debug!("load_name_version_toml {:?}", path);
+    let content = std::fs::read_to_string(path)?;
+    let parsed: SimpleCargo = toml::from_str(&content)?;
+    Ok((parsed.package.name, parsed.package.version))
 }

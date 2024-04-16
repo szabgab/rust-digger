@@ -23,6 +23,9 @@
         {% endif %}
         <tr><td>max_upload_size</td><td>{{ crate.max_upload_size }}</td></tr>
         <tr><td>id</td><td>{{ crate.id }}</td></tr>
+        {% if cargo_toml_error %}
+            <tr><td>Cargo.toml error:</td><td><span class="tag is-danger is-light">{{ cargo_toml_error }}</span></td></tr>
+        {% endif %}
       </tbody>
     </table>
 
