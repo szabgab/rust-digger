@@ -28,6 +28,9 @@ struct Cli {
     )]
     recent: u32,
 
+    #[arg(long, default_value_t = false, help = "Only clone, don't pull.")]
+    clone: bool,
+
     #[arg(
         long,
         default_value_t = false,
@@ -72,7 +75,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     log::info!("Starting the clone process for max {} crates.", args.limit);
 
     let crates: Vec<Crate> = read_crates(0)?;
-    update_repositories(&crates, args.limit, args.recent, args.force)?;
+    update_repositories(&crates, args.limit, args.recent, args.force, args.clone)?;
 
     Ok(())
 }
@@ -82,6 +85,7 @@ fn update_repositories(
     limit: u32,
     recent: u32,
     force: bool,
+    clone: bool,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("start update repositories");
 
@@ -151,7 +155,7 @@ fn update_repositories(
             continue;
         }
 
-        update_single_repository(&host, &owner, &repo, &repository_url)?;
+        update_single_repository(&host, &owner, &repo, &repository_url, clone)?;
 
         count += 1;
     }
@@ -164,6 +168,7 @@ fn update_single_repository(
     owner: &str,
     repo: &str,
     repository_url: &str,
+    clone: bool,
 ) -> Result<(), Box<dyn Error>> {
     let owner_path = get_repos_folder().join(host).join(owner);
     let current_dir = env::current_dir()?;
@@ -175,9 +180,13 @@ fn update_single_repository(
     fs::create_dir_all(&owner_path)?;
     let repo_path = owner_path.join(repo);
     if Path::new(&repo_path).exists() {
-        log::info!("repo exist; cd to {:?}", &repo_path);
-        env::set_current_dir(&repo_path)?;
-        git_pull();
+        if clone {
+            log::info!("repo exist but we only clone now.  Skipping.");
+        } else {
+            log::info!("repo exist; cd to {:?}", &repo_path);
+            env::set_current_dir(&repo_path)?;
+            git_pull();
+        }
     } else {
         log::info!("new repo; cd to {:?}", &owner_path);
         env::set_current_dir(owner_path)?;
