@@ -770,6 +770,23 @@ pub fn generate_pages(
 
     let _all = render_filtered_crates("all", "Rust Digger", |_krate| true, crates)?;
 
+    let has_interesting_homepage = render_filtered_crates(
+        "has-interesting-homepage",
+        "Has a homepage field that is not GitHub or docs.rs",
+        |krate| {
+            krate.cargo.as_ref().map_or(false, |cargo| {
+                cargo.package.homepage.as_ref().map_or(false, |homepage| {
+                    !homepage.starts_with("https://github.com/")
+                        && !homepage.starts_with("https://gitlab.com/")
+                        && !homepage.starts_with("https://crates.io/")
+                        && !homepage.starts_with("https://docs.rs/")
+                        && !homepage.starts_with("https://libs.rs/")
+                })
+            })
+        },
+        crates,
+    )?;
+
     let has_cargo_toml_errors = render_filtered_crates(
         "has-cargo-toml-errors",
         "Has errors in the released Cargo.toml file",
@@ -899,6 +916,7 @@ pub fn generate_pages(
         ("has_both_rustfmt_toml", has_both_rustfmt_toml),
         ("has_cargo_toml_in_root", has_cargo_toml_in_root),
         ("has_no_cargo_toml_in_root", has_no_cargo_toml_in_root),
+        ("has_interesting_homepage", has_interesting_homepage),
     ]);
 
     render_stats_page(crates.len(), &stats);
