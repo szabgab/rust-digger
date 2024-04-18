@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -64,6 +64,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     std::thread::scope(|scope| {
         scope.spawn(|| generate_pages(&crates, &released_cargo_toml_errors).unwrap());
+        scope.spawn(|| generate_interesting_homepages(&crates).unwrap());
         scope.spawn(|| generate_errors_page(&released_cargo_toml_errors_nameless).unwrap());
         scope.spawn(render_news_pages);
         scope.spawn(|| render_static_pages().unwrap());
@@ -758,12 +759,73 @@ fn crate_has_interesting_homepage(krate: &Crate) -> bool {
     krate.cargo.as_ref().map_or(false, |cargo| {
         cargo.package.homepage.as_ref().map_or(false, |homepage| {
             !homepage.starts_with("https://github.com/")
+                && !homepage.starts_with("http://github.com/")
                 && !homepage.starts_with("https://gitlab.com/")
                 && !homepage.starts_with("https://crates.io/")
                 && !homepage.starts_with("https://docs.rs/")
                 && !homepage.starts_with("https://libs.rs/")
         })
     })
+}
+
+pub fn generate_interesting_homepages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
+    log::info!("generate_interesting_homepages");
+
+    let homepages = crates.iter().filter_map(|krate| {
+        if crate_has_interesting_homepage(krate) {
+            krate
+                .cargo
+                .as_ref()
+                .and_then(|cargo| cargo.package.homepage.clone())
+        } else {
+            None
+        }
+    });
+
+    let mut seen: HashSet<String> = HashSet::new();
+
+    let mut unique_homepages = homepages
+        .into_iter()
+        .filter(|hp| {
+            if seen.contains(hp) {
+                false
+            } else {
+                seen.insert(hp.clone());
+                true
+            }
+        })
+        .collect::<Vec<String>>();
+    unique_homepages.sort();
+
+    log::info!(
+        "generate_interesting_homepages results: {} {:#?}",
+        unique_homepages.len(),
+        unique_homepages
+    );
+
+    let partials = load_templates().unwrap();
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/homepages.html")
+        .unwrap();
+
+    let filename = get_site_folder().join("homepages.html");
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   "homepages",
+        "homepages": unique_homepages,
+    });
+    let html = template.render(&globals).unwrap();
+    let mut file = File::create(filename).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
+
+    Ok(())
 }
 
 /// Generate various lists of crates:

@@ -1,0 +1,28 @@
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title">Homepages</h1>
+
+    <div>
+      The unique values collected from the <b>homepage</b> field of each Crate. We have filtered out the less interesting ones, e.g. the ones that point to GitHub, GitLab, Crates.io etc.
+      Still there are a few that remained as they did not match our filters.
+    </div>
+
+    <div>
+        Number of homepages: {{ homepages.size}}
+    </div>
+    
+
+
+    <ul>
+        {% for hp in homepages %}
+          <li>{{hp}}</li>
+        {% endfor %}
+    
+    </ul>
+
+  </div>
+</section>
+
+{% include 'templates/incl/footer.html' %}
