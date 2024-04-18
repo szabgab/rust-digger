@@ -18,61 +18,73 @@
           <td>{{total | commafy}}</td>
           <td>100%</td>
       </tr>
+
       <tr>
         <td><a href="/vcs/no-repo">No repository</a></td>
         <td>{{stats.no_repo | commafy}}</td>
         <td>{{percentage.no_repo}}%</td>
       </tr>
+
       <tr>
           <td><a href="/has-homepage-but-no-repo">Has homepage but no repository</a></td>
           <td>{{stats.home_page_but_no_repo | commafy}}</td>
           <td>{{percentage.home_page_but_no_repo}}%</td>
       </tr>
+
       <tr>
           <td><a href="/no-homepage-no-repo">No homepage and no repository</a></td>
           <td>{{stats.no_homepage_no_repo_crates | commafy}}</td>
           <td>{{percentage.no_homepage_no_repo_crates}}%</td>
       </tr>
+
       <tr>
         <td><a href="/github-but-no-ci">On GitHub but no CI</a></td>
         <td>{{stats.github_but_no_ci | commafy}}</td>
         <td>{{percentage.github_but_no_ci}}%</td>
       </tr>
+
       <tr>
         <td><a href="/gitlab-but-no-ci">On GitLab but no CI</a></td>
         <td>{{stats.gitlab_but_no_ci | commafy}}</td>
         <td>{{percentage.gitlab_but_no_ci}}%</td>
       </tr>
+
       <tr>
         <td><a href="/crates-without-owner-name">Crates without owner name</a></td>
         <td>{{stats.crates_without_owner_name | commafy}}</td>
         <td>{{percentage.crates_without_owner_name}}%</td>
       </tr>
+
       <tr>
         <td><a href="/crates-without-owner">Crates without owner</a></td>
         <td>{{stats.crates_without_owner | commafy}}</td>
         <td>{{percentage.crates_without_owner}}%</td>
       </tr>
+
       <tr>
         <td><a href="/has-rustfmt-toml">Has rustfmt.toml</a></td>
         <td>{{stats.has_rustfmt_toml | commafy}}</td>
         <td>{{percentage.has_rustfmt_toml}}%</td>
       </tr>
+
       <tr>
         <td><a href="/has-dot-rustfmt-toml">Has .rustfmt.toml</a></td>
         <td>{{stats.has_dot_rustfmt_toml | commafy}}</td>
         <td>{{percentage.has_dot_rustfmt_toml}}%</td>
       </tr>
+
       <tr>
         <td><a href="/has-both-rustfmt-toml">Has both rustfmt.toml and .rustfmt.toml</a></td>
         <td>{{stats.has_both_rustfmt_toml | commafy}}</td>
         <td>{{percentage.has_both_rustfmt_toml}}%</td>
       </tr>
+
       <tr>
         <td><a href="/has-cargo-toml-in-root">Has Cargo.toml in root</a></td>
         <td>{{stats.has_cargo_toml_in_root | commafy}}</td>
         <td>{{percentage.has_cargo_toml_in_root}}%</td>
       </tr>
+
       <tr>
         <td><a href="/has-no-cargo-toml-in-root">Has no Cargo.toml in root</a></td>
         <td>{{stats.has_no_cargo_toml_in_root | commafy}}</td>
@@ -84,7 +96,7 @@
         <td>{{stats.has_cargo_toml_errors | commafy}}</td>
         <td>{{percentage.has_cargo_toml_errors}}%</td>
       </tr>
-    
+
       <tr>
         <td><a href="/crates-without-edition-or-rust-version">Crates without edition and without rust-version in the Cargo.toml</a></td>
         <td>{{stats.crates_without_edition_or_rust_version | commafy}}</td>
