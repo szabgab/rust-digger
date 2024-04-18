@@ -754,6 +754,18 @@ pub fn generate_errors_page(
     Ok(())
 }
 
+fn crate_has_interesting_homepage(krate: &Crate) -> bool {
+    krate.cargo.as_ref().map_or(false, |cargo| {
+        cargo.package.homepage.as_ref().map_or(false, |homepage| {
+            !homepage.starts_with("https://github.com/")
+                && !homepage.starts_with("https://gitlab.com/")
+                && !homepage.starts_with("https://crates.io/")
+                && !homepage.starts_with("https://docs.rs/")
+                && !homepage.starts_with("https://libs.rs/")
+        })
+    })
+}
+
 /// Generate various lists of crates:
 /// Filter the crates according to various rules and render them using `render_filtered_crates`.
 /// Then using the numbers returned by that function generate the stats page.
@@ -773,17 +785,7 @@ pub fn generate_pages(
     let has_interesting_homepage = render_filtered_crates(
         "has-interesting-homepage",
         "Has a homepage field that is not GitHub or docs.rs",
-        |krate| {
-            krate.cargo.as_ref().map_or(false, |cargo| {
-                cargo.package.homepage.as_ref().map_or(false, |homepage| {
-                    !homepage.starts_with("https://github.com/")
-                        && !homepage.starts_with("https://gitlab.com/")
-                        && !homepage.starts_with("https://crates.io/")
-                        && !homepage.starts_with("https://docs.rs/")
-                        && !homepage.starts_with("https://libs.rs/")
-                })
-            })
-        },
+        |krate| crate_has_interesting_homepage(krate),
         crates,
     )?;
 
