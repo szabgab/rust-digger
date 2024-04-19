@@ -56,6 +56,11 @@ path = "src/download_db_dump.rs"
 name = "rust-digger-download-crates"
 path = "src/download_crates.rs"
 
+[[bin]]
+name = "analyze-crates"
+path = "src/analyze_crates.rs"
+
+
 [lints.clippy]
 cargo        = { priority = -1, level = "deny" }
 complexity   = { priority = -1, level = "deny" }

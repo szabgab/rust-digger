@@ -289,6 +289,10 @@ pub fn crates_root() -> PathBuf {
     get_data_folder().join("crates")
 }
 
+pub fn analyzed_crates_root() -> PathBuf {
+    get_data_folder().join("analyzed-crates")
+}
+
 pub fn repo_details_root() -> PathBuf {
     get_data_folder().join("repo-details")
 }
@@ -305,6 +309,7 @@ pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(get_db_dump_folder())?;
     fs::create_dir_all(get_temp_folder())?;
     fs::create_dir_all(crates_root()).unwrap();
+    fs::create_dir_all(analyzed_crates_root()).unwrap();
 
     Ok(())
 }
