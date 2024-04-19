@@ -77,12 +77,14 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         let mut details = CrateDetails::new();
         has_files(&dir_entry.path(), &mut details)?;
         log::info!("details: {details:#?}");
-        if let Some(filename) = dir_entry.path().file_name() {
-            let filepath = analyzed_crates_root().join(filename);
-            save_details(&details, filepath)?;
+        let filepath = if let Some(filename) = dir_entry.path().file_name() {
+            analyzed_crates_root().join(filename)
         } else {
             log::error!("Could not get file_name");
-        }
+            continue;
+        };
+
+        save_details(&details, filepath)?;
     }
 
     Ok(())
