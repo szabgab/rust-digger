@@ -1,5 +1,4 @@
 use std::error::Error;
-use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
@@ -73,12 +72,14 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
 
         // try to read the already collected data
         // if it succeeds break
+
         // if it fails collect all the data and save to the disk
         let mut details = CrateDetails::new();
         has_files(&dir_entry.path(), &mut details)?;
         log::info!("details: {details:#?}");
         if let Some(filename) = dir_entry.path().file_name() {
-            save_details(&details, filename)?;
+            let filepath = analyzed_crates_root().join(filename);
+            save_details(&details, filepath)?;
         } else {
             log::error!("Could not get file_name");
         }
@@ -97,9 +98,8 @@ fn has_files(path: &PathBuf, details: &mut CrateDetails) -> Result<(), Box<dyn s
 
 fn save_details(
     details: &CrateDetails,
-    filename: &OsStr,
+    filepath: PathBuf,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let filepath = analyzed_crates_root().join(filename);
     log::info!("Saving crate details to {filepath:?}");
     let mut file = File::create(filepath)?;
     writeln!(&mut file, "{}", serde_json::to_string(details)?)?;
