@@ -70,19 +70,25 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         let dir_entry = entry?;
         log::info!("{:?}", dir_entry);
 
-        // try to read the already collected data
-        // if it succeeds break
-
-        // if it fails collect all the data and save to the disk
-        let mut details = CrateDetails::new();
-        has_files(&dir_entry.path(), &mut details)?;
-        log::info!("details: {details:#?}");
         let filepath = if let Some(filename) = dir_entry.path().file_name() {
             analyzed_crates_root().join(filename)
         } else {
             log::error!("Could not get file_name");
             continue;
         };
+
+        // try to read the already collected data, if it succeeds go to the next crate
+        if let Ok(content) = std::fs::read_to_string(&filepath) {
+            if let Ok(_details) = serde_json::from_str::<CrateDetails>(&content) {
+                log::info!("Details found");
+                continue;
+            }
+        }
+
+        // if it fails collect all the data and save to the disk
+        let mut details = CrateDetails::new();
+        has_files(&dir_entry.path(), &mut details)?;
+        log::info!("details: {details:#?}");
 
         save_details(&details, filepath)?;
     }
