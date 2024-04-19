@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
@@ -10,12 +11,14 @@ use rust_digger::{analyzed_crates_root, crates_root, create_data_folders};
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct CrateDetails {
     has_build_rs: bool,
+    nonstandard_folders: Vec<String>,
 }
 
 impl CrateDetails {
     const fn new() -> Self {
         Self {
             has_build_rs: false,
+            nonstandard_folders: vec![],
         }
     }
 }
@@ -100,6 +103,32 @@ fn has_files(path: &PathBuf, details: &mut CrateDetails) -> Result<(), Box<dyn s
     log::info!("has_files for {path:?}");
 
     details.has_build_rs = path.join("build.rs").exists();
+
+    let standard_folders = [
+        OsStr::new("src"),
+        OsStr::new("tests"),
+        OsStr::new("examples"),
+        OsStr::new("benches"),
+    ];
+
+    let folders = path
+        .read_dir()?
+        .flatten()
+        .filter_map(|entry| {
+            if !entry.path().is_dir() || standard_folders.contains(&entry.file_name().as_os_str()) {
+                None
+            } else {
+                #[allow(clippy::option_map_or_none)]
+                entry
+                    .file_name()
+                    .to_str()
+                    .map_or(None, |file_name| Some(file_name.to_owned()))
+            }
+        })
+        .collect::<Vec<String>>();
+
+    log::info!("nonstandard_folders: {:?}", folders);
+    details.nonstandard_folders = folders;
 
     Ok(())
 }
