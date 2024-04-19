@@ -64,7 +64,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
     create_data_folders()?;
 
     for (count, entry) in crates_root().read_dir()?.enumerate() {
-        if limit > 0 && count > limit {
+        if limit > 0 && count >= limit {
             break;
         }
         let dir_entry = entry?;
