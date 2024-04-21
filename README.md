@@ -10,10 +10,10 @@
 
 Please send small pull-requests and make sure each PR changes one thing.
 
-If you would like to implement a feature, but first you need to refacto the code, please send the PR to refactor the code
+If you would like to implement a feature, but first you need to refactor the code, please send the PR to refactor the code
 and only once I accepted that send the change to implement the feature. This might sound frustrating, but I am
 not very good at code reviews so if I get a long PR that changes several things that don't have to be changed at once,
-then I might not understand it and I might not accept it. That would be a lot more frutrating to both of us.
+then I might not understand it and I might not accept it. That would be a lot more frustrating to both of us.
 
 Please either set up the `pre-commit hooks` as described below or run `cargo fmt`, `cargo clippy`, and `cargo test`
 manually before committing code.
@@ -91,7 +91,7 @@ Discussed here: https://crates.io/data-access
 As of 2024.03.26
 
 1. The git repository https://github.com/rust-lang/crates.io-index does not contain the meta data, such as the github URL
-1. The https://static.crates.io/db-dump.tar.gz is 305 Mb It unzipped to a timestamped folder called `YYYY-MM-DD-020046` which is 1.1 Gb and contains CSV dumps of a Postgresql database.
+1. The https://static.crates.io/db-dump.tar.gz is 305 Mb It unzipped to a timestamped folder called `YYYY-MM-DD-020046` which is 1.1 Gb and contains CSV dumps of a PostgreSQL database.
 
 The fetching and unzipping is done by the `rust-digger-download` binary.
 
