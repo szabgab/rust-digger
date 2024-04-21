@@ -60,10 +60,77 @@ pub struct Package {
     pub include: Option<Vec<String>>,
 }
 
+impl Package {
+    pub fn new() -> Self {
+        Self {
+            name: String::new(),
+            version: String::new(),
+            edition: None,
+            authors: None,
+            description: None,
+            readme: None,
+            license: None,
+            repository: None,
+            homepage: None,
+            documentation: None,
+            build: None,
+
+            resolver: None,
+            links: None,
+
+            default_dash_run: None,
+
+            rust_dash_version: None,
+            rust_version: None,
+
+            license_dash_file: None,
+
+            license_file: None,
+
+            license_capital_file: None,
+
+            forced_dash_target: None,
+
+            autobins: None,
+            autotests: None,
+            autoexamples: None,
+            autobenches: None,
+
+            publish: None,
+            metadata: None,
+            keywords: None,
+            categories: None,
+            exclude: None,
+            include: None,
+        }
+    }
+}
+
+impl Default for Package {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Cargo {
     pub package: Package,
     pub dependencies: Option<Value>,
+}
+
+impl Cargo {
+    pub fn new() -> Self {
+        Self {
+            package: Package::new(),
+            dependencies: None,
+        }
+    }
+}
+
+impl Default for Cargo {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

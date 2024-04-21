@@ -182,7 +182,8 @@ pub struct Crate {
     #[serde(default = "empty_details")]
     pub vcs_details: VCSDetails,
 
-    pub cargo: Option<Cargo>,
+    #[serde(default = "empty_cargo")]
+    pub cargo: Cargo,
 
     #[serde(default = "empty_crate_details")]
     pub crate_details: CrateDetails,
@@ -207,7 +208,7 @@ impl Crate {
             owner_name: String::new(),
 
             vcs_details: VCSDetails::new(),
-            cargo: None,
+            cargo: Cargo::new(),
             crate_details: CrateDetails::new(),
         }
     }
@@ -270,6 +271,10 @@ fn get_default_percentage() -> String {
 
 fn empty_details() -> VCSDetails {
     VCSDetails::new()
+}
+
+fn empty_cargo() -> Cargo {
+    Cargo::new()
 }
 
 const fn empty_crate_details() -> CrateDetails {
@@ -511,9 +516,11 @@ pub fn add_cargo_toml_to_crates(
     let updated_crates = crates
         .into_iter()
         .map(|mut krate| {
-            krate.cargo = cargo_of_crate
-                .contains_key(&krate.name)
-                .then(|| cargo_of_crate[&krate.name].clone());
+            krate.cargo = if cargo_of_crate.contains_key(&krate.name) {
+                cargo_of_crate[&krate.name].clone()
+            } else {
+                Cargo::new()
+            };
             krate
         })
         .collect::<Vec<Crate>>();

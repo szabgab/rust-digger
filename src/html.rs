@@ -98,11 +98,12 @@ fn load_vcs_details_for_all_the_crates(crates: &mut [Crate]) {
 fn load_crate_details_for_all_the_crates(crates: &mut [Crate]) {
     #[allow(clippy::pattern_type_mismatch)]
     for krate in crates.iter_mut() {
-        if let Some(cargo) = &krate.cargo {
-            let filename = format!("{}-{}.json", cargo.package.name, cargo.package.version);
-            let filepath = analyzed_crates_root().join(filename);
-            krate.crate_details = load_crate_details(&filepath).unwrap_or_default();
-        }
+        let filename = format!(
+            "{}-{}.json",
+            krate.cargo.package.name, krate.cargo.package.version
+        );
+        let filepath = analyzed_crates_root().join(filename);
+        krate.crate_details = load_crate_details(&filepath).unwrap_or_default();
     }
 }
 
@@ -762,8 +763,12 @@ pub fn generate_errors_page(
 }
 
 fn crate_has_interesting_homepage(krate: &Crate) -> bool {
-    krate.cargo.as_ref().map_or(false, |cargo| {
-        cargo.package.homepage.as_ref().map_or(false, |homepage| {
+    krate
+        .cargo
+        .package
+        .homepage
+        .as_ref()
+        .map_or(false, |homepage| {
             !homepage.starts_with("https://github.com/")
                 && !homepage.starts_with("http://github.com/")
                 && !homepage.starts_with("https://gitlab.com/")
@@ -771,7 +776,6 @@ fn crate_has_interesting_homepage(krate: &Crate) -> bool {
                 && !homepage.starts_with("https://docs.rs/")
                 && !homepage.starts_with("https://libs.rs/")
         })
-    })
 }
 
 pub fn generate_interesting_homepages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
@@ -779,10 +783,7 @@ pub fn generate_interesting_homepages(crates: &[Crate]) -> Result<(), Box<dyn Er
 
     let homepages = crates.iter().filter_map(|krate| {
         if crate_has_interesting_homepage(krate) {
-            krate
-                .cargo
-                .as_ref()
-                .and_then(|cargo| cargo.package.homepage.clone())
+            krate.cargo.package.homepage.clone()
         } else {
             None
         }
@@ -946,9 +947,7 @@ pub fn generate_pages(
         "crates-without-edition-or-rust-version",
         "Crates without edition or rust-version",
         |krate| {
-            krate.cargo.as_ref().map_or(false, |cargo| {
-                cargo.package.edition.is_none() && cargo.package.rust_dash_version.is_none()
-            })
+            krate.cargo.package.edition.is_none() && krate.cargo.package.rust_dash_version.is_none()
         },
         crates,
     )?;
@@ -957,9 +956,7 @@ pub fn generate_pages(
         "crates-with-both-edition-and-rust-version",
         "Crates with both edition and rust-version",
         |krate| {
-            krate.cargo.as_ref().map_or(false, |cargo| {
-                cargo.package.edition.is_some() && cargo.package.rust_dash_version.is_some()
-            })
+            krate.cargo.package.edition.is_some() && krate.cargo.package.rust_dash_version.is_some()
         },
         crates,
     )?;
@@ -1191,29 +1188,29 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     let mut rust_dash_versions: HashMap<String, u32> = HashMap::new();
 
     for krate in crates {
-        #[allow(clippy::pattern_type_mismatch)]
-        if let Some(cargo) = &krate.cargo {
-            let key1 = cargo
-                .package
-                .edition
-                .as_ref()
-                .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-            *editions.entry(key1).or_insert(0) += 1;
+        let key1 = krate
+            .cargo
+            .package
+            .edition
+            .as_ref()
+            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
+        *editions.entry(key1).or_insert(0) += 1;
 
-            let key2 = cargo
-                .package
-                .rust_version
-                .as_ref()
-                .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-            *rust_versions.entry(key2).or_insert(0) += 1;
+        let key2 = krate
+            .cargo
+            .package
+            .rust_version
+            .as_ref()
+            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
+        *rust_versions.entry(key2).or_insert(0) += 1;
 
-            let key3 = cargo
-                .package
-                .rust_dash_version
-                .as_ref()
-                .map_or_else(|| String::from("na"), core::clone::Clone::clone);
-            *rust_dash_versions.entry(key3).or_insert(0) += 1;
-        };
+        let key3 = krate
+            .cargo
+            .package
+            .rust_dash_version
+            .as_ref()
+            .map_or_else(|| String::from("na"), core::clone::Clone::clone);
+        *rust_dash_versions.entry(key3).or_insert(0) += 1;
     }
 
     log::info!("editions {:#?}", editions);
@@ -1269,17 +1266,13 @@ fn list_crates_with_rust_dash_version(
                 rust_dash_version.0
             ),
             |krate| {
-                #[allow(clippy::pattern_type_mismatch)]
-                if let Some(cargo) = &krate.cargo {
-                    rust_dash_version.0
-                        == cargo
-                            .package
-                            .rust_dash_version
-                            .as_ref()
-                            .map_or_else(|| String::from("na"), core::clone::Clone::clone)
-                } else {
-                    false
-                }
+                rust_dash_version.0
+                    == krate
+                        .cargo
+                        .package
+                        .rust_dash_version
+                        .as_ref()
+                        .map_or_else(|| String::from("na"), core::clone::Clone::clone)
             },
             crates,
         )?;
@@ -1296,17 +1289,13 @@ fn list_crates_with_rust_version(
             &format!("rust-version-{}", rust_version.1),
             &format!("Crates with rust_version field being '{}'", rust_version.0),
             |krate| {
-                #[allow(clippy::pattern_type_mismatch)]
-                if let Some(cargo) = &krate.cargo {
-                    rust_version.0
-                        == cargo
-                            .package
-                            .rust_version
-                            .as_ref()
-                            .map_or_else(|| String::from("na"), core::clone::Clone::clone)
-                } else {
-                    false
-                }
+                rust_version.0
+                    == krate
+                        .cargo
+                        .package
+                        .rust_version
+                        .as_ref()
+                        .map_or_else(|| String::from("na"), core::clone::Clone::clone)
             },
             crates,
         )?;
@@ -1324,17 +1313,13 @@ fn list_crates_with_edition(
             &format!("edition-{}", edition.1),
             &format!("Crates with edition field being '{}'", edition.0),
             |krate| {
-                #[allow(clippy::pattern_type_mismatch)]
-                if let Some(cargo) = &krate.cargo {
-                    edition.0
-                        == cargo
-                            .package
-                            .edition
-                            .as_ref()
-                            .map_or_else(|| String::from("na"), core::clone::Clone::clone)
-                } else {
-                    false
-                }
+                edition.0
+                    == krate
+                        .cargo
+                        .package
+                        .edition
+                        .as_ref()
+                        .map_or_else(|| String::from("na"), core::clone::Clone::clone)
             },
             crates,
         )?;
