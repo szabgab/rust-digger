@@ -5,6 +5,7 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use clap::Parser;
+use walkdir::WalkDir;
 
 use rust_digger::{analyzed_crates_root, crates_root, create_data_folders};
 
@@ -12,6 +13,7 @@ use rust_digger::{analyzed_crates_root, crates_root, create_data_folders};
 struct CrateDetails {
     has_build_rs: bool,
     nonstandard_folders: Vec<String>,
+    size: u64,
 }
 
 impl CrateDetails {
@@ -19,6 +21,7 @@ impl CrateDetails {
         Self {
             has_build_rs: false,
             nonstandard_folders: vec![],
+            size: 0,
         }
     }
 }
@@ -93,10 +96,25 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         has_files(&dir_entry.path(), &mut details)?;
         log::info!("details: {details:#?}");
 
+        details.size = disk_size(&dir_entry.path());
+
         save_details(&details, filepath)?;
     }
 
     Ok(())
+}
+
+fn disk_size(root: &PathBuf) -> u64 {
+    let mut size = 0;
+    for dir_entry in WalkDir::new(root).into_iter().flatten() {
+        if dir_entry.path().is_file() {
+            if let Ok(meta) = dir_entry.path().metadata() {
+                size += meta.len();
+            }
+        }
+    }
+
+    size
 }
 
 fn has_files(path: &PathBuf, details: &mut CrateDetails) -> Result<(), Box<dyn std::error::Error>> {

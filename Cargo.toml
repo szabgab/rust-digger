@@ -30,6 +30,7 @@ simple_logger = "4.2"
 tar = "0.4.40"
 tempdir = "0.3.7"
 toml = "0.8.12"
+walkdir = "2.5"
 
 [[bin]]
 name = "rust-digger-html"
