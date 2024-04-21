@@ -4,7 +4,7 @@ use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 
 use clap::Parser;
@@ -99,8 +99,6 @@ fn collect_data_from_vcs(
         env::set_current_dir(&repo_path)?;
         log::info!("in folder: {:?}", env::current_dir()?);
 
-        process_cargo_toml(&mut details)?;
-
         collect_data_about_ci(&mut details)?;
 
         collect_data_about_rustfmt(&mut details, &mut rustfmt, krate);
@@ -149,42 +147,6 @@ fn collect_data_about_ci(details: &mut Details) -> Result<(), Box<dyn Error>> {
         Path::new(".appveyor.yml").exists() || Path::new("appveyor.yml").exists();
     details.has_azure_pipeline = Path::new("azure-pipelines.yml").exists();
     details.has_bitbucket_pipeline = Path::new("bitbucket-pipelines.yml").exists();
-
-    Ok(())
-}
-
-fn process_cargo_toml(details: &mut Details) -> Result<(), Box<dyn Error>> {
-    details.cargo_toml_in_root = Path::new("Cargo.toml").exists();
-
-    match load_cargo_toml_from_source() {
-        Ok(cargo_toml) => {
-            if let Some(package) = cargo_toml.get("package") {
-                //log::info!("cargo_toml: {:#?}", package);
-                if let Some(edition) = package.get("edition") {
-                    if let Some(edition_str) = edition.as_str() {
-                        details.edition = edition_str.to_owned();
-                    }
-                };
-                if let Some(rust_version) = package.get("rust_version") {
-                    if let Some(rust_version_str) = rust_version.as_str() {
-                        details.rust_version = rust_version_str.to_owned();
-                    }
-                };
-                // TODO should we report if both fields exist?
-                if let Some(rust_dash_version) = package.get("rust-version") {
-                    if let Some(rust_dash_version_str) = rust_dash_version.as_str() {
-                        details.rust_dash_version = rust_dash_version_str.to_owned();
-                    }
-                };
-            }
-        }
-        Err(err) => {
-            log::error!(
-                "Could not load Cargo.toml in {:?} ({err})",
-                env::current_dir()?
-            );
-        }
-    };
 
     Ok(())
 }
@@ -240,20 +202,5 @@ fn read_rustfmt(rustfmt: &mut Vec<String>, filename: &str, name: &str) {
                 }
             }
         }
-    }
-}
-
-fn load_cargo_toml_from_source() -> Result<Table, Box<dyn Error>> {
-    log::info!("load_cargo_toml_from_source");
-    let path = PathBuf::from("Cargo.toml");
-    if !path.exists() {
-        return Err(Box::<dyn Error>::from("Cargo.toml does not exist"));
-    }
-    let content = std::fs::read_to_string("Cargo.toml")?;
-    match content.parse::<Table>() {
-        Err(err) => Err(Box::<dyn Error>::from(format!(
-            "Error: {err} when parsing toml"
-        ))),
-        Ok(table) => Ok(table),
     }
 }
