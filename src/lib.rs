@@ -174,7 +174,7 @@ pub struct Crate {
     pub owner_gh_avatar: String,
 
     #[serde(default = "empty_details")]
-    pub details: VCSDetails,
+    pub vcs_details: VCSDetails,
 
     pub cargo: Option<Cargo>,
 }
@@ -197,7 +197,7 @@ impl Crate {
             owner_gh_login: String::new(),
             owner_name: String::new(),
 
-            details: VCSDetails::new(),
+            vcs_details: VCSDetails::new(),
             cargo: None,
         }
     }

@@ -90,7 +90,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn load_vcs_details_for_all_the_crates(crates: &mut [Crate]) {
     for krate in crates.iter_mut() {
-        krate.details = load_vcs_details(&krate.repository);
+        krate.vcs_details = load_vcs_details(&krate.repository);
     }
 }
 
@@ -435,7 +435,8 @@ pub fn generate_user_pages(
                     selected_crates
                         .iter()
                         .filter(|krate| {
-                            krate.details.has_rustfmt_toml && krate.details.has_dot_rustfmt_toml
+                            krate.vcs_details.has_rustfmt_toml
+                                && krate.vcs_details.has_dot_rustfmt_toml
                         })
                         .collect::<Vec<_>>(),
                 );
@@ -861,35 +862,35 @@ pub fn generate_pages(
     let has_cargo_toml_in_root = render_filtered_crates(
         "has-cargo-toml-in-root",
         "Has Cargo.toml file in the root",
-        |krate| krate.details.cargo_toml_in_root,
+        |krate| krate.vcs_details.cargo_toml_in_root,
         crates,
     )?;
 
     let has_no_cargo_toml_in_root = render_filtered_crates(
         "has-no-cargo-toml-in-root",
         "Has no Cargo.toml file in the root",
-        |krate| !krate.details.cargo_toml_in_root,
+        |krate| !krate.vcs_details.cargo_toml_in_root,
         crates,
     )?;
 
     let has_rustfmt_toml = render_filtered_crates(
         "has-rustfmt-toml",
         "Has rustfmt.toml file",
-        |krate| krate.details.has_rustfmt_toml,
+        |krate| krate.vcs_details.has_rustfmt_toml,
         crates,
     )?;
 
     let has_dot_rustfmt_toml = render_filtered_crates(
         "has-dot-rustfmt-toml",
         "Has .rustfmt.toml file",
-        |krate| krate.details.has_dot_rustfmt_toml,
+        |krate| krate.vcs_details.has_dot_rustfmt_toml,
         crates,
     )?;
 
     let has_both_rustfmt_toml = render_filtered_crates(
         "has-both-rustfmt-toml",
         "Has both rustfmt.toml and .rustfmt.toml file",
-        |krate| krate.details.has_rustfmt_toml && krate.details.has_dot_rustfmt_toml,
+        |krate| krate.vcs_details.has_rustfmt_toml && krate.vcs_details.has_dot_rustfmt_toml,
         crates,
     )?;
 
@@ -1024,7 +1025,9 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    if krate.details.has_github_action || krate.details.has_circle_ci || krate.details.has_cirrus_ci
+    if krate.vcs_details.has_github_action
+        || krate.vcs_details.has_circle_ci
+        || krate.vcs_details.has_cirrus_ci
     {
         return false;
     }
@@ -1046,7 +1049,7 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    if krate.details.has_gitlab_pipeline {
+    if krate.vcs_details.has_gitlab_pipeline {
         return false;
     }
 
@@ -1101,7 +1104,7 @@ fn generate_ci_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         render_filtered_crates(
             "has-github-actions",
             "Crates with GitHub Actions",
-            |krate| krate.details.has_github_action,
+            |krate| krate.vcs_details.has_github_action,
             crates,
         )?,
     );
@@ -1111,7 +1114,7 @@ fn generate_ci_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         render_filtered_crates(
             "has-gitlab-pipeline",
             "Crates with GitLab Pipeline",
-            |krate| krate.details.has_gitlab_pipeline,
+            |krate| krate.vcs_details.has_gitlab_pipeline,
             crates,
         )?,
     );
@@ -1121,7 +1124,7 @@ fn generate_ci_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         render_filtered_crates(
             "has-cirrus-ci",
             "Crates with Cirrus CI",
-            |krate| krate.details.has_cirrus_ci,
+            |krate| krate.vcs_details.has_cirrus_ci,
             crates,
         )?,
     );
