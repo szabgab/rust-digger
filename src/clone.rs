@@ -9,7 +9,7 @@ use clap::Parser;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
-use rust_digger::{get_owner_and_repo, get_repos_folder, load_details, read_crates, Crate};
+use rust_digger::{get_owner_and_repo, get_repos_folder, load_vcs_details, read_crates, Crate};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -138,7 +138,7 @@ fn update_repositories(
             continue;
         }
 
-        let details = load_details(&repository_url);
+        let details = load_vcs_details(&repository_url);
         if !details.git_clone_error.is_empty() && !force {
             continue;
         }

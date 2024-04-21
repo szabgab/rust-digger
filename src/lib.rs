@@ -51,7 +51,7 @@ const URL_REGEXES: [&str; 2] = [
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[allow(clippy::struct_excessive_bools)]
-pub struct Details {
+pub struct VCSDetails {
     #[serde(default = "default_false")]
     pub has_github_action: bool,
     #[serde(default = "default_false")]
@@ -85,7 +85,7 @@ pub struct Details {
     pub has_dot_rustfmt_toml: bool,
 }
 
-impl Details {
+impl VCSDetails {
     pub fn new() -> Self {
         Self {
             has_github_action: false,
@@ -109,7 +109,7 @@ impl Details {
     }
 }
 
-impl Default for Details {
+impl Default for VCSDetails {
     fn default() -> Self {
         Self::new()
     }
@@ -174,7 +174,7 @@ pub struct Crate {
     pub owner_gh_avatar: String,
 
     #[serde(default = "empty_details")]
-    pub details: Details,
+    pub details: VCSDetails,
 
     pub cargo: Option<Cargo>,
 }
@@ -197,7 +197,7 @@ impl Crate {
             owner_gh_login: String::new(),
             owner_name: String::new(),
 
-            details: Details::new(),
+            details: VCSDetails::new(),
             cargo: None,
         }
     }
@@ -258,8 +258,8 @@ fn get_default_percentage() -> String {
     String::from("0")
 }
 
-fn empty_details() -> Details {
-    Details::new()
+fn empty_details() -> VCSDetails {
+    VCSDetails::new()
 }
 
 const fn empty_string() -> String {
@@ -345,7 +345,7 @@ pub fn percentage(num: usize, total: usize) -> String {
     (total_f32 / 100.0).to_string()
 }
 
-pub fn get_details_path(repository: &str) -> Option<PathBuf> {
+pub fn get_vcs_details_path(repository: &str) -> Option<PathBuf> {
     let (host, owner, repo) = get_owner_and_repo(repository);
 
     if repo.is_empty() {
@@ -356,15 +356,15 @@ pub fn get_details_path(repository: &str) -> Option<PathBuf> {
     Some(details_path)
 }
 
-pub fn load_details(repository: &str) -> Details {
+pub fn load_vcs_details(repository: &str) -> VCSDetails {
     log::info!("Load details started for {}", repository);
 
-    let Some(details_path) = get_details_path(repository) else {
-        return Details::new();
+    let Some(details_path) = get_vcs_details_path(repository) else {
+        return VCSDetails::new();
     };
 
     if !details_path.exists() {
-        return Details::new();
+        return VCSDetails::new();
     }
 
     match File::open(&details_path) {
@@ -377,7 +377,7 @@ pub fn load_details(repository: &str) -> Details {
                         details_path.display(),
                         err
                     );
-                    return Details::new();
+                    return VCSDetails::new();
                 }
             };
         }
@@ -385,7 +385,7 @@ pub fn load_details(repository: &str) -> Details {
             log::error!("Error opening file {}: {}", details_path.display(), error);
         }
     }
-    Details::new()
+    VCSDetails::new()
 }
 
 fn create_repo_details_folders() -> Result<(), Box<dyn Error>> {
@@ -400,7 +400,7 @@ fn create_repo_details_folders() -> Result<(), Box<dyn Error>> {
 /// # Errors
 ///
 /// Will return Err if can't create folders.
-pub fn save_details(repository: &str, details: &Details) -> Result<(), Box<dyn Error>> {
+pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dyn Error>> {
     log::info!("save_details for '{repository}'");
 
     create_repo_details_folders()?;
@@ -619,19 +619,19 @@ mod tests {
             .join("foo")
             .join("bar.json");
         assert_eq!(
-            get_details_path("https://github.com/foo/bar")
+            get_vcs_details_path("https://github.com/foo/bar")
                 .expect("X")
                 .as_path(),
             expected
         );
 
         assert_eq!(
-            get_details_path("https://github.com/foo/bar/baz")
+            get_vcs_details_path("https://github.com/foo/bar/baz")
                 .expect("X")
                 .as_path(),
             expected
         ); // TODO this should not work I think
-        assert_eq!(get_details_path("https://zorg.com/foo/bar"), None);
+        assert_eq!(get_vcs_details_path("https://zorg.com/foo/bar"), None);
     }
 
     #[test]

@@ -14,9 +14,9 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 
 use rust_digger::{
-    add_cargo_toml_to_crates, build_path, collected_data_root, get_owner_and_repo, load_details,
-    percentage, read_crates, CargoTomlErrors, Crate, CrateErrors, CratesByOwner, Owners, Repo,
-    User,
+    add_cargo_toml_to_crates, build_path, collected_data_root, get_owner_and_repo,
+    load_vcs_details, percentage, read_crates, CargoTomlErrors, Crate, CrateErrors, CratesByOwner,
+    Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -59,7 +59,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //dbg!(&crates_by_owner);
 
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
-    load_details_for_all_the_crates(&mut crates);
+    load_vcs_details_for_all_the_crates(&mut crates);
     create_html_folders()?;
 
     std::thread::scope(|scope| {
@@ -88,9 +88,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn load_details_for_all_the_crates(crates: &mut [Crate]) {
+fn load_vcs_details_for_all_the_crates(crates: &mut [Crate]) {
     for krate in crates.iter_mut() {
-        krate.details = load_details(&krate.repository);
+        krate.details = load_vcs_details(&krate.repository);
     }
 }
 

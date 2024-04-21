@@ -11,8 +11,8 @@ use clap::Parser;
 use toml::Table;
 
 use rust_digger::{
-    collected_data_root, get_owner_and_repo, get_repos_folder, load_details, read_crates,
-    save_details, Crate, Details,
+    collected_data_root, get_owner_and_repo, get_repos_folder, load_vcs_details, read_crates,
+    save_details, Crate, VCSDetails,
 };
 
 #[derive(Parser, Debug)]
@@ -88,7 +88,7 @@ fn collect_data_from_vcs(
         //log::info!("{:?}", seen);
         seen.insert(krate.repository.to_lowercase());
 
-        let mut details = load_details(&krate.repository);
+        let mut details = load_vcs_details(&krate.repository);
 
         let repo_path = get_repos_folder().join(&host).join(&owner).join(&repo);
         if !Path::new(&repo_path).exists() {
@@ -118,7 +118,7 @@ fn collect_data_from_vcs(
     Ok(())
 }
 
-fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, krate: &Crate) {
+fn collect_data_about_rustfmt(details: &mut VCSDetails, rustfmt: &mut Vec<String>, krate: &Crate) {
     details.has_rustfmt_toml = Path::new("rustfmt.toml").exists();
     details.has_dot_rustfmt_toml = Path::new(".rustfmt.toml").exists();
     if details.has_rustfmt_toml {
@@ -129,7 +129,7 @@ fn collect_data_about_rustfmt(details: &mut Details, rustfmt: &mut Vec<String>, 
     }
 }
 
-fn collect_data_about_ci(details: &mut Details) -> Result<(), Box<dyn Error>> {
+fn collect_data_about_ci(details: &mut VCSDetails) -> Result<(), Box<dyn Error>> {
     let workflows = Path::new(".github/workflows");
     if workflows.exists() {
         for entry in workflows.read_dir()?.flatten() {
