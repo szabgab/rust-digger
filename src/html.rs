@@ -319,13 +319,6 @@ pub fn render_news_pages() {
         let mut file = File::create(output_path).unwrap();
         writeln!(&mut file, "{html}").unwrap();
     }
-
-    //            },
-    //            Err(error) => {
-    //                log:error!("Error opening file {:?}: {}", file.as_os_str(), error);
-    //            },
-    //        }
-    //    }
 }
 
 pub fn generate_crate_pages(
