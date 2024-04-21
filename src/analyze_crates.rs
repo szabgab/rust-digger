@@ -59,8 +59,10 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         let dir_entry = entry?;
         log::info!("{:?}", dir_entry);
 
-        let filepath = if let Some(filename) = dir_entry.path().file_name() {
-            analyzed_crates_root().join(filename)
+        let filepath = if let Some(crate_dirname) = dir_entry.path().file_name() {
+            let filepath = analyzed_crates_root().join(crate_dirname);
+            // can't use set_extension as there are dots in the names and this would remove them
+            PathBuf::from(format!("{}.json", filepath.display()))
         } else {
             log::error!("Could not get file_name");
             continue;
