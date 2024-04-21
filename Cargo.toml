@@ -33,28 +33,28 @@ toml = "0.8.12"
 walkdir = "2.5"
 
 [[bin]]
-name = "rust-digger-html"
+name = "html"
 path = "src/html.rs"
 
 
 [[bin]]
-name = "rust-digger-fmt"
+name = "fmt"
 path = "src/fmt.rs"
 
 [[bin]]
-name = "rust-digger-vcs"
+name = "analyze-vcs"
 path = "src/vcs.rs"
 
 [[bin]]
-name = "rust-digger-clone"
+name = "clone"
 path = "src/clone.rs"
 
 [[bin]]
-name = "rust-digger-download-db-dump"
+name = "download-db-dump"
 path = "src/download_db_dump.rs"
 
 [[bin]]
-name = "rust-digger-download-crates"
+name = "download-crates"
 path = "src/download_crates.rs"
 
 [[bin]]
