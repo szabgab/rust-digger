@@ -30,6 +30,7 @@
         {% if cargo_toml_error != "" %}
             <tr><td>Cargo.toml error:</td><td><span class="tag is-danger is-light">{{ cargo_toml_error }}</span></td></tr>
         {% endif %}
+        <tr><td>size</td><td>{{ crate.crate_details.size | commafy }}</td></tr>
       </tbody>
     </table>
 

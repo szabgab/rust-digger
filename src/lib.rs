@@ -13,7 +13,7 @@ use regex::Regex;
 mod cargo_toml_parser;
 pub use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct CrateDetails {
     pub has_build_rs: bool,
     pub nonstandard_folders: Vec<String>,
@@ -27,6 +27,12 @@ impl CrateDetails {
             nonstandard_folders: vec![],
             size: 0,
         }
+    }
+}
+
+impl Default for CrateDetails {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -177,6 +183,9 @@ pub struct Crate {
     pub vcs_details: VCSDetails,
 
     pub cargo: Option<Cargo>,
+
+    #[serde(default = "empty_crate_details")]
+    pub crate_details: CrateDetails,
 }
 
 impl Crate {
@@ -199,6 +208,7 @@ impl Crate {
 
             vcs_details: VCSDetails::new(),
             cargo: None,
+            crate_details: CrateDetails::new(),
         }
     }
 }
@@ -260,6 +270,10 @@ fn get_default_percentage() -> String {
 
 fn empty_details() -> VCSDetails {
     VCSDetails::new()
+}
+
+const fn empty_crate_details() -> CrateDetails {
+    CrateDetails::new()
 }
 
 const fn empty_string() -> String {
@@ -551,6 +565,12 @@ pub fn build_path(mut path: PathBuf, parts: &[&str], extension: Option<&str>) ->
     };
 
     path
+}
+
+pub fn load_crate_details(filepath: &PathBuf) -> Result<CrateDetails, Box<dyn Error>> {
+    log::info!("load_crate_details {filepath:?}");
+    let content = std::fs::read_to_string(filepath)?;
+    Ok(serde_json::from_str::<CrateDetails>(&content)?)
 }
 
 #[cfg(test)]

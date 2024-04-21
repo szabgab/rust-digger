@@ -14,9 +14,9 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 
 use rust_digger::{
-    add_cargo_toml_to_crates, build_path, collected_data_root, get_owner_and_repo,
-    load_vcs_details, percentage, read_crates, CargoTomlErrors, Crate, CrateErrors, CratesByOwner,
-    Owners, Repo, User,
+    add_cargo_toml_to_crates, analyzed_crates_root, build_path, collected_data_root,
+    get_owner_and_repo, load_crate_details, load_vcs_details, percentage, read_crates,
+    CargoTomlErrors, Crate, CrateErrors, CratesByOwner, Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -60,6 +60,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     add_owners_to_crates(&mut crates, &users, &owner_by_crate_id);
     load_vcs_details_for_all_the_crates(&mut crates);
+    load_crate_details_for_all_the_crates(&mut crates);
     create_html_folders()?;
 
     std::thread::scope(|scope| {
@@ -91,6 +92,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn load_vcs_details_for_all_the_crates(crates: &mut [Crate]) {
     for krate in crates.iter_mut() {
         krate.vcs_details = load_vcs_details(&krate.repository);
+    }
+}
+
+fn load_crate_details_for_all_the_crates(crates: &mut [Crate]) {
+    #[allow(clippy::pattern_type_mismatch)]
+    for krate in crates.iter_mut() {
+        if let Some(cargo) = &krate.cargo {
+            let filename = format!("{}-{}.json", cargo.package.name, cargo.package.version);
+            let filepath = analyzed_crates_root().join(filename);
+            krate.crate_details = load_crate_details(&filepath).unwrap_or_default();
+        }
     }
 }
 
