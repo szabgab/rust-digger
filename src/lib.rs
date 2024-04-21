@@ -14,6 +14,23 @@ mod cargo_toml_parser;
 pub use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct CrateDetails {
+    pub has_build_rs: bool,
+    pub nonstandard_folders: Vec<String>,
+    pub size: u64,
+}
+
+impl CrateDetails {
+    pub const fn new() -> Self {
+        Self {
+            has_build_rs: false,
+            nonstandard_folders: vec![],
+            size: 0,
+        }
+    }
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 #[non_exhaustive]
 pub enum RepoPlatform {
     GitHub,    // https://github.com/

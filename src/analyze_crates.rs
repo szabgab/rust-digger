@@ -7,24 +7,7 @@ use std::path::PathBuf;
 use clap::Parser;
 use walkdir::WalkDir;
 
-use rust_digger::{analyzed_crates_root, crates_root, create_data_folders};
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct CrateDetails {
-    has_build_rs: bool,
-    nonstandard_folders: Vec<String>,
-    size: u64,
-}
-
-impl CrateDetails {
-    const fn new() -> Self {
-        Self {
-            has_build_rs: false,
-            nonstandard_folders: vec![],
-            size: 0,
-        }
-    }
-}
+use rust_digger::{analyzed_crates_root, crates_root, create_data_folders, CrateDetails};
 
 #[derive(Parser, Debug)]
 #[command(version)]
