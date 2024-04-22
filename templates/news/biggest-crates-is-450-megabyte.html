@@ -1,0 +1,747 @@
+{% assign title = "Rust Digger: Does size matter? The biggest crate is 450Mb; More than 100 crates are over 50Mb." %}
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+  <h1 class="title is-3">{{title}}</h1>
+  <div class="content">
+    <p>
+      Date: 2024.04.22
+    </p>
+    <p>
+        <h2>Update</h2>
+        Now that we have all the released crates copied locally we can analyze them. The <a href="/news/msrv-stats">MSRV stats</a> last week were already
+        using that data. The code needed some cleanup to easily accommodate more data, but now we can already collect data from all the files in a released
+        crates. One such aspect was total size of the crates. The result quite surprised me.    
+    </p>
+
+    <h2>The biggest crates</h2>
+
+    <p>
+      This table was taken from <a href="/biggest-crates/">the biggest crates report</a>.
+      The biggest crate is 450 Mb of source code! The 100 biggest crates all weight more than 50 Mb in source code.
+      Compared to that the Rust Digger uses about 400K and about 60% of that is just HTML.
+    </p>
+    <p>
+      I'll have to look more deeply into what is taking up so much space and also to see "smaller" crates that are still more than 10 Mb.
+
+
+      <table class="table">
+        <thead>
+        <tr>
+         <th>name</th>
+         
+           <th>Size</th>
+         
+        </tr>
+        </thead>
+      <tbody>
+      
+        <tr>
+          <td><a href="/crates/difftastic">difftastic</a></td>
+          
+             <td>474,778,153</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/inkjet">inkjet</a></td>
+          
+             <td>446,057,459</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/jni-android-sys">jni-android-sys</a></td>
+          
+             <td>217,981,312</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/baz-difftastic">baz-difftastic</a></td>
+          
+             <td>216,841,203</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/bevy-glsl-to-spirv">bevy-glsl-to-spirv</a></td>
+          
+             <td>199,008,531</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/nixel">nixel</a></td>
+          
+             <td>197,915,431</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/tree-sitter-parsers">tree-sitter-parsers</a></td>
+          
+             <td>169,041,626</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/diffsitter">diffsitter</a></td>
+          
+             <td>168,885,016</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/difftastic_mod_for_windows">difftastic_mod_for_windows</a></td>
+          
+             <td>163,945,309</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/stm32-metapac">stm32-metapac</a></td>
+          
+             <td>162,202,538</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/mozjs_sys">mozjs_sys</a></td>
+          
+             <td>161,225,785</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/Brains">Brains</a></td>
+          
+             <td>160,502,576</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/efm32gg11b-pac">efm32gg11b-pac</a></td>
+          
+             <td>158,582,787</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/open62541-ffi">open62541-ffi</a></td>
+          
+             <td>158,506,978</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/printk">printk</a></td>
+          
+             <td>155,688,102</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/efm32gg12b-pac">efm32gg12b-pac</a></td>
+          
+             <td>152,594,947</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/efm32wg-pac">efm32wg-pac</a></td>
+          
+             <td>150,269,076</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/efm32lg-pac">efm32lg-pac</a></td>
+          
+             <td>149,878,428</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/difftastic-oc">difftastic-oc</a></td>
+          
+             <td>143,662,576</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/efm32gg-pac">efm32gg-pac</a></td>
+          
+             <td>142,689,659</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/windows">windows</a></td>
+          
+             <td>133,924,352</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/treelight">treelight</a></td>
+          
+             <td>133,825,395</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/qt_core">qt_core</a></td>
+          
+             <td>133,695,547</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/qt_widgets">qt_widgets</a></td>
+          
+             <td>128,274,706</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/schema_org_types">schema_org_types</a></td>
+          
+             <td>121,860,909</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/v8">v8</a></td>
+          
+             <td>121,207,897</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/pepegsitter">pepegsitter</a></td>
+          
+             <td>113,522,568</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/fbxsdk-sys">fbxsdk-sys</a></td>
+          
+             <td>113,110,956</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/qt_gui">qt_gui</a></td>
+          
+             <td>111,336,001</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/tree-sitter-poweron">tree-sitter-poweron</a></td>
+          
+             <td>101,871,750</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/clfft">clfft</a></td>
+          
+             <td>97,478,845</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/evercrypt-sys">evercrypt-sys</a></td>
+          
+             <td>96,973,631</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/image2aa">image2aa</a></td>
+          
+             <td>96,550,201</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/openblas_ffi">openblas_ffi</a></td>
+          
+             <td>94,585,909</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/cluna">cluna</a></td>
+          
+             <td>93,485,631</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/xmp_toolkit">xmp_toolkit</a></td>
+          
+             <td>93,434,218</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/openblas-provider">openblas-provider</a></td>
+          
+             <td>92,275,987</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/fermium">fermium</a></td>
+          
+             <td>90,568,891</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/vec-rac">vec-rac</a></td>
+          
+             <td>90,454,742</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/wycheproof">wycheproof</a></td>
+          
+             <td>90,148,154</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/sdl2-sys">sdl2-sys</a></td>
+          
+             <td>89,810,114</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/rusty_v8">rusty_v8</a></td>
+          
+             <td>89,353,368</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/stm32h7">stm32h7</a></td>
+          
+             <td>88,456,296</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/openblas-blas-provider">openblas-blas-provider</a></td>
+          
+             <td>85,755,080</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/unicode_types">unicode_types</a></td>
+          
+             <td>85,290,217</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/stm32h5">stm32h5</a></td>
+          
+             <td>84,875,388</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/spirv-to-dxil-sys">spirv-to-dxil-sys</a></td>
+          
+             <td>84,286,341</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/yy-typings">yy-typings</a></td>
+          
+             <td>81,735,370</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/matrix_display">matrix_display</a></td>
+          
+             <td>80,308,931</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/esp-wifi-sys">esp-wifi-sys</a></td>
+          
+             <td>80,281,241</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/reactive-mutiny">reactive-mutiny</a></td>
+          
+             <td>79,906,359</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/erg">erg</a></td>
+          
+             <td>79,039,217</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/gcloud-sdk">gcloud-sdk</a></td>
+          
+             <td>78,602,269</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/sdl3-sys">sdl3-sys</a></td>
+          
+             <td>77,173,599</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/bcndecode">bcndecode</a></td>
+          
+             <td>76,985,832</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/kube-custom-resources-rs">kube-custom-resources-rs</a></td>
+          
+             <td>76,675,065</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/alpino-tokenizer-sys">alpino-tokenizer-sys</a></td>
+          
+             <td>76,299,196</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/multibody_dynamics">multibody_dynamics</a></td>
+          
+             <td>75,164,626</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/sample_planning">sample_planning</a></td>
+          
+             <td>71,844,535</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/generic-ip">generic-ip</a></td>
+          
+             <td>71,386,433</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/prefixset">prefixset</a></td>
+          
+             <td>71,191,744</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/fhirbolt-serde">fhirbolt-serde</a></td>
+          
+             <td>71,164,777</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/avr-libc">avr-libc</a></td>
+          
+             <td>69,678,964</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/at32f4xx-pac">at32f4xx-pac</a></td>
+          
+             <td>68,713,014</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/stm32ral">stm32ral</a></td>
+          
+             <td>68,298,277</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/ffmpeg4-sys">ffmpeg4-sys</a></td>
+          
+             <td>68,254,710</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/threed-ice-sys">threed-ice-sys</a></td>
+          
+             <td>67,331,006</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/relp-bin">relp-bin</a></td>
+          
+             <td>66,405,064</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/wow_spells">wow_spells</a></td>
+          
+             <td>66,388,232</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/httlib-hpack">httlib-hpack</a></td>
+          
+             <td>65,147,820</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/occt-sys">occt-sys</a></td>
+          
+             <td>64,783,171</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/tree-sitter-ocaml">tree-sitter-ocaml</a></td>
+          
+             <td>64,624,128</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/shaderc-sys">shaderc-sys</a></td>
+          
+             <td>64,090,492</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/libmagie">libmagie</a></td>
+          
+             <td>64,021,366</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/google-api-proto">google-api-proto</a></td>
+          
+             <td>63,642,254</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/lapack-sys">lapack-sys</a></td>
+          
+             <td>62,951,897</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/grib">grib</a></td>
+          
+             <td>61,124,990</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/monoio-http">monoio-http</a></td>
+          
+             <td>60,965,035</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/stm32f7">stm32f7</a></td>
+          
+             <td>60,606,550</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/mupdf-sys">mupdf-sys</a></td>
+          
+             <td>60,425,595</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/drone-stm32-map-svd">drone-stm32-map-svd</a></td>
+          
+             <td>59,330,782</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/stm32l4-stm32hal">stm32l4-stm32hal</a></td>
+          
+             <td>59,186,328</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/librclone-sys">librclone-sys</a></td>
+          
+             <td>58,644,380</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/sport_monks">sport_monks</a></td>
+          
+             <td>58,367,682</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/rasputin">rasputin</a></td>
+          
+             <td>57,557,273</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/icu_datetime_data">icu_datetime_data</a></td>
+          
+             <td>57,538,619</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/lpc546xx-pac">lpc546xx-pac</a></td>
+          
+             <td>57,426,126</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/countries">countries</a></td>
+          
+             <td>56,072,551</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/ecmascript">ecmascript</a></td>
+          
+             <td>55,734,992</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/fsr-sys">fsr-sys</a></td>
+          
+             <td>55,474,824</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/llama_cpp_sys">llama_cpp_sys</a></td>
+          
+             <td>55,438,525</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/qt_3d_render">qt_3d_render</a></td>
+          
+             <td>54,414,488</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/hello-world-jjr">hello-world-jjr</a></td>
+          
+             <td>54,413,408</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/spatialite-sys">spatialite-sys</a></td>
+          
+             <td>54,375,362</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/efm32tg11b-pac">efm32tg11b-pac</a></td>
+          
+             <td>54,196,685</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/fasters">fasters</a></td>
+          
+             <td>53,982,508</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/stm32l4">stm32l4</a></td>
+          
+             <td>53,879,300</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/fefix">fefix</a></td>
+          
+             <td>53,872,985</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/chisel-parsers">chisel-parsers</a></td>
+          
+             <td>53,867,495</td>
+          
+        </tr>
+      
+        <tr>
+          <td><a href="/crates/mountpoint-s3-crt-sys">mountpoint-s3-crt-sys</a></td>
+          
+             <td>53,212,500</td>
+          
+        </tr>
+      
+      </tbody>
+      </table>
+
+   </div>
+  </div>
+</section>
+
+{% include 'templates/incl/footer.html' %}
