@@ -32,16 +32,20 @@
           <td><a href="/about-repository"><span class="tag is-danger is-light">NA</span></a></td>
         {% endif %}
 
-        {% if crate.vcs_details.commit_count == 0 %}
-          <td><a href="/about-repository#no-commit-count"><span class="tag is-danger is-light">NA</span></a></td>
+        {% if crate.vcs_details %}
+          {% if crate.vcs_details.commit_count == 0 %}
+            <td><a href="/about-repository#no-commit-count"><span class="tag is-danger is-light">NA</span></a></td>
+          {% else %}
+            <td>{{ crate.vcs_details.commit_count }}</td>
+          {% endif %}
+    
+          {% if crate.vcs_details.has_github_action %}
+            <td>GitHub Action</td>
+          {% else %}
+            <td><a href="/about-ci"><span class="tag is-danger is-light">NA</span></a></td>
+          {% endif %}
         {% else %}
-          <td>{{ crate.vcs_details.commit_count }}</td>
-        {% endif %}
-  
-        {% if crate.vcs_details.has_github_action %}
-           <td>GitHub Action</td>
-        {% else %}
-           <td><a href="/about-ci"><span class="tag is-danger is-light">NA</span></a></td>
+          <td>VCS is missing</td>
         {% endif %}
         <td><a href="/about-fmt">fmt</a></td>
       </tr>
