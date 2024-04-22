@@ -1,0 +1,44 @@
+{% include 'templates/incl/header.html' %}
+
+
+<section class="section">
+  <div class="container">
+    <h1 class="title">{{title}}</h1>
+    <p>
+      {% case filename %}
+        {% when "biggest-crates" %}
+        Biggest crates
+
+      {% endcase %}
+  
+    </p>
+    <p>
+      <b>Total:  {{total | commafy}}</b>
+    </p>
+    
+    <table class="table">
+        <thead>
+        <tr>
+         <th>name</th>
+         {% for field in fields %}
+           <th>{{field}}</th>
+         {% endfor %}
+        </tr>
+        </thead>
+      <tbody>
+      {% for thing in things %}
+        <tr>
+          <td><a href="/crates/{{thing.krate.name}}">{{thing.krate.name}}</a></td>
+          {% for field in thing.fields %}
+             <td>{{field}}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+      </tbody>
+      </table>
+
+
+  </div>
+</section>
+
+{% include 'templates/incl/footer.html' %}

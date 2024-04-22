@@ -9,9 +9,9 @@ use std::path::{Path, PathBuf};
 use chrono::prelude::{DateTime, Utc};
 use clap::Parser;
 use liquid_filter_commafy::Commafy;
-
 use once_cell::sync::Lazy;
 use regex::Regex;
+use thousands::Separable;
 
 use rust_digger::{
     add_cargo_toml_to_crates, analyzed_crates_root, build_path, collected_data_root,
@@ -80,6 +80,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             .unwrap();
         });
     });
+
+    generate_top_crates_lists(&mut crates).unwrap();
 
     generate_sitemap();
     generate_robots_txt();
@@ -832,6 +834,86 @@ pub fn generate_interesting_homepages(crates: &[Crate]) -> Result<(), Box<dyn Er
     let mut file = File::create(filename).unwrap();
     writeln!(&mut file, "{html}").unwrap();
 
+    Ok(())
+}
+
+fn render_top_crates(
+    filename: &str,
+    title: &str,
+    fields: &[&str],
+    krates: &[Thing],
+) -> Result<(), Box<dyn Error>> {
+    log::info!("render_top_crates: {filename}",);
+
+    let page_size = if krates.len() > PAGE_SIZE {
+        PAGE_SIZE
+    } else {
+        krates.len()
+    };
+
+    let partials = load_templates().unwrap();
+
+    let utc: DateTime<Utc> = Utc::now();
+    let globals = liquid::object!({
+        "version": format!("{VERSION}"),
+        "utc":     format!("{}", utc),
+        "title":   title,
+        "filename": filename,
+        "total":   krates.len(),
+        "fields":  fields,
+        "things":  (krates[0..page_size]).to_vec(),
+    });
+
+    let template = liquid::ParserBuilder::with_stdlib()
+        .filter(Commafy)
+        .partials(partials)
+        .build()
+        .unwrap()
+        .parse_file("templates/list_top_crates.html")
+        .unwrap();
+    let html = template.render(&globals).unwrap();
+
+    let filepath = std::path::PathBuf::from(format!(
+        "{}.html",
+        get_site_folder().join(filename).display()
+    ));
+
+    let mut file = File::create(filepath).unwrap();
+    writeln!(&mut file, "{html}").unwrap();
+    //match res {
+    //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
+    //    Err(error) => log:error!("{}", error)
+    //}
+    Ok(())
+}
+
+#[derive(Debug, serde::Serialize, Clone)]
+struct Thing<'local> {
+    krate: &'local Crate,
+    fields: Vec<String>,
+}
+pub fn generate_top_crates_lists(crates: &mut [Crate]) -> Result<(), Box<dyn Error>> {
+    log::info!("start generate_top_crates_lsts");
+
+    crates.sort_by_key(|krate| krate.crate_details.size);
+    crates.reverse();
+
+    let crates_and_fields = crates
+        .iter()
+        .map(|krate| Thing {
+            krate,
+            fields: vec![krate.crate_details.size.separate_with_commas()],
+        })
+        .collect::<Vec<Thing>>();
+
+    render_top_crates(
+        "biggest-crates",
+        "Crates using the most bytes",
+        &["Size"],
+        &crates_and_fields,
+    )?;
+
+    log::info!("end generate_top_crates_lsts");
     Ok(())
 }
 
