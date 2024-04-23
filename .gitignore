@@ -6,5 +6,6 @@
 *.bak
 *.swp
 
+/*.log
 /*.out
 /*.err
