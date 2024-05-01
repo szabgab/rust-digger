@@ -7,7 +7,10 @@ use std::path::PathBuf;
 use clap::Parser;
 use walkdir::WalkDir;
 
-use rust_digger::{analyzed_crates_root, crates_root, create_data_folders, CrateDetails};
+use rust_digger::{
+    analyzed_crates_root, collect_cargo_toml_released_crates, crates_root, create_data_folders,
+    get_data_folder, CrateDetails,
+};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -39,6 +42,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     log::info!("Limit: {}", args.limit);
 
     collect_data_from_crates(args.limit)?;
+    collect_cargo_toml_released_crates()?;
 
     Ok(())
 }
@@ -51,6 +55,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         log::info!("We are going to process all the crates we find locally",);
     }
     create_data_folders()?;
+    let mut crate_details = vec![];
 
     for (count, entry) in crates_root().read_dir()?.enumerate() {
         if limit > 0 && count >= limit {
@@ -84,7 +89,13 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         details.size = disk_size(&dir_entry.path());
 
         save_details(&details, filepath)?;
+        crate_details.push(details);
     }
+
+    std::fs::write(
+        get_data_folder().join("crate_details.json"),
+        serde_json::to_vec(&crate_details)?,
+    )?;
 
     Ok(())
 }

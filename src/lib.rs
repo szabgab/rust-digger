@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
+use std::fs::read_to_string;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
@@ -446,6 +447,24 @@ pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dy
 
 pub fn load_cargo_toml_released_crates(
 ) -> Result<(Vec<Cargo>, CrateErrors, CargoTomlErrors), Box<dyn Error>> {
+    let released_crates = serde_json::from_str(&read_to_string(
+        get_data_folder().join("released_cargo_toml.json"),
+    )?)?;
+    let released_cargo_toml_errors = serde_json::from_str(&read_to_string(
+        get_data_folder().join("released_cargo_toml_errors.json"),
+    )?)?;
+    let released_cargo_toml_errors_nameless = serde_json::from_str(&read_to_string(
+        get_data_folder().join("released_cargo_toml_errors_nameless.json"),
+    )?)?;
+
+    Ok((
+        released_crates,
+        released_cargo_toml_errors,
+        released_cargo_toml_errors_nameless,
+    ))
+}
+
+pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
     log::info!("start load_cargo_toml_released_crates");
     let dir_handle = crates_root().read_dir()?;
     let mut released_cargo_toml_errors: CrateErrors = HashMap::new();
@@ -476,12 +495,21 @@ pub fn load_cargo_toml_released_crates(
         })
         .collect::<Vec<Cargo>>();
 
+    std::fs::write(
+        get_data_folder().join("released_cargo_toml.json"),
+        serde_json::to_vec(&released_crates)?,
+    )?;
+    std::fs::write(
+        get_data_folder().join("released_cargo_toml_errors.json"),
+        serde_json::to_vec(&released_cargo_toml_errors)?,
+    )?;
+    std::fs::write(
+        get_data_folder().join("released_cargo_toml_errors_nameless.json"),
+        serde_json::to_vec(&released_cargo_toml_errors_nameless)?,
+    )?;
+
     log::info!("end load_cargo_toml_released_crates");
-    Ok((
-        released_crates,
-        released_cargo_toml_errors,
-        released_cargo_toml_errors_nameless,
-    ))
+    Ok(())
 }
 
 /// # Errors
