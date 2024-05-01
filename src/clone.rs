@@ -109,17 +109,7 @@ fn update_repositories(
             continue;
         }
 
-        let repository_url = if !krate.repository.is_empty() {
-            krate.repository.to_lowercase()
-        } else if !krate.homepage.is_empty() {
-            log::info!(
-                "Trying to use homepage field '{}' as a repository link to clone the project",
-                krate.homepage
-            );
-            krate.homepage.to_lowercase()
-        } else {
-            String::new()
-        };
+        let repository_url = get_repository_url(krate);
 
         if repository_url.is_empty() {
             continue;
@@ -161,6 +151,22 @@ fn update_repositories(
     }
 
     Ok(())
+}
+
+fn get_repository_url(krate: &Crate) -> String {
+    if !krate.repository.is_empty() {
+        return krate.repository.to_lowercase();
+    }
+
+    if !krate.homepage.is_empty() {
+        log::info!(
+            "Trying to use homepage field '{}' as a repository link to clone the project",
+            krate.homepage
+        );
+        return krate.homepage.to_lowercase();
+    }
+
+    String::new()
 }
 
 fn update_single_repository(
