@@ -6,7 +6,7 @@
 
     {% if released_cargo_toml_errors_nameless.size > 0 %}
         <h2 class="title">Has error in the released Cargo.toml file</h2>
-
+        Total: {{ released_cargo_toml_errors_nameless.size | commafy }}
         <table class="table">
             <thead>
             <tr>
