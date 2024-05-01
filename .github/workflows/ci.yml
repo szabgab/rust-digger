@@ -51,6 +51,12 @@ jobs:
           mkdir -p temp
           cargo run --bin download-crates -- --limit 10
 
+      - name: Analyze crates
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          mkdir -p temp
+          cargo run --bin analyze-crates
+
       - name: Create pages
         if: ${{ github.event_name != 'pull_request' }}
         run: |
