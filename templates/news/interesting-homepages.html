@@ -1,0 +1,31 @@
+{% assign title = "Rust Digger: There are 4,907 interesting Crate homepages" %}
+{% include 'templates/incl/header.html' %}
+
+<section class="section">
+  <div class="container">
+  <h1 class="title is-3">{{title}}</h1>
+  <div class="content">
+    <p>
+      Date: 2024.05.01
+    </p>
+    <p>
+        In the past week I hardly had time to work on this project, but there is some interestin report about homepages. In the Cargo.toml file wach crate can include
+        a field for <b>repository</b> and another field <b>homepage</b>. Out of the 144,632 crates <a href="/vcs/no-repo">27,872 (19.27%) has no repository field</a></b>,
+        some have the link to the repository in the <b>homepage</b> field <a href="/has-interesting-homepage">14,005 (9.68%) has an "interesting" homepage</a>. By "interesting" I mean one that is not a link to its repository and
+        not to the <a href="https://docs.rs/"></a>documentation on docs.rs</a>. Give or take a few hundred due to bugs in the Rust Digger.
+    </p>
+    <p>
+        The 14,005 interesting homepages are actually <a href="/homepages">4,907 unique addresses</a>. I've created a list of these pages for you to observe
+        and to find issues with the Rust Digger that we might want to fix. I did not convert the URLs to links partially as I was worried that some of those
+        might be "bad" addresses. Not just "localhost", but also sites that are "not safe for work". I opened an <a href="https://github.com/szabgab/rust-digger/issues/70">issue</a>
+        for this, but I don't yet know what should I really do with this information.
+    </p>
+    <p>
+    </p>
+
+
+  </div>
+  </div>
+</section>
+
+{% include 'templates/incl/footer.html' %}
