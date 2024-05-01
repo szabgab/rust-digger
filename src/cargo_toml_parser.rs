@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
 
@@ -112,10 +113,17 @@ impl Default for Package {
     }
 }
 
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// pub struct CargoDependencyValue {
+//     pub optional: Option<bool>,
+//     pub version: String,
+// }
+// CargoDependencyValue
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Cargo {
     pub package: Package,
-    pub dependencies: Option<Value>,
+    pub dependencies: Option<HashMap<String, Value>>,
 }
 
 impl Cargo {
