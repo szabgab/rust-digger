@@ -26,6 +26,11 @@ jobs:
 #      - name: Setup Pages
 #        uses: actions/configure-pages@v2
 
+      - name: Update rust
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+            rustup update
+
       - name: Compile application
         if: ${{ github.event_name != 'pull_request' }}
         run: |
