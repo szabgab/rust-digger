@@ -122,9 +122,9 @@ fn add_owners_to_crates(crates: &mut [Crate], users: &Vec<User>, owner_by_crate_
                 //println!("owner_id: {owner_id}");
                 match mapping.get(owner_id) {
                     Some(val) => {
-                        krate.owner_gh_login = val.gh_login.clone();
-                        krate.owner_name = val.name.clone();
-                        krate.owner_gh_avatar = val.gh_avatar.clone();
+                        krate.owner_gh_login.clone_from(&val.gh_login);
+                        krate.owner_name.clone_from(&val.name);
+                        krate.owner_gh_avatar.clone_from(&val.gh_avatar);
                     }
                     None => {
                         log::warn!("crate {crate_id} owner_id {owner_id} does not have a user");

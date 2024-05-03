@@ -98,3 +98,5 @@ cast_lossless = "allow"
 default_numeric_fallback = "allow"
 expect_used = "allow"
 unnecessary_wraps = "allow"
+
+std_instead_of_core = "allow"

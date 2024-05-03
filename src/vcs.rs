@@ -193,6 +193,7 @@ fn read_rustfmt(rustfmt: &mut Vec<String>, filename: &str, name: &str) {
                         //log::debug!("key: {:30} value: {}", row.0, row.1);
                         let mut value = row.1.to_string();
                         #[allow(clippy::string_slice)]
+                        #[allow(clippy::assigning_clones)]
                         if value.starts_with('"') && value.ends_with('"') {
                             value = value[1..value.len() - 1].to_owned();
                         }
