@@ -24,7 +24,7 @@ const URL: &str = "https://rust-digger.code-maven.com";
 pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySource>;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-const PAGE_SIZE: usize = 100;
+const PAGE_SIZE: usize = 200;
 
 mod read;
 use read::{read_crate_owners, read_teams, read_users};
