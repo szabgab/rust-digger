@@ -109,12 +109,6 @@
         <td>{{percentage.crates_with_both_edition_and_rust_version}}%</td>
       </tr>
 
-      <tr>
-        <td><a href="/has-interesting-homepage">Has interesting homepage</a></td>
-        <td>{{stats.has_interesting_homepage | commafy}}</td>
-        <td>{{percentage.has_interesting_homepage}}%</td>
-      </tr>
-
       {% for stat in stats2 %}
       <tr>
         <td><a href="/{{stat.path}}">{{stat.title}}</a></td>

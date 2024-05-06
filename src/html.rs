@@ -27,6 +27,21 @@ pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySo
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 200;
 
+struct CrateFilter {
+    func: Box<dyn Fn(&&Crate) -> bool>,
+}
+
+impl CrateFilter {
+    fn new<F>(func: F) -> Self
+    where
+        F: Fn(&&Crate) -> bool + 'static,
+    {
+        Self {
+            func: Box::new(func),
+        }
+    }
+}
+
 #[derive(Serialize, Debug)]
 struct StatEntry<'aaa> {
     id: &'aaa str,
@@ -944,13 +959,6 @@ pub fn generate_pages(
 
     let _all = render_filtered_crates("all", "Rust Digger", |_krate| true, crates)?;
 
-    let has_interesting_homepage = render_filtered_crates(
-        "has-interesting-homepage",
-        "Has a homepage field that is not GitHub or docs.rs",
-        |krate| crate_has_interesting_homepage(krate),
-        crates,
-    )?;
-
     let has_cargo_toml_errors = render_filtered_crates(
         "has-cargo-toml-errors",
         "Has errors in the released Cargo.toml file",
@@ -1076,19 +1084,26 @@ pub fn generate_pages(
         ("has_both_rustfmt_toml", has_both_rustfmt_toml),
         ("has_cargo_toml_in_root", has_cargo_toml_in_root),
         ("has_no_cargo_toml_in_root", has_no_cargo_toml_in_root),
-        ("has_interesting_homepage", has_interesting_homepage),
     ]);
 
     let mut stats2 = vec![];
     // crate_details
-    let cases = vec![(
-        "crates_with_cargo_lock",
-        "crates-with-cargo-lock",
-        "Crates with Cargo.lock file",
-        |krate: &&Crate| krate.crate_details.has_cargo_lock,
-    )];
+    let cases = vec![
+        (
+            "has_interesting_homepage",
+            "has-interesting-homepage",
+            "Has interesting homepage",
+            CrateFilter::new(|krate: &&Crate| crate_has_interesting_homepage(krate)),
+        ),
+        (
+            "crates_with_cargo_lock",
+            "crates-with-cargo-lock",
+            "Crates with Cargo.lock file",
+            CrateFilter::new(|krate: &&Crate| krate.crate_details.has_cargo_lock),
+        ),
+    ];
     for case in cases {
-        let count = render_filtered_crates(case.1, case.2, case.3, crates)?;
+        let count = render_filtered_crates(case.1, case.2, case.3.func, crates)?;
         stats2.push(StatEntry {
             id: case.0,
             path: case.1,
