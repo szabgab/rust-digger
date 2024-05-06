@@ -117,6 +117,12 @@ fn has_files(path: &PathBuf, details: &mut CrateDetails) -> Result<(), Box<dyn s
     log::info!("has_files for {path:?}");
 
     details.has_build_rs = path.join("build.rs").exists();
+    details.has_cargo_toml = path.join("Cargo.toml").exists();
+    details.has_cargo_lock = path.join("Cargo.lock").exists();
+    details.has_clippy_toml = path.join("clippy.toml").exists();
+    details.has_dot_clippy_toml = path.join(".clippy.toml").exists();
+    details.has_rustfmt_toml = path.join("rustfmt.toml").exists();
+    details.has_dot_rustfmt_toml = path.join(".rustfmt.toml").exists();
 
     let standard_folders = [
         OsStr::new("src"),

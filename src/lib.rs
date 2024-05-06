@@ -14,9 +14,16 @@ use regex::Regex;
 mod cargo_toml_parser;
 pub use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
 
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct CrateDetails {
     pub has_build_rs: bool,
+    pub has_cargo_toml: bool,
+    pub has_cargo_lock: bool,
+    pub has_clippy_toml: bool,
+    pub has_dot_clippy_toml: bool,
+    pub has_rustfmt_toml: bool,
+    pub has_dot_rustfmt_toml: bool,
     pub nonstandard_folders: Vec<String>,
     pub size: u64,
 }
@@ -25,6 +32,12 @@ impl CrateDetails {
     pub const fn new() -> Self {
         Self {
             has_build_rs: false,
+            has_cargo_toml: false,
+            has_cargo_lock: false,
+            has_clippy_toml: false,
+            has_dot_clippy_toml: false,
+            has_rustfmt_toml: false,
+            has_dot_rustfmt_toml: false,
             nonstandard_folders: vec![],
             size: 0,
         }
