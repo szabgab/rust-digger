@@ -115,11 +115,13 @@
         <td>{{percentage.has_interesting_homepage}}%</td>
       </tr>
 
+      {% for stat in stats2 %}
       <tr>
-        <td><a href="/crates-with-cargo-lock">Crates with Cargo.lock file</a></td>
-        <td>{{stats.crates_with_cargo_lock | commafy}}</td>
-        <td>{{percentage.crates_with_cargo_lock}}%</td>
+        <td><a href="/{{stat.path}}">{{stat.title}}</a></td>
+        <td>{{stat.count | commafy}}</td>
+        <td>{{stat.percentage}}%</td>
       </tr>
+      {% endfor %}
 
 
     </tbody>

@@ -11,6 +11,7 @@ use clap::Parser;
 use liquid_filter_commafy::Commafy;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use serde::Serialize;
 use thousands::Separable;
 
 use rust_digger::{
@@ -25,6 +26,15 @@ pub type Partials = liquid::partials::EagerCompiler<liquid::partials::InMemorySo
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const PAGE_SIZE: usize = 200;
+
+#[derive(Serialize, Debug)]
+struct StatEntry<'aaa> {
+    id: &'aaa str,
+    path: &'aaa str,
+    title: &'aaa str,
+    count: usize,
+    percentage: String,
+}
 
 mod read;
 use read::{read_crate_owners, read_teams, read_users};
@@ -563,7 +573,7 @@ fn generate_people_search_page() {
     log::info!("generate_people_search_page end");
 }
 
-fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>) {
+fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>, stats2: &[StatEntry]) {
     log::info!("render_stats_page");
     let partials = load_templates().unwrap();
 
@@ -592,6 +602,7 @@ fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>) {
         "total": crates,
         "percentage": perc,
         "stats": stats,
+        "stats2": stats2,
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
@@ -1043,16 +1054,7 @@ pub fn generate_pages(
         crates,
     )?;
 
-    // crate_details
-    let crates_with_cargo_lock = render_filtered_crates(
-        "crates-with-cargo-lock",
-        "Crates with Cargo.lock file",
-        |krate| krate.crate_details.has_cargo_lock,
-        crates,
-    )?;
-
     let stats = HashMap::from([
-        ("crates_with_cargo_lock", crates_with_cargo_lock),
         (
             "crates_with_both_edition_and_rust_version",
             crates_with_both_edition_and_rust_version,
@@ -1077,7 +1079,26 @@ pub fn generate_pages(
         ("has_interesting_homepage", has_interesting_homepage),
     ]);
 
-    render_stats_page(crates.len(), &stats);
+    let mut stats2 = vec![];
+    // crate_details
+    let cases = vec![(
+        "crates_with_cargo_lock",
+        "crates-with-cargo-lock",
+        "Crates with Cargo.lock file",
+        |krate: &&Crate| krate.crate_details.has_cargo_lock,
+    )];
+    for case in cases {
+        let count = render_filtered_crates(case.1, case.2, case.3, crates)?;
+        stats2.push(StatEntry {
+            id: case.0,
+            path: case.1,
+            title: case.2,
+            count,
+            percentage: percentage(count, crates.len()),
+        });
+    }
+
+    render_stats_page(crates.len(), &stats, &stats2);
     generate_rustfmt_pages(crates.len(), &stats, crates)?;
     generate_msrv_pages(crates)?;
     generate_ci_pages(crates)?;
