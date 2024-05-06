@@ -1,0 +1,6 @@
+Has homepage but no repository 3,343
+No homepage and no repository  24,557
+Has both rustfmt.toml and .rustfmt.toml 37
+Has errors in the released Cargo.toml file 99
+
+

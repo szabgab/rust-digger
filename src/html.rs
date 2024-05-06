@@ -1043,7 +1043,16 @@ pub fn generate_pages(
         crates,
     )?;
 
+    // crate_details
+    let crates_with_cargo_lock = render_filtered_crates(
+        "crates-with-cargo-lock",
+        "Crates with Cargo.lock file",
+        |krate| krate.crate_details.has_cargo_lock,
+        crates,
+    )?;
+
     let stats = HashMap::from([
+        ("crates_with_cargo_lock", crates_with_cargo_lock),
         (
             "crates_with_both_edition_and_rust_version",
             crates_with_both_edition_and_rust_version,
