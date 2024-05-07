@@ -587,7 +587,7 @@ fn generate_people_search_page() {
     log::info!("generate_people_search_page end");
 }
 
-fn render_stats_page(crates: usize, stats: &[StatEntry]) {
+fn render_stats_page(stats: &[StatEntry]) {
     log::info!("render_stats_page");
     let partials = load_templates().unwrap();
 
@@ -605,9 +605,6 @@ fn render_stats_page(crates: usize, stats: &[StatEntry]) {
         "version": format!("{VERSION}"),
         "utc":     format!("{}", utc),
         "title":   "Rust Digger Stats",
-        //"user":    user,
-        //"crate":   krate,
-        "total": crates,
         "stats": stats,
     });
     let html = template.render(&globals).unwrap();
@@ -953,6 +950,13 @@ pub fn generate_pages(
     let mut stats = vec![];
 
     stats.push(StatEntry {
+        path: "all",
+        title: "Total",
+        count: crates.len(),
+        percentage: String::from("100%"),
+    });
+
+    stats.push(StatEntry {
         path: "vcs/no-repo",
         title: "No repository",
         count: no_repo,
@@ -1086,7 +1090,8 @@ pub fn generate_pages(
         });
     }
 
-    render_stats_page(crates.len(), &stats);
+    render_stats_page(&stats);
+
     #[allow(clippy::if_then_some_else_none)]
     let with_rustfmt = stats
         .iter()
