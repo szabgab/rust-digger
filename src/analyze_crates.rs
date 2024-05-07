@@ -123,6 +123,7 @@ fn has_files(path: &PathBuf, details: &mut CrateDetails) -> Result<(), Box<dyn s
     details.has_dot_clippy_toml = path.join(".clippy.toml").exists();
     details.has_rustfmt_toml = path.join("rustfmt.toml").exists();
     details.has_dot_rustfmt_toml = path.join(".rustfmt.toml").exists();
+    details.has_main_rs = path.join("src/main.rs").exists();
 
     let standard_folders = [
         OsStr::new("src"),

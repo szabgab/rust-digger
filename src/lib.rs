@@ -24,6 +24,7 @@ pub struct CrateDetails {
     pub has_dot_clippy_toml: bool,
     pub has_rustfmt_toml: bool,
     pub has_dot_rustfmt_toml: bool,
+    pub has_main_rs: bool,
     pub nonstandard_folders: Vec<String>,
     pub size: u64,
 }
@@ -38,6 +39,7 @@ impl CrateDetails {
             has_dot_clippy_toml: false,
             has_rustfmt_toml: false,
             has_dot_rustfmt_toml: false,
+            has_main_rs: false,
             nonstandard_folders: vec![],
             size: 0,
         }
