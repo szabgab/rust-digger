@@ -1053,20 +1053,7 @@ pub fn generate_pages(
         crates,
     )?;
 
-    let crates_with_both_edition_and_rust_version = render_filtered_crates(
-        "crates-with-both-edition-and-rust-version",
-        "Crates with both edition and rust-version",
-        |krate| {
-            krate.cargo.package.edition.is_some() && krate.cargo.package.rust_dash_version.is_some()
-        },
-        crates,
-    )?;
-
     let stats = HashMap::from([
-        (
-            "crates_with_both_edition_and_rust_version",
-            crates_with_both_edition_and_rust_version,
-        ),
         (
             "crates_without_edition_or_rust_version",
             crates_without_edition_or_rust_version,
@@ -1090,6 +1077,15 @@ pub fn generate_pages(
     // crate_details
     let cases = vec![
         (
+            "crates_with_both_edition_and_rust_version",
+            "crates-with-both-edition-and-rust-version",
+            "Crates with both edition and rust-version",
+            CrateFilter::new(|krate: &&Crate| {
+                krate.cargo.package.edition.is_some()
+                    && krate.cargo.package.rust_dash_version.is_some()
+            }),
+        ),
+        (
             "has_interesting_homepage",
             "has-interesting-homepage",
             "Has interesting homepage",
@@ -1100,6 +1096,20 @@ pub fn generate_pages(
             "crates-with-cargo-lock",
             "Crates with Cargo.lock file",
             CrateFilter::new(|krate: &&Crate| krate.crate_details.has_cargo_lock),
+        ),
+        (
+            "crates_without_cargo_lock",
+            "crates-without-cargo-lock",
+            "Crates without Cargo.lock file",
+            CrateFilter::new(|krate: &&Crate| !krate.crate_details.has_cargo_lock),
+        ),
+        (
+            "crates_without_cargo_lock_without_main_rs",
+            "crates-without-cargo-lock-without-main-rs",
+            "Crates without Cargo.lock and without src/main.rs file",
+            CrateFilter::new(|krate: &&Crate| {
+                !krate.crate_details.has_cargo_lock && !krate.crate_details.has_main_rs
+            }),
         ),
     ];
     for case in cases {

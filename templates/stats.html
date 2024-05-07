@@ -103,11 +103,6 @@
         <td>{{percentage.crates_without_edition_or_rust_version}}%</td>
       </tr>
 
-      <tr>
-        <td><a href="/crates-with-both-edition-and-rust-version">Crates with both edition rust-version in the Cargo.toml</a></td>
-        <td>{{stats.crates_with_both_edition_and_rust_version | commafy}}</td>
-        <td>{{percentage.crates_with_both_edition_and_rust_version}}%</td>
-      </tr>
 
       {% for stat in stats2 %}
       <tr>
