@@ -289,7 +289,7 @@ pub fn render_list_page(
     title: &str,
     crates: &[&Crate],
 ) -> Result<(), Box<dyn Error>> {
-    let _a = ElapsedTimer::new("render_list_pages");
+    let _a = ElapsedTimer::new("render_list_page");
     log::info!("render_list_page: {filename:?}");
 
     let filepath = std::path::PathBuf::from(format!(
