@@ -966,25 +966,9 @@ pub fn generate_pages(
         crates,
     )?;
 
-    let has_rustfmt_toml = render_filtered_crates(
-        "has-rustfmt-toml",
-        "Has rustfmt.toml file",
-        |krate| krate.vcs_details.has_rustfmt_toml,
-        crates,
-    )?;
-
-    let has_dot_rustfmt_toml = render_filtered_crates(
-        "has-dot-rustfmt-toml",
-        "Has .rustfmt.toml file",
-        |krate| krate.vcs_details.has_dot_rustfmt_toml,
-        crates,
-    )?;
-
     let stats = HashMap::from([
         ("has_cargo_toml_errors", has_cargo_toml_errors),
         ("no_repo", no_repo),
-        ("has_rustfmt_toml", has_rustfmt_toml),
-        ("has_dot_rustfmt_toml", has_dot_rustfmt_toml),
     ]);
 
     let mut stats2 = vec![];
@@ -1021,6 +1005,18 @@ pub fn generate_pages(
             CrateFilter::new(|krate: &&Crate| {
                 !krate.homepage.is_empty() && krate.repository.is_empty()
             }),
+        ),
+        (
+            "has_rustfmt_toml",
+            "has-rustfmt-toml",
+            "Has rustfmt.toml file",
+            CrateFilter::new(|krate: &&Crate| krate.vcs_details.has_rustfmt_toml),
+        ),
+        (
+            "has_dot_rustfmt_toml",
+            "has-dot-rustfmt-toml",
+            "Has .rustfmt.toml file",
+            CrateFilter::new(|krate: &&Crate| krate.vcs_details.has_dot_rustfmt_toml),
         ),
         (
             "has_both_rustfmt_toml",
@@ -1109,7 +1105,18 @@ pub fn generate_pages(
     }
 
     render_stats_page(crates.len(), &stats, &stats2);
-    let with_rustfmt = stats["has_rustfmt_toml"] + stats["has_dot_rustfmt_toml"];
+    #[allow(clippy::if_then_some_else_none)]
+    let with_rustfmt = stats2
+        .iter()
+        .filter_map(|entry| {
+            if entry.id == "has_dot_rustfmt_toml" || entry.id == "has_rustfmt_toml" {
+                Some(entry.count)
+            } else {
+                None
+            }
+        })
+        .sum();
+
     generate_rustfmt_pages(crates.len(), with_rustfmt, crates)?;
     generate_msrv_pages(crates)?;
     generate_ci_pages(crates)?;
