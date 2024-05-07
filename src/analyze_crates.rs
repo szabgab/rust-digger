@@ -9,7 +9,7 @@ use walkdir::WalkDir;
 
 use rust_digger::{
     analyzed_crates_root, collect_cargo_toml_released_crates, crates_root, create_data_folders,
-    get_data_folder, CrateDetails,
+    get_data_folder, CrateDetails, ElapsedTimer,
 };
 
 #[derive(Parser, Debug)]
@@ -38,6 +38,8 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<dyn Error>> {
+    let _a = ElapsedTimer::new("analyze_crates");
+
     let args = Cli::parse();
     log::info!("Limit: {}", args.limit);
 
@@ -48,7 +50,8 @@ fn run() -> Result<(), Box<dyn Error>> {
 }
 
 fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Error>> {
-    log::info!("collect_data_from_crates");
+    let _a = ElapsedTimer::new("collect_data_from_crates");
+
     if 0 < limit {
         log::info!("We are going to process only {} crates", limit);
     } else {

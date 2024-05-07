@@ -9,7 +9,9 @@ use clap::Parser;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
-use rust_digger::{get_owner_and_repo, get_repos_folder, load_vcs_details, read_crates, Crate};
+use rust_digger::{
+    get_owner_and_repo, get_repos_folder, load_vcs_details, read_crates, Crate, ElapsedTimer,
+};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -72,6 +74,7 @@ fn main() {
 
 fn run() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
+    let _a = ElapsedTimer::new("clone.rs");
     log::info!("Starting the clone process for max {} crates.", args.limit);
 
     let crates: Vec<Crate> = read_crates(0)?;

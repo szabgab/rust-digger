@@ -12,7 +12,7 @@ use toml::Table;
 
 use rust_digger::{
     collected_data_root, get_owner_and_repo, get_repos_folder, load_vcs_details, read_crates,
-    save_details, Crate, VCSDetails,
+    save_details, Crate, ElapsedTimer, VCSDetails,
 };
 
 #[derive(Parser, Debug)]
@@ -43,6 +43,7 @@ fn main() {
 fn run() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
     log::info!("Limit: {}", args.limit);
+    let _a = ElapsedTimer::new("vcs.rs");
 
     let crates: Vec<Crate> = read_crates(0)?;
     collect_data_from_vcs(&crates, args.limit)?;

@@ -17,7 +17,7 @@ use thousands::Separable;
 use rust_digger::{
     add_cargo_toml_to_crates, analyzed_crates_root, build_path, collected_data_root,
     get_owner_and_repo, load_crate_details, load_vcs_details, percentage, read_crates,
-    CargoTomlErrors, Crate, CrateErrors, CratesByOwner, Owners, Repo, User,
+    CargoTomlErrors, Crate, CrateErrors, CratesByOwner, ElapsedTimer, Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -242,7 +242,7 @@ pub fn load_templates() -> Result<Partials, Box<dyn Error>> {
 }
 
 pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
-    log::info!("render_static_pages start");
+    let _a = ElapsedTimer::new("render_static_pages");
 
     let pages = vec![
         ("index", "Rust Digger"),
@@ -281,7 +281,6 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
             File::create(build_path(get_site_folder(), &[page.0], Some("html"))).unwrap();
         writeln!(&mut file, "{html}").unwrap();
     }
-    log::info!("render_static_pages end");
     Ok(())
 }
 
@@ -290,6 +289,7 @@ pub fn render_list_page(
     title: &str,
     crates: &[&Crate],
 ) -> Result<(), Box<dyn Error>> {
+    let _a = ElapsedTimer::new("render_list_pages");
     log::info!("render_list_page: {filename:?}");
 
     let filepath = std::path::PathBuf::from(format!(
@@ -335,6 +335,7 @@ pub fn render_list_page(
 }
 
 pub fn render_news_pages() {
+    let _a = ElapsedTimer::new("render_news_pages");
     log::info!("render_news_pages");
     let utc: DateTime<Utc> = Utc::now();
 
@@ -384,6 +385,8 @@ pub fn generate_crate_pages(
     crates: &Vec<Crate>,
     released_cargo_toml_errors: &CrateErrors,
 ) -> Result<(), Box<dyn Error>> {
+    let _a = ElapsedTimer::new("generate_crate_pages");
+
     log::info!("generate_crate_pages start");
     let partials = load_templates().unwrap();
 
@@ -441,7 +444,7 @@ pub fn generate_user_pages(
     crates_by_owner: &CratesByOwner,
     released_cargo_toml_errors: &CrateErrors,
 ) -> Result<(), Box<dyn Error>> {
-    log::info!("generate_user_pages start");
+    let _a = ElapsedTimer::new("generate_user_pages");
 
     let partials = load_templates().unwrap();
 
@@ -554,11 +557,12 @@ pub fn generate_user_pages(
     save_list_of_users_json(&users_with_crates);
     generate_people_search_page();
 
-    log::info!("generate_user_pages end");
     Ok(())
 }
 
 fn save_list_of_users_json(users: &[User]) {
+    let _a = ElapsedTimer::new("save_list_of_users_json");
+
     let mut users_data = users
         .iter()
         .map(|user| {
@@ -800,7 +804,7 @@ fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
 pub fn generate_errors_page(
     released_cargo_toml_errors_nameless: &CargoTomlErrors,
 ) -> Result<(), Box<dyn Error>> {
-    log::info!("generate_errors_page");
+    let _a = ElapsedTimer::new("generate_errors_pages");
     let partials = load_templates().unwrap();
 
     let template = liquid::ParserBuilder::with_stdlib()
@@ -843,7 +847,7 @@ fn crate_has_interesting_homepage(krate: &Crate) -> bool {
 }
 
 pub fn generate_interesting_homepages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
-    log::info!("generate_interesting_homepages");
+    let _a = ElapsedTimer::new("generate_interesting_homepages");
 
     let homepages = crates.iter().filter_map(|krate| {
         if crate_has_interesting_homepage(krate) {
@@ -955,7 +959,7 @@ struct Thing<'local> {
     fields: Vec<String>,
 }
 pub fn generate_top_crates_lists(crates: &mut [Crate]) -> Result<(), Box<dyn Error>> {
-    log::info!("start generate_top_crates_lsts");
+    let _a = ElapsedTimer::new("generate_top_crates_lists");
 
     crates.sort_by_key(|krate| krate.crate_details.size);
     crates.reverse();
@@ -975,7 +979,6 @@ pub fn generate_top_crates_lists(crates: &mut [Crate]) -> Result<(), Box<dyn Err
         &crates_and_fields,
     )?;
 
-    log::info!("end generate_top_crates_lsts");
     Ok(())
 }
 
@@ -987,7 +990,7 @@ pub fn generate_pages(
     crates: &[Crate],
     released_cargo_toml_errors: &CrateErrors,
 ) -> Result<(), Box<dyn Error>> {
-    log::info!("generate_pages");
+    let _a = ElapsedTimer::new("generate_pages");
 
     fs::copy("digger.js", get_site_folder().join("digger.js"))?;
 

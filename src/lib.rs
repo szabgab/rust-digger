@@ -14,6 +14,9 @@ use regex::Regex;
 mod cargo_toml_parser;
 pub use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
 
+mod timer;
+pub use timer::ElapsedTimer;
+
 #[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct CrateDetails {
@@ -480,7 +483,8 @@ pub fn load_cargo_toml_released_crates(
 }
 
 pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
-    log::info!("start load_cargo_toml_released_crates");
+    let _a = ElapsedTimer::new("collect_cargo_toml_released_crates");
+
     let dir_handle = crates_root().read_dir()?;
     let mut released_cargo_toml_errors: CrateErrors = HashMap::new();
     let mut released_cargo_toml_errors_nameless: CargoTomlErrors = HashMap::new();
@@ -523,7 +527,6 @@ pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
         serde_json::to_vec(&released_cargo_toml_errors_nameless)?,
     )?;
 
-    log::info!("end load_cargo_toml_released_crates");
     Ok(())
 }
 
