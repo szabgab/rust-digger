@@ -1029,25 +1029,8 @@ pub fn generate_pages(
         crates,
     )?;
 
-    let crates_without_owner_name = render_filtered_crates(
-        "crates-without-owner-name",
-        "Crates without owner name",
-        |krate| krate.owner_name.is_empty(),
-        crates,
-    )
-    .unwrap();
-
-    let crates_without_owner = render_filtered_crates(
-        "crates-without-owner",
-        "Crates without owner",
-        |krate| krate.owner_name.is_empty() && krate.owner_gh_login.is_empty(),
-        crates,
-    )?;
-
     let stats = HashMap::from([
         ("has_cargo_toml_errors", has_cargo_toml_errors),
-        ("crates_without_owner", crates_without_owner),
-        ("crates_without_owner_name", crates_without_owner_name),
         ("home_page_but_no_repo", home_page_but_no_repo),
         ("no_homepage_no_repo_crates", no_homepage_no_repo_crates),
         ("github_but_no_ci", github_but_no_ci),
@@ -1063,6 +1046,20 @@ pub fn generate_pages(
     let mut stats2 = vec![];
     // crate_details
     let cases = vec![
+        (
+            "crates_without_owner",
+            "crates-without-owner",
+            "Crates without owner",
+            CrateFilter::new(|krate: &&Crate| {
+                krate.owner_name.is_empty() && krate.owner_gh_login.is_empty()
+            }),
+        ),
+        (
+            "crates_without_owner_name",
+            "crates-without-owner-name",
+            "Crates without owner name",
+            CrateFilter::new(|krate: &&Crate| krate.owner_name.is_empty()),
+        ),
         (
             "crates_without_edition_or_rust_version",
             "crates-without-edition-or-rust-version",
