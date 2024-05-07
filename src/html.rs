@@ -588,7 +588,7 @@ fn generate_people_search_page() {
     log::info!("generate_people_search_page end");
 }
 
-fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>, stats2: &[StatEntry]) {
+fn render_stats_page(crates: usize, stats2: &[StatEntry]) {
     log::info!("render_stats_page");
     let partials = load_templates().unwrap();
 
@@ -600,12 +600,6 @@ fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>, stats2: &[Stat
         .parse_file("templates/stats.html")
         .unwrap();
 
-    let vector = stats
-        .iter()
-        .map(|(field, value)| (field, percentage(*value, crates)))
-        .collect::<Vec<(&&str, String)>>();
-    let perc: HashMap<&&str, String> = HashMap::from_iter(vector);
-
     let filename = get_site_folder().join("stats.html");
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
@@ -615,8 +609,6 @@ fn render_stats_page(crates: usize, stats: &HashMap<&str, usize>, stats2: &[Stat
         //"user":    user,
         //"crate":   krate,
         "total": crates,
-        "percentage": perc,
-        "stats": stats,
         "stats2": stats2,
     });
     let html = template.render(&globals).unwrap();
@@ -966,8 +958,6 @@ pub fn generate_pages(
         crates,
     )?;
 
-    let stats = HashMap::from([("has_cargo_toml_errors", has_cargo_toml_errors)]);
-
     let mut stats2 = vec![];
 
     stats2.push(StatEntry {
@@ -976,6 +966,14 @@ pub fn generate_pages(
         title: "No repository",
         count: no_repo,
         percentage: percentage(no_repo, crates.len()),
+    });
+
+    stats2.push(StatEntry {
+        id: "has_cargo_toml_errors",
+        path: "has-cargo-toml-errors",
+        title: "Has errors in the released Cargo.toml file",
+        count: has_cargo_toml_errors,
+        percentage: percentage(has_cargo_toml_errors, crates.len()),
     });
 
     let cases = vec![
@@ -1109,7 +1107,7 @@ pub fn generate_pages(
         });
     }
 
-    render_stats_page(crates.len(), &stats, &stats2);
+    render_stats_page(crates.len(), &stats2);
     #[allow(clippy::if_then_some_else_none)]
     let with_rustfmt = stats2
         .iter()
