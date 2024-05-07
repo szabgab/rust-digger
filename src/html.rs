@@ -588,7 +588,7 @@ fn generate_people_search_page() {
     log::info!("generate_people_search_page end");
 }
 
-fn render_stats_page(crates: usize, stats2: &[StatEntry]) {
+fn render_stats_page(crates: usize, stats: &[StatEntry]) {
     log::info!("render_stats_page");
     let partials = load_templates().unwrap();
 
@@ -609,7 +609,7 @@ fn render_stats_page(crates: usize, stats2: &[StatEntry]) {
         //"user":    user,
         //"crate":   krate,
         "total": crates,
-        "stats2": stats2,
+        "stats": stats,
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
@@ -951,9 +951,9 @@ pub fn generate_pages(
 
     let _all = render_filtered_crates("all", "Rust Digger", |_krate| true, crates)?;
 
-    let mut stats2 = vec![];
+    let mut stats = vec![];
 
-    stats2.push(StatEntry {
+    stats.push(StatEntry {
         id: "no_repo",
         path: "vcs/no-repo",
         title: "No repository",
@@ -968,7 +968,7 @@ pub fn generate_pages(
         crates,
     )?;
 
-    stats2.push(StatEntry {
+    stats.push(StatEntry {
         id: "has_cargo_toml_errors",
         path: "has-cargo-toml-errors",
         title: "Has errors in the released Cargo.toml file",
@@ -1098,7 +1098,7 @@ pub fn generate_pages(
     ];
     for case in cases {
         let count = render_filtered_crates(case.1, case.2, case.3.func, crates)?;
-        stats2.push(StatEntry {
+        stats.push(StatEntry {
             id: case.0,
             path: case.1,
             title: case.2,
@@ -1107,9 +1107,9 @@ pub fn generate_pages(
         });
     }
 
-    render_stats_page(crates.len(), &stats2);
+    render_stats_page(crates.len(), &stats);
     #[allow(clippy::if_then_some_else_none)]
-    let with_rustfmt = stats2
+    let with_rustfmt = stats
         .iter()
         .filter_map(|entry| {
             if entry.id == "has_dot_rustfmt_toml" || entry.id == "has_rustfmt_toml" {
