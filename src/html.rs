@@ -377,6 +377,7 @@ pub fn generate_crate_pages(
             "utc":     format!("{}", utc),
             "title":   &krate.name,
             "crate":   krate,
+            "readme":  markdown2html(&krate.readme),
             "cargo_toml_error": cargo_toml_error,
         });
         let html = template.render(&globals).unwrap();
@@ -385,6 +386,21 @@ pub fn generate_crate_pages(
     }
     log::info!("generate_crate_pages end");
     Ok(())
+}
+
+fn markdown2html(content: &str) -> String {
+    markdown::to_html_with_options(
+        content,
+        &markdown::Options {
+            compile: markdown::CompileOptions {
+                allow_dangerous_html: true,
+                //allow_dangerous_protocol: true,
+                ..markdown::CompileOptions::default()
+            },
+            ..markdown::Options::gfm()
+        },
+    )
+    .unwrap_or_else(|err| format!("Error converting README {err}"))
 }
 
 pub fn generate_user_pages(
