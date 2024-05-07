@@ -966,13 +966,18 @@ pub fn generate_pages(
         crates,
     )?;
 
-    let stats = HashMap::from([
-        ("has_cargo_toml_errors", has_cargo_toml_errors),
-        ("no_repo", no_repo),
-    ]);
+    let stats = HashMap::from([("has_cargo_toml_errors", has_cargo_toml_errors)]);
 
     let mut stats2 = vec![];
-    // crate_details
+
+    stats2.push(StatEntry {
+        id: "no_repo",
+        path: "vcs/no-repo",
+        title: "No repository",
+        count: no_repo,
+        percentage: percentage(no_repo, crates.len()),
+    });
+
     let cases = vec![
         (
             "github_but_no_ci",
