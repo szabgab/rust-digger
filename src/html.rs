@@ -1112,7 +1112,7 @@ pub fn generate_pages(
     let with_rustfmt = stats
         .iter()
         .filter_map(|entry| {
-            if entry.id == "has_dot_rustfmt_toml" || entry.id == "has_rustfmt_toml" {
+            if entry.path == "has-dot-rustfmt-toml" || entry.path == "has-rustfmt-toml" {
                 Some(entry.count)
             } else {
                 None
