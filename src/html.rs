@@ -1124,7 +1124,8 @@ pub fn generate_pages(
     }
 
     render_stats_page(crates.len(), &stats, &stats2);
-    generate_rustfmt_pages(crates.len(), &stats, crates)?;
+    let with_rustfmt = stats["has_rustfmt_toml"] + stats["has_dot_rustfmt_toml"];
+    generate_rustfmt_pages(crates.len(), with_rustfmt, crates)?;
     generate_msrv_pages(crates)?;
     generate_ci_pages(crates)?;
 
@@ -1467,7 +1468,7 @@ fn list_crates_with_edition(
 
 fn generate_rustfmt_pages(
     number_of_crates: usize,
-    stats: &HashMap<&str, usize>,
+    with_rustfmt: usize,
     crates: &[Crate],
 ) -> Result<(), Box<dyn Error>> {
     static RE_KEY: Lazy<Regex> = Lazy::new(|| Regex::new("^[a-z_]+$").unwrap());
@@ -1572,9 +1573,9 @@ fn generate_rustfmt_pages(
         "title":   "Rustfmt Stats",
         "count_by_key": count_by_key_vector,
         "count_by_pair": count_by_pair_vector,
-        "stats": stats,
+        //"stats": stats,
         "number_of_crates": number_of_crates,
-        "with_rustfmt": stats["has_rustfmt_toml"] + stats["has_dot_rustfmt_toml"],
+        "with_rustfmt": with_rustfmt,
     });
     let html = template.render(&globals).unwrap();
     let mut file = File::create(filename).unwrap();
