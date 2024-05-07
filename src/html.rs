@@ -980,40 +980,8 @@ pub fn generate_pages(
         crates,
     )?;
 
-    let github_but_no_ci = render_filtered_crates(
-        "github-but-no-ci",
-        "On GitHub but has no CI",
-        |krate| on_github_but_no_ci(krate),
-        crates,
-    )?;
-
-    let gitlab_but_no_ci = render_filtered_crates(
-        "gitlab-but-no-ci",
-        "On GitLab but has no CI",
-        |krate| on_gitlab_but_no_ci(krate),
-        crates,
-    )?;
-
-    let home_page_but_no_repo = render_filtered_crates(
-        "has-homepage-but-no-repo",
-        "Has homepage, but no repository",
-        |krate| !krate.homepage.is_empty() && krate.repository.is_empty(),
-        crates,
-    )?;
-
-    let no_homepage_no_repo_crates = render_filtered_crates(
-        "no-homepage-no-repo",
-        "No repository, no homepage",
-        |krate| krate.homepage.is_empty() && krate.repository.is_empty(),
-        crates,
-    )?;
-
     let stats = HashMap::from([
         ("has_cargo_toml_errors", has_cargo_toml_errors),
-        ("home_page_but_no_repo", home_page_but_no_repo),
-        ("no_homepage_no_repo_crates", no_homepage_no_repo_crates),
-        ("github_but_no_ci", github_but_no_ci),
-        ("gitlab_but_no_ci", gitlab_but_no_ci),
         ("no_repo", no_repo),
         ("has_rustfmt_toml", has_rustfmt_toml),
         ("has_dot_rustfmt_toml", has_dot_rustfmt_toml),
@@ -1022,6 +990,18 @@ pub fn generate_pages(
     let mut stats2 = vec![];
     // crate_details
     let cases = vec![
+        (
+            "github_but_no_ci",
+            "github-but-no-ci",
+            "On GitHub but has no CI",
+            CrateFilter::new(|krate: &&Crate| on_github_but_no_ci(krate)),
+        ),
+        (
+            "gitlab_but_no_ci",
+            "gitlab-but-no-ci",
+            "On GitLab but has no CI",
+            CrateFilter::new(|krate: &&Crate| on_gitlab_but_no_ci(krate)),
+        ),
         (
             "has_cargo_toml_in_root",
             "has-cargo-toml-in-root",
@@ -1035,11 +1015,27 @@ pub fn generate_pages(
             CrateFilter::new(|krate: &&Crate| !krate.vcs_details.cargo_toml_in_root),
         ),
         (
+            "home_page_but_no_repo",
+            "has-homepage-but-no-repo",
+            "Has homepage, but no repository",
+            CrateFilter::new(|krate: &&Crate| {
+                !krate.homepage.is_empty() && krate.repository.is_empty()
+            }),
+        ),
+        (
             "has_both_rustfmt_toml",
             "has-both-rustfmt-toml",
             "Has both rustfmt.toml and .rustfmt.toml file in the root of the repository",
             CrateFilter::new(|krate: &&Crate| {
                 krate.vcs_details.has_rustfmt_toml && krate.vcs_details.has_dot_rustfmt_toml
+            }),
+        ),
+        (
+            "no_homepage_no_repo_crates",
+            "no-homepage-no-repo",
+            "No repository, no homepage",
+            CrateFilter::new(|krate: &&Crate| {
+                krate.homepage.is_empty() && krate.repository.is_empty()
             }),
         ),
         (
