@@ -44,7 +44,6 @@ impl CrateFilter {
 
 #[derive(Serialize, Debug)]
 struct StatEntry<'aaa> {
-    id: &'aaa str,
     path: &'aaa str,
     title: &'aaa str,
     count: usize,
@@ -954,7 +953,6 @@ pub fn generate_pages(
     let mut stats = vec![];
 
     stats.push(StatEntry {
-        id: "no_repo",
         path: "vcs/no-repo",
         title: "No repository",
         count: no_repo,
@@ -969,7 +967,6 @@ pub fn generate_pages(
     )?;
 
     stats.push(StatEntry {
-        id: "has_cargo_toml_errors",
         path: "has-cargo-toml-errors",
         title: "Has errors in the released Cargo.toml file",
         count: has_cargo_toml_errors,
@@ -978,31 +975,26 @@ pub fn generate_pages(
 
     let cases = vec![
         (
-            "github_but_no_ci",
             "github-but-no-ci",
             "On GitHub but has no CI",
             CrateFilter::new(|krate: &&Crate| on_github_but_no_ci(krate)),
         ),
         (
-            "gitlab_but_no_ci",
             "gitlab-but-no-ci",
             "On GitLab but has no CI",
             CrateFilter::new(|krate: &&Crate| on_gitlab_but_no_ci(krate)),
         ),
         (
-            "has_cargo_toml_in_root",
             "has-cargo-toml-in-root",
             "Has Cargo.toml file in the root of the repository",
             CrateFilter::new(|krate: &&Crate| krate.vcs_details.cargo_toml_in_root),
         ),
         (
-            "has_no_cargo_toml_in_root",
             "has-no-cargo-toml-in-root",
             "Has no Cargo.toml file in the root of the repository",
             CrateFilter::new(|krate: &&Crate| !krate.vcs_details.cargo_toml_in_root),
         ),
         (
-            "home_page_but_no_repo",
             "has-homepage-but-no-repo",
             "Has homepage, but no repository",
             CrateFilter::new(|krate: &&Crate| {
@@ -1010,19 +1002,16 @@ pub fn generate_pages(
             }),
         ),
         (
-            "has_rustfmt_toml",
             "has-rustfmt-toml",
             "Has rustfmt.toml file",
             CrateFilter::new(|krate: &&Crate| krate.vcs_details.has_rustfmt_toml),
         ),
         (
-            "has_dot_rustfmt_toml",
             "has-dot-rustfmt-toml",
             "Has .rustfmt.toml file",
             CrateFilter::new(|krate: &&Crate| krate.vcs_details.has_dot_rustfmt_toml),
         ),
         (
-            "has_both_rustfmt_toml",
             "has-both-rustfmt-toml",
             "Has both rustfmt.toml and .rustfmt.toml file in the root of the repository",
             CrateFilter::new(|krate: &&Crate| {
@@ -1030,7 +1019,6 @@ pub fn generate_pages(
             }),
         ),
         (
-            "no_homepage_no_repo_crates",
             "no-homepage-no-repo",
             "No repository, no homepage",
             CrateFilter::new(|krate: &&Crate| {
@@ -1038,7 +1026,6 @@ pub fn generate_pages(
             }),
         ),
         (
-            "crates_without_owner",
             "crates-without-owner",
             "Crates without owner",
             CrateFilter::new(|krate: &&Crate| {
@@ -1046,13 +1033,11 @@ pub fn generate_pages(
             }),
         ),
         (
-            "crates_without_owner_name",
             "crates-without-owner-name",
             "Crates without owner name",
             CrateFilter::new(|krate: &&Crate| krate.owner_name.is_empty()),
         ),
         (
-            "crates_without_edition_or_rust_version",
             "crates-without-edition-or-rust-version",
             "Crates without edition or rust-version",
             CrateFilter::new(|krate: &&Crate| {
@@ -1061,7 +1046,6 @@ pub fn generate_pages(
             }),
         ),
         (
-            "crates_with_both_edition_and_rust_version",
             "crates-with-both-edition-and-rust-version",
             "Crates with both edition and rust-version",
             CrateFilter::new(|krate: &&Crate| {
@@ -1070,25 +1054,21 @@ pub fn generate_pages(
             }),
         ),
         (
-            "has_interesting_homepage",
             "has-interesting-homepage",
             "Has interesting homepage",
             CrateFilter::new(|krate: &&Crate| crate_has_interesting_homepage(krate)),
         ),
         (
-            "crates_with_cargo_lock",
             "crates-with-cargo-lock",
             "Crates with Cargo.lock file",
             CrateFilter::new(|krate: &&Crate| krate.crate_details.has_cargo_lock),
         ),
         (
-            "crates_without_cargo_lock",
             "crates-without-cargo-lock",
             "Crates without Cargo.lock file",
             CrateFilter::new(|krate: &&Crate| !krate.crate_details.has_cargo_lock),
         ),
         (
-            "crates_without_cargo_lock_without_main_rs",
             "crates-without-cargo-lock-without-main-rs",
             "Crates without Cargo.lock and without src/main.rs file",
             CrateFilter::new(|krate: &&Crate| {
@@ -1097,11 +1077,10 @@ pub fn generate_pages(
         ),
     ];
     for case in cases {
-        let count = render_filtered_crates(case.1, case.2, case.3.func, crates)?;
+        let count = render_filtered_crates(case.0, case.1, case.2.func, crates)?;
         stats.push(StatEntry {
-            id: case.0,
-            path: case.1,
-            title: case.2,
+            path: case.0,
+            title: case.1,
             count,
             percentage: percentage(count, crates.len()),
         });
