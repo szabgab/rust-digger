@@ -966,20 +966,6 @@ pub fn generate_pages(
         crates,
     )?;
 
-    let has_cargo_toml_in_root = render_filtered_crates(
-        "has-cargo-toml-in-root",
-        "Has Cargo.toml file in the root",
-        |krate| krate.vcs_details.cargo_toml_in_root,
-        crates,
-    )?;
-
-    let has_no_cargo_toml_in_root = render_filtered_crates(
-        "has-no-cargo-toml-in-root",
-        "Has no Cargo.toml file in the root",
-        |krate| !krate.vcs_details.cargo_toml_in_root,
-        crates,
-    )?;
-
     let has_rustfmt_toml = render_filtered_crates(
         "has-rustfmt-toml",
         "Has rustfmt.toml file",
@@ -991,13 +977,6 @@ pub fn generate_pages(
         "has-dot-rustfmt-toml",
         "Has .rustfmt.toml file",
         |krate| krate.vcs_details.has_dot_rustfmt_toml,
-        crates,
-    )?;
-
-    let has_both_rustfmt_toml = render_filtered_crates(
-        "has-both-rustfmt-toml",
-        "Has both rustfmt.toml and .rustfmt.toml file",
-        |krate| krate.vcs_details.has_rustfmt_toml && krate.vcs_details.has_dot_rustfmt_toml,
         crates,
     )?;
 
@@ -1038,14 +1017,31 @@ pub fn generate_pages(
         ("no_repo", no_repo),
         ("has_rustfmt_toml", has_rustfmt_toml),
         ("has_dot_rustfmt_toml", has_dot_rustfmt_toml),
-        ("has_both_rustfmt_toml", has_both_rustfmt_toml),
-        ("has_cargo_toml_in_root", has_cargo_toml_in_root),
-        ("has_no_cargo_toml_in_root", has_no_cargo_toml_in_root),
     ]);
 
     let mut stats2 = vec![];
     // crate_details
     let cases = vec![
+        (
+            "has_cargo_toml_in_root",
+            "has-cargo-toml-in-root",
+            "Has Cargo.toml file in the root of the repository",
+            CrateFilter::new(|krate: &&Crate| krate.vcs_details.cargo_toml_in_root),
+        ),
+        (
+            "has_no_cargo_toml_in_root",
+            "has-no-cargo-toml-in-root",
+            "Has no Cargo.toml file in the root of the repository",
+            CrateFilter::new(|krate: &&Crate| !krate.vcs_details.cargo_toml_in_root),
+        ),
+        (
+            "has_both_rustfmt_toml",
+            "has-both-rustfmt-toml",
+            "Has both rustfmt.toml and .rustfmt.toml file in the root of the repository",
+            CrateFilter::new(|krate: &&Crate| {
+                krate.vcs_details.has_rustfmt_toml && krate.vcs_details.has_dot_rustfmt_toml
+            }),
+        ),
         (
             "crates_without_owner",
             "crates-without-owner",
