@@ -97,12 +97,6 @@
         <td>{{percentage.has_cargo_toml_errors}}%</td>
       </tr>
 
-      <tr>
-        <td><a href="/crates-without-edition-or-rust-version">Crates without edition and without rust-version in the Cargo.toml</a></td>
-        <td>{{stats.crates_without_edition_or_rust_version | commafy}}</td>
-        <td>{{percentage.crates_without_edition_or_rust_version}}%</td>
-      </tr>
-
 
       {% for stat in stats2 %}
       <tr>

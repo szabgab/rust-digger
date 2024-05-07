@@ -1044,20 +1044,7 @@ pub fn generate_pages(
         crates,
     )?;
 
-    let crates_without_edition_or_rust_version = render_filtered_crates(
-        "crates-without-edition-or-rust-version",
-        "Crates without edition or rust-version",
-        |krate| {
-            krate.cargo.package.edition.is_none() && krate.cargo.package.rust_dash_version.is_none()
-        },
-        crates,
-    )?;
-
     let stats = HashMap::from([
-        (
-            "crates_without_edition_or_rust_version",
-            crates_without_edition_or_rust_version,
-        ),
         ("has_cargo_toml_errors", has_cargo_toml_errors),
         ("crates_without_owner", crates_without_owner),
         ("crates_without_owner_name", crates_without_owner_name),
@@ -1076,6 +1063,15 @@ pub fn generate_pages(
     let mut stats2 = vec![];
     // crate_details
     let cases = vec![
+        (
+            "crates_without_edition_or_rust_version",
+            "crates-without-edition-or-rust-version",
+            "Crates without edition or rust-version",
+            CrateFilter::new(|krate: &&Crate| {
+                krate.cargo.package.edition.is_none()
+                    && krate.cargo.package.rust_dash_version.is_none()
+            }),
+        ),
         (
             "crates_with_both_edition_and_rust_version",
             "crates-with-both-edition-and-rust-version",
@@ -1573,7 +1569,6 @@ fn generate_rustfmt_pages(
         "title":   "Rustfmt Stats",
         "count_by_key": count_by_key_vector,
         "count_by_pair": count_by_pair_vector,
-        //"stats": stats,
         "number_of_crates": number_of_crates,
         "with_rustfmt": with_rustfmt,
     });
