@@ -951,13 +951,6 @@ pub fn generate_pages(
 
     let _all = render_filtered_crates("all", "Rust Digger", |_krate| true, crates)?;
 
-    let has_cargo_toml_errors = render_filtered_crates(
-        "has-cargo-toml-errors",
-        "Has errors in the released Cargo.toml file",
-        |krate| released_cargo_toml_errors.contains_key(&krate.name),
-        crates,
-    )?;
-
     let mut stats2 = vec![];
 
     stats2.push(StatEntry {
@@ -967,6 +960,13 @@ pub fn generate_pages(
         count: no_repo,
         percentage: percentage(no_repo, crates.len()),
     });
+
+    let has_cargo_toml_errors = render_filtered_crates(
+        "has-cargo-toml-errors",
+        "Has errors in the released Cargo.toml file",
+        |krate| released_cargo_toml_errors.contains_key(&krate.name),
+        crates,
+    )?;
 
     stats2.push(StatEntry {
         id: "has_cargo_toml_errors",
