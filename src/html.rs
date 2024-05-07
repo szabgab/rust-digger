@@ -62,6 +62,12 @@ struct Cli {
         help = "Limit the number of items we process."
     )]
     limit: u32,
+
+    #[arg(long, default_value_t = false, help = "Generate every page")]
+    all: bool,
+
+    #[arg(long, default_value_t = false, help = "Generate the news pages")]
+    news: bool,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -88,27 +94,53 @@ fn main() -> Result<(), Box<dyn Error>> {
     create_html_folders()?;
 
     std::thread::scope(|scope| {
-        scope.spawn(|| generate_pages(&crates, &released_cargo_toml_errors).unwrap());
-        scope.spawn(|| generate_interesting_homepages(&crates).unwrap());
-        scope.spawn(|| generate_errors_page(&released_cargo_toml_errors_nameless).unwrap());
-        scope.spawn(render_news_pages);
-        scope.spawn(|| render_static_pages().unwrap());
-        scope.spawn(|| generate_crate_pages(&crates, &released_cargo_toml_errors).unwrap());
         scope.spawn(|| {
-            generate_user_pages(
-                &crates,
-                users,
-                &crates_by_owner,
-                &released_cargo_toml_errors,
-            )
-            .unwrap();
+            if args.all {
+                generate_pages(&crates, &released_cargo_toml_errors).unwrap();
+            }
+        });
+        scope.spawn(|| {
+            if args.all {
+                generate_interesting_homepages(&crates).unwrap();
+            }
+        });
+        scope.spawn(|| {
+            if args.all {
+                generate_errors_page(&released_cargo_toml_errors_nameless).unwrap();
+            }
+        });
+        scope.spawn(render_news_pages);
+        scope.spawn(|| {
+            if args.all {
+                render_static_pages().unwrap();
+            }
+        });
+        scope.spawn(|| {
+            if args.all {
+                generate_crate_pages(&crates, &released_cargo_toml_errors).unwrap();
+            }
+        });
+        scope.spawn(|| {
+            if args.all {
+                generate_user_pages(
+                    &crates,
+                    users,
+                    &crates_by_owner,
+                    &released_cargo_toml_errors,
+                )
+                .unwrap();
+            }
         });
     });
 
-    generate_top_crates_lists(&mut crates).unwrap();
+    if args.all {
+        generate_top_crates_lists(&mut crates).unwrap();
+    }
 
-    generate_sitemap();
-    generate_robots_txt();
+    if args.all {
+        generate_sitemap();
+        generate_robots_txt();
+    }
 
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the Rust Digger generating html pages");
