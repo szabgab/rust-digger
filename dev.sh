@@ -8,4 +8,4 @@ cargo run --bin download-crates   > download-crates.log  2> download-crates.err
 cargo run --bin clone -- --recent 10 > clone.log         2> clone.err
 cargo run --bin analyze-vcs       > vcs.log              2> vcs.err
 cargo run --bin analyze-crates    > analyze-crates.log   2> analyze-crates.err
-cargo run --bin html              > html.log             2> html.err
+cargo run --bin html -- --all     > html.log             2> html.err

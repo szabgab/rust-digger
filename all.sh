@@ -7,4 +7,4 @@ cd /home/gabor/work/rust-digger
 ./target/release/clone --recent 10 > /tmp/rust-digger-clone.log 2> /tmp/rust-digger-clone.err
 ./target/release/analyze-vcs > /tmp/rust-digger-vcs.log 2> /tmp/rust-digger-vcs.err
 ./target/release/analyze-crates > /tmp/rust-digger-analyze-crates.log 2> /tmp/rust-digger-analyze-crates.err
-./target/release/html > /tmp/rust-digger-html.log 2> /tmp/rust-digger-html.err
+./target/release/html --all > /tmp/rust-digger-html.log 2> /tmp/rust-digger-html.err
