@@ -1119,9 +1119,30 @@ pub fn generate_pages(
             CrateFilter::new(|krate: &&Crate| krate.crate_details.has_cargo_lock),
         ),
         (
+            "crates-with-cargo-lock-and-with-main-rs",
+            "Crates with Cargo.lock file and with src/main.rs file",
+            CrateFilter::new(|krate: &&Crate| {
+                krate.crate_details.has_cargo_lock && krate.crate_details.has_main_rs
+            }),
+        ),
+        (
+            "crates-with-cargo-lock-but-without-main-rs",
+            "Crates with Cargo.lock file but without src/main.rs file",
+            CrateFilter::new(|krate: &&Crate| {
+                krate.crate_details.has_cargo_lock && !krate.crate_details.has_main_rs
+            }),
+        ),
+        (
             "crates-without-cargo-lock",
             "Crates without Cargo.lock file",
             CrateFilter::new(|krate: &&Crate| !krate.crate_details.has_cargo_lock),
+        ),
+        (
+            "crates-without-cargo-lock-with-main-rs",
+            "Crates without Cargo.lock but with src/main.rs file",
+            CrateFilter::new(|krate: &&Crate| {
+                !krate.crate_details.has_cargo_lock && krate.crate_details.has_main_rs
+            }),
         ),
         (
             "crates-without-cargo-lock-without-main-rs",
