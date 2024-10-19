@@ -73,7 +73,7 @@ pub fn read_crate_owners() -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
         crates_by_owner.entry(record.owner_id.clone()).or_default();
         crates_by_owner
             .get_mut(&record.owner_id)
-            .ok_or(format!("Could not find owner {}", &record.owner_id))?
+            .ok_or_else(|| format!("Could not find owner {}", &record.owner_id))?
             .push(record.crate_id.clone());
         //dbg!(&crates_by_owner[&record.owner_id]);
     }

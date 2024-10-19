@@ -84,6 +84,8 @@ absolute_paths = "allow"          # I like using absoulut paths in function call
 single_call_fn = "allow"          # We prefer to have shorter functions even if they are only used once.
 float_arithmetic = "allow"        # In this application it is fine to have float arithmetic
 cast_precision_loss = "allow"     # Not an issue for this application
+allow_attributes_without_reason = "allow" # No need to entrer empty reason field
+
 
 arithmetic_side_effects = "allow"
 as_conversions = "allow"

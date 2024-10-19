@@ -62,7 +62,7 @@ pub struct Package {
 }
 
 impl Package {
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             name: String::new(),
             version: String::new(),
@@ -127,7 +127,7 @@ pub struct Cargo {
 }
 
 impl Cargo {
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             package: Package::new(),
             dependencies: None,

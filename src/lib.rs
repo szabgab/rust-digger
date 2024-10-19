@@ -17,7 +17,7 @@ pub use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
 mod timer;
 pub use timer::ElapsedTimer;
 
-#[allow(clippy::struct_excessive_bools)]
+#[expect(clippy::struct_excessive_bools)]
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct CrateDetails {
     pub has_build_rs: bool,
@@ -75,7 +75,7 @@ const URL_REGEXES: [&str; 2] = [
 ];
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
-#[allow(clippy::struct_excessive_bools)]
+#[expect(clippy::struct_excessive_bools)]
 pub struct VCSDetails {
     #[serde(default = "default_false")]
     pub has_github_action: bool,
@@ -111,7 +111,7 @@ pub struct VCSDetails {
 }
 
 impl VCSDetails {
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             has_github_action: false,
             has_gitlab_pipeline: false,
@@ -209,7 +209,7 @@ pub struct Crate {
 }
 
 impl Crate {
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             created_at: String::new(),
             description: String::new(),
@@ -288,11 +288,11 @@ fn get_default_percentage() -> String {
     String::from("0")
 }
 
-fn empty_details() -> VCSDetails {
+const fn empty_details() -> VCSDetails {
     VCSDetails::new()
 }
 
-fn empty_cargo() -> Cargo {
+const fn empty_cargo() -> Cargo {
     Cargo::new()
 }
 
@@ -601,7 +601,7 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
 
         crates.push(krate);
     }
-    #[allow(clippy::min_ident_chars)]
+    #[expect(clippy::min_ident_chars)]
     crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
 
     log::info!("Finished reading {filepath:?}");

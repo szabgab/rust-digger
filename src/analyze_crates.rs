@@ -142,7 +142,7 @@ fn has_files(path: &PathBuf, details: &mut CrateDetails) -> Result<(), Box<dyn s
             if !entry.path().is_dir() || standard_folders.contains(&entry.file_name().as_os_str()) {
                 None
             } else {
-                #[allow(clippy::option_map_or_none)]
+                #[expect(clippy::option_map_or_none)]
                 entry
                     .file_name()
                     .to_str()

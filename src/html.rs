@@ -154,7 +154,6 @@ fn load_vcs_details_for_all_the_crates(crates: &mut [Crate]) {
 }
 
 fn load_crate_details_for_all_the_crates(crates: &mut [Crate]) {
-    #[allow(clippy::pattern_type_mismatch)]
     for krate in crates.iter_mut() {
         let filename = format!(
             "{}-{}.json",
@@ -483,7 +482,7 @@ pub fn generate_user_pages(
                 user.count = selected_crates.len();
                 //users_with_crates.push(user);
 
-                #[allow(clippy::min_ident_chars)]
+                #[expect(clippy::min_ident_chars)]
                 selected_crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
                 let filename = build_path(
                     get_site_folder(),
@@ -550,7 +549,7 @@ pub fn generate_user_pages(
         .filter(|user| user.count > 0)
         .collect();
 
-    #[allow(clippy::min_ident_chars)]
+    #[expect(clippy::min_ident_chars)]
     users_with_crates.sort_by(|a, b| a.name.cmp(&b.name));
 
     generate_list_of_users(&users_with_crates);
@@ -572,7 +571,7 @@ fn save_list_of_users_json(users: &[User]) {
             ])
         })
         .collect::<Vec<HashMap<&str, String>>>();
-    #[allow(clippy::min_ident_chars)]
+    #[expect(clippy::min_ident_chars)]
     users_data.sort_by(|a, b| a["gh_login"].cmp(&b["gh_login"]));
 
     match serde_json::to_string(&users_data) {
@@ -681,7 +680,7 @@ fn collect_paths(root: &Path) -> Vec<String> {
         //log::info!("{}", &format!("{}", entry.unwrap().path().display())[5..])
         //paths.push(format!("{}", entry.unwrap().path().display())[5..].to_string().clone());
         let path = entry.as_ref().unwrap().path();
-        #[allow(clippy::string_slice)]
+        #[expect(clippy::string_slice)]
         if path.is_file() && path.extension().unwrap() == "html" {
             let url_path =
                 format!("{}", path.display())[5..path.display().to_string().len() - 5].to_string();
@@ -985,7 +984,7 @@ pub fn generate_top_crates_lists(crates: &mut [Crate]) -> Result<(), Box<dyn Err
 /// Generate various lists of crates:
 /// Filter the crates according to various rules and render them using `render_filtered_crates`.
 /// Then using the numbers returned by that function generate the stats page.
-#[allow(clippy::too_many_lines)]
+#[expect(clippy::too_many_lines)]
 pub fn generate_pages(
     crates: &[Crate],
     released_cargo_toml_errors: &CrateErrors,
@@ -1164,7 +1163,7 @@ pub fn generate_pages(
 
     render_stats_page(&stats);
 
-    #[allow(clippy::if_then_some_else_none)]
+    #[expect(clippy::if_then_some_else_none)]
     let with_rustfmt = stats
         .iter()
         .filter_map(|entry| {
@@ -1362,7 +1361,7 @@ fn vectorize(editions: &HashMap<String, u32>) -> Vec<(String, String, u32)> {
         })
         .collect::<Vec<(String, String, u32)>>();
 
-    #[allow(clippy::min_ident_chars)]
+    #[expect(clippy::min_ident_chars)]
     editions_vector.sort_by(|a, b| a.0.cmp(&b.0));
     editions_vector.reverse();
 
@@ -1529,8 +1528,8 @@ fn generate_rustfmt_pages(
     let mut count_by_key: HashMap<String, u32> = HashMap::new();
     let mut count_by_pair: HashMap<(String, String), u32> = HashMap::new();
 
-    #[allow(clippy::explicit_iter_loop)] // TODO
-    #[allow(clippy::pattern_type_mismatch)] // TODO
+    #[expect(clippy::explicit_iter_loop)] // TODO
+    #[expect(clippy::pattern_type_mismatch)] // TODO
     for (key, value, _krate) in rustfmt.iter() {
         *count_by_key.entry(key.to_owned()).or_insert(0) += 1;
         *count_by_pair
@@ -1541,7 +1540,7 @@ fn generate_rustfmt_pages(
         .iter()
         //.map(|pair| pair)
         .collect::<Vec<(&String, &u32)>>();
-    #[allow(clippy::min_ident_chars)]
+    #[expect(clippy::min_ident_chars)]
     count_by_key_vector.sort_by_key(|f| f.1);
     count_by_key_vector.reverse();
 
@@ -1549,11 +1548,11 @@ fn generate_rustfmt_pages(
         .iter()
         .map(|pair| (&pair.0 .0, &pair.0 .1, pair.1))
         .collect::<Vec<(&String, &String, &u32)>>();
-    #[allow(clippy::min_ident_chars)]
+    #[expect(clippy::min_ident_chars)]
     count_by_pair_vector.sort_by(|a, b| a.0.partial_cmp(b.0).unwrap());
     //count_by_pair.reverse();
 
-    #[allow(clippy::pattern_type_mismatch)] // TODO
+    #[expect(clippy::pattern_type_mismatch)] // TODO
     for (field, _count) in &count_by_key_vector {
         match RE_KEY.captures(field) {
             None => {
@@ -1576,7 +1575,7 @@ fn generate_rustfmt_pages(
         )?;
     }
 
-    #[allow(clippy::pattern_type_mismatch)] // TODO
+    #[expect(clippy::pattern_type_mismatch)] // TODO
     for (field, value, _count) in &count_by_pair_vector {
         match RE_KEY.captures(field) {
             None => {
