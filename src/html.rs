@@ -1554,13 +1554,10 @@ fn generate_rustfmt_pages(
 
     #[expect(clippy::pattern_type_mismatch)] // TODO
     for (field, _count) in &count_by_key_vector {
-        match RE_KEY.captures(field) {
-            None => {
-                log::error!("Invalid fmt key: {field}");
-                continue;
-            }
-            Some(_) => {}
-        };
+        if RE_KEY.captures(field).is_none() {
+            log::error!("Invalid fmt key: {field}");
+            continue;
+        }
 
         let crate_names = rustfmt
             .iter()
@@ -1582,13 +1579,12 @@ fn generate_rustfmt_pages(
                 log::error!("Invalid fmt key: {field}");
                 continue;
             }
-            Some(_) => match RE_VALUE.captures(value) {
-                None => {
+            Some(_) => {
+                if RE_VALUE.captures(value).is_none() {
                     log::error!("Invalid fmt value: {field}   '{value}'");
                     continue;
                 }
-                Some(_) => {}
-            },
+            }
         };
 
         let crate_names = rustfmt
