@@ -1,15 +1,11 @@
 use std::collections::HashMap;
-use std::env;
 use std::error::Error;
-use std::fs;
-use std::path::Path;
-use std::process::Command;
 
 use clap::Parser;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
-use git_digger::get_owner_and_repo;
+use git_digger::{get_owner_and_repo, update_single_repository};
 
 use rust_digger::{get_repos_folder, load_vcs_details, read_crates, Crate, ElapsedTimer};
 
@@ -148,7 +144,14 @@ fn update_repositories(
             continue;
         }
 
-        update_single_repository(&host, &owner, &repo, &repository_url, clone)?;
+        update_single_repository(
+            &get_repos_folder(),
+            &host,
+            &owner,
+            &repo,
+            &repository_url,
+            clone,
+        )?;
 
         count += 1;
     }
@@ -170,39 +173,6 @@ fn get_repository_url(krate: &Crate) -> String {
     }
 
     String::new()
-}
-
-fn update_single_repository(
-    host: &str,
-    owner: &str,
-    repo: &str,
-    repository_url: &str,
-    clone: bool,
-) -> Result<(), Box<dyn Error>> {
-    let owner_path = get_repos_folder().join(host).join(owner);
-    let current_dir = env::current_dir()?;
-    log::info!(
-        "Creating owner_path {:?} while current_dir is {:?}",
-        &owner_path,
-        &current_dir
-    );
-    fs::create_dir_all(&owner_path)?;
-    let repo_path = owner_path.join(repo);
-    if Path::new(&repo_path).exists() {
-        if clone {
-            log::info!("repo exist but we only clone now.  Skipping.");
-        } else {
-            log::info!("repo exist; cd to {:?}", &repo_path);
-            env::set_current_dir(&repo_path)?;
-            git_pull();
-        }
-    } else {
-        log::info!("new repo; cd to {:?}", &owner_path);
-        env::set_current_dir(owner_path)?;
-        git_clone(repository_url, repo);
-    }
-    env::set_current_dir(current_dir)?;
-    Ok(())
 }
 
 fn crate_too_old(krate: &Crate, before: DateTime<Utc>) -> bool {
@@ -229,25 +199,6 @@ fn crate_too_old(krate: &Crate, before: DateTime<Utc>) -> bool {
     false
 }
 
-fn git_clone(url: &str, path: &str) {
-    log::info!("git clone {} {}", url, path);
-    match Command::new("git").arg("clone").arg(url).arg(path).output() {
-        Ok(result) => {
-            if result.status.success() {
-                log::info!("git_clone exit code: '{}'", result.status);
-            } else {
-                log::warn!(
-                    "git_clone exit code: '{}' for url '{}' cloning to '{}'",
-                    result.status,
-                    url,
-                    path
-                );
-            }
-        }
-        Err(err) => log::error!("Could not run git_clone {url} {path} error: {err}"),
-    }
-}
-
 fn check_url(url: &str) -> reqwest::StatusCode {
     log::info!("Checking url {}", url);
 
@@ -260,28 +211,4 @@ fn check_url(url: &str) -> reqwest::StatusCode {
     };
     log::info!("Status: {}", res.status());
     res.status()
-}
-
-fn git_pull() {
-    log::info!("git pull");
-    let current_dir = env::current_dir().unwrap();
-
-    match Command::new("git").arg("pull").output() {
-        Ok(result) => {
-            if result.status.success() {
-                log::info!(
-                    "git_pull exit code: '{}' in folder {:?}",
-                    result.status,
-                    current_dir
-                );
-            } else {
-                log::warn!(
-                    "git_pull exit code: '{}' in folder {:?}",
-                    result.status,
-                    current_dir
-                );
-            }
-        }
-        Err(err) => log::error!("Could not run git_pull in folder {current_dir:?} error: {err}"),
-    }
 }
