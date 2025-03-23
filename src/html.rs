@@ -14,10 +14,12 @@ use regex::Regex;
 use serde::Serialize;
 use thousands::Separable;
 
+use git_digger::get_owner_and_repo;
+
 use rust_digger::{
     add_cargo_toml_to_crates, analyzed_crates_root, build_path, collected_data_root,
-    get_owner_and_repo, load_crate_details, load_vcs_details, percentage, read_crates,
-    CargoTomlErrors, Crate, CrateErrors, CratesByOwner, ElapsedTimer, Owners, Repo, User,
+    load_crate_details, load_vcs_details, percentage, read_crates, CargoTomlErrors, Crate,
+    CrateErrors, CratesByOwner, ElapsedTimer, Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";

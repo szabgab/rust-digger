@@ -8,8 +8,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
-use once_cell::sync::Lazy;
-use regex::Regex;
+use git_digger::get_owner_and_repo;
 
 mod cargo_toml_parser;
 pub use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
@@ -69,11 +68,6 @@ pub enum RepoPlatform {
 }
 
 const REPO_FOLDERS: [&str; 2] = ["github", "gitlab"];
-const URL_REGEXES: [&str; 2] = [
-    "^https://(github).com/([^/]+)/([^/]+)/?.*$",
-    "^https://(gitlab).com/([^/]+)/([^/]+)/?.*$",
-];
-
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[expect(clippy::struct_excessive_bools)]
 pub struct VCSDetails {
@@ -357,27 +351,6 @@ pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn get_owner_and_repo(repository: &str) -> (String, String, String) {
-    static REGS: Lazy<Vec<Regex>> = Lazy::new(|| {
-        URL_REGEXES
-            .iter()
-            .map(|reg| Regex::new(reg).unwrap())
-            .collect::<Vec<Regex>>()
-    });
-
-    for re in REGS.iter() {
-        if let Some(repo_url) = re.captures(repository) {
-            let host = repo_url[1].to_lowercase();
-            let owner = repo_url[2].to_lowercase();
-            let repo = repo_url[3].to_lowercase();
-            return (host, owner, repo);
-        }
-    }
-
-    log::warn!("No match for repo in '{}'", &repository);
-    (String::new(), String::new(), String::new())
-}
-
 pub fn percentage(num: usize, total: usize) -> String {
     let total_f32 = (10000.0 * num as f32 / total as f32).floor();
     (total_f32 / 100.0).to_string()
@@ -630,52 +603,6 @@ pub fn load_crate_details(filepath: &PathBuf) -> Result<CrateDetails, Box<dyn Er
 mod tests {
     use super::*;
     //use crate::repo_details_root;
-
-    #[test]
-    fn test_get_owner_and_repo() {
-        assert_eq!(
-            get_owner_and_repo("https://github.com/szabgab/rust-digger"),
-            (
-                "github".to_string(),
-                "szabgab".to_string(),
-                "rust-digger".to_string()
-            )
-        );
-        assert_eq!(
-            get_owner_and_repo("https://github.com/szabgab/rust-digger/"),
-            (
-                "github".to_string(),
-                "szabgab".to_string(),
-                "rust-digger".to_string()
-            )
-        );
-        assert_eq!(
-            get_owner_and_repo(
-                "https://github.com/crypto-crawler/crypto-crawler-rs/tree/main/crypto-market-type"
-            ),
-            (
-                "github".to_string(),
-                "crypto-crawler".to_string(),
-                "crypto-crawler-rs".to_string()
-            )
-        );
-        assert_eq!(
-            get_owner_and_repo("https://gitlab.com/szabgab/rust-digger"),
-            (
-                "gitlab".to_string(),
-                "szabgab".to_string(),
-                "rust-digger".to_string()
-            )
-        );
-        assert_eq!(
-            get_owner_and_repo("https://gitlab.com/Szabgab/Rust-digger/"),
-            (
-                "gitlab".to_string(),
-                "szabgab".to_string(),
-                "rust-digger".to_string()
-            )
-        );
-    }
 
     #[test]
     fn test_percentage() {

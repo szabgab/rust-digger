@@ -9,9 +9,9 @@ use clap::Parser;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
-use rust_digger::{
-    get_owner_and_repo, get_repos_folder, load_vcs_details, read_crates, Crate, ElapsedTimer,
-};
+use git_digger::get_owner_and_repo;
+
+use rust_digger::{get_repos_folder, load_vcs_details, read_crates, Crate, ElapsedTimer};
 
 #[derive(Parser, Debug)]
 #[command(version)]
