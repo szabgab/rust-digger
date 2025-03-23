@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::ffi::OsStr;
 use std::fs::File;
-use std::io::Write;
+use std::io::Write as _;
 use std::path::PathBuf;
 
 use clap::Parser;

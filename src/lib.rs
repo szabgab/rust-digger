@@ -5,7 +5,7 @@ use std::error::Error;
 use std::fs;
 use std::fs::read_to_string;
 use std::fs::File;
-use std::io::Write;
+use std::io::Write as _;
 use std::path::PathBuf;
 
 use git_digger::get_owner_and_repo;

@@ -3,7 +3,7 @@ use std::env;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
-use std::io::Write;
+use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
 use chrono::prelude::{DateTime, Utc};
@@ -12,7 +12,7 @@ use liquid_filter_commafy::Commafy;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::Serialize;
-use thousands::Separable;
+use thousands::Separable as _;
 
 use git_digger::get_owner_and_repo;
 

@@ -176,7 +176,7 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
         )
         .send()
     else {
-        return Err(Box::<dyn Error>::from("failed fetching {url}"));
+        return Err(Box::<dyn Error>::from(format!("failed fetching {url}")));
     };
 
     if response.status() != 200 {
