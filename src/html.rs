@@ -837,7 +837,7 @@ fn crate_has_interesting_homepage(krate: &Crate) -> bool {
         .package
         .homepage
         .as_ref()
-        .map_or(false, |homepage| {
+        .is_some_and(|homepage| {
             !homepage.starts_with("https://github.com/")
                 && !homepage.starts_with("http://github.com/")
                 && !homepage.starts_with("https://gitlab.com/")
