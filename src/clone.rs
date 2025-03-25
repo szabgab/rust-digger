@@ -175,22 +175,24 @@ fn get_repository_url(krate: &Crate) -> String {
 }
 
 fn crate_too_old(krate: &Crate, before: DateTime<Utc>) -> bool {
-    let updated_at = match NaiveDateTime::parse_from_str(&krate.updated_at, "%Y-%m-%d %H:%M:%S.%f")
-    {
-        Ok(ts) => ts,
-        Err(err) => {
-            // TODO there are some crates, eg. one called cargo-script where the
-            // updated_at field has no microseconds and it looks like this: 2023-09-18 01:44:10
-            log::error!(
-                "Error parsing timestamp '{}' of the crate {} ({})",
-                &krate.updated_at,
-                &krate.name,
-                err
-            );
-            //std::process::exit(1);
-            return true;
-        }
-    };
+    // 2025-03-23 01:14:51.877032+00
+    //let updated_at = match NaiveDateTime::parse_from_str(&krate.updated_at, "%Y-%m-%d %H:%M:%S.%f")
+    let updated_at =
+        match NaiveDateTime::parse_from_str(&krate.updated_at, "%Y-%m-%d %H:%M:%S.%f%Z") {
+            Ok(ts) => ts,
+            Err(err) => {
+                // TODO there are some crates, eg. one called cargo-script where the
+                // updated_at field has no microseconds and it looks like this: 2023-09-18 01:44:10
+                log::error!(
+                    "Error parsing timestamp '{}' of the crate {} ({})",
+                    &krate.updated_at,
+                    &krate.name,
+                    err
+                );
+                //std::process::exit(1);
+                return true;
+            }
+        };
     if updated_at < before.naive_utc() {
         return true;
     }
