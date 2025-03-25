@@ -5,7 +5,7 @@ use clap::Parser;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
-use git_digger::{get_owner_and_repo, update_single_repository};
+use git_digger::{update_single_repository, Repository};
 
 use rust_digger::{get_repos_folder, load_vcs_details, read_crates, Crate, ElapsedTimer};
 
@@ -122,10 +122,17 @@ fn update_repositories(
             None => repo_reuse.insert(repository_url.clone(), 1),
         };
 
-        let (host, owner, repo) = get_owner_and_repo(&repository_url);
-        if owner.is_empty() {
-            continue;
-        }
+        let repo = match Repository::from_url(&repository_url) {
+            Ok(repo) => repo,
+            Err(err) => {
+                log::error!(
+                    "Error parsing repository url '{}': {}",
+                    &repository_url,
+                    err
+                );
+                continue;
+            }
+        };
 
         let details = load_vcs_details(&repository_url);
         if !details.git_clone_error.is_empty() && !force {
@@ -146,9 +153,9 @@ fn update_repositories(
 
         update_single_repository(
             &get_repos_folder(),
-            &host,
-            &owner,
-            &repo,
+            &repo.host,
+            &repo.owner,
+            &repo.repo,
             &repository_url,
             clone,
         )?;

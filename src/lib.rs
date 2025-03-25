@@ -8,7 +8,7 @@ use std::fs::File;
 use std::io::Write as _;
 use std::path::PathBuf;
 
-use git_digger::get_owner_and_repo;
+use git_digger::Repository;
 
 mod cargo_toml_parser;
 pub use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
@@ -356,15 +356,22 @@ pub fn percentage(num: usize, total: usize) -> String {
     (total_f32 / 100.0).to_string()
 }
 
-pub fn get_vcs_details_path(repository: &str) -> Option<PathBuf> {
-    let (host, owner, repo) = get_owner_and_repo(repository);
-
-    if repo.is_empty() {
-        return None;
+pub fn get_vcs_details_path(url: &str) -> Option<PathBuf> {
+    let repository = Repository::from_url(url);
+    match repository {
+        Ok(repo) => {
+            let details_path = build_path(
+                repo_details_root(),
+                &[&repo.host, &repo.owner, &repo.repo],
+                Some("json"),
+            );
+            Some(details_path)
+        }
+        Err(err) => {
+            log::error!("Error parsing repository URL: {}", err);
+            None
+        }
     }
-
-    let details_path = build_path(repo_details_root(), &[&host, &owner, &repo], Some("json"));
-    Some(details_path)
 }
 
 pub fn load_vcs_details(repository: &str) -> VCSDetails {
@@ -416,24 +423,31 @@ pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dy
 
     create_repo_details_folders()?;
 
-    let (host, owner, repo) = get_owner_and_repo(repository);
-    if owner.is_empty() {
-        return Ok(()); // this should never happen
+    match Repository::from_url(repository) {
+        Ok(repo) => {
+            let _res = fs::create_dir_all(repo_details_root().join(&repo.host).join(&repo.owner));
+            let details_path = build_path(
+                repo_details_root(),
+                &[&repo.host, &repo.owner, &repo.repo],
+                Some("json"),
+            );
+            // log::info!("details {:#?}", &details);
+            log::info!("Going to save in details_path {:?}", &details_path);
+            // if Path::new(&details_path).exists() {
+            //     match File::open(details_path.to_string()) {
+            // }
+
+            let content = serde_json::to_string(&details).unwrap();
+            let mut file = File::create(details_path).unwrap();
+            writeln!(&mut file, "{content}").unwrap();
+
+            Ok(())
+        }
+        Err(err) => {
+            log::error!("Error parsing repository URL: {}", err);
+            Ok(()) // this should never happen
+        }
     }
-
-    let _res = fs::create_dir_all(repo_details_root().join(&host).join(&owner));
-    let details_path = build_path(repo_details_root(), &[&host, &owner, &repo], Some("json"));
-    // log::info!("details {:#?}", &details);
-    log::info!("Going to save in details_path {:?}", &details_path);
-    // if Path::new(&details_path).exists() {
-    //     match File::open(details_path.to_string()) {
-    // }
-
-    let content = serde_json::to_string(&details).unwrap();
-    let mut file = File::create(details_path).unwrap();
-    writeln!(&mut file, "{content}").unwrap();
-
-    Ok(())
 }
 
 pub fn load_cargo_toml_released_crates(
@@ -615,7 +629,7 @@ mod tests {
     #[test]
     fn test_get_details_path() {
         let expected = repo_details_root()
-            .join("github")
+            .join("github.com")
             .join("foo")
             .join("bar.json");
         assert_eq!(

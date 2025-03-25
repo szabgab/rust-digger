@@ -14,7 +14,7 @@ use regex::Regex;
 use serde::Serialize;
 use thousands::Separable as _;
 
-use git_digger::get_owner_and_repo;
+use git_digger::Repository;
 
 use rust_digger::{
     add_cargo_toml_to_crates, analyzed_crates_root, build_path, collected_data_root,
@@ -1208,23 +1208,25 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    let (host, owner, _) = get_owner_and_repo(&krate.repository);
-    if owner.is_empty() {
-        return false;
-    }
+    match Repository::from_url(&krate.repository) {
+        Ok(repo) => {
+            if repo.host != "github.com" {
+                return false;
+            }
+            if krate.vcs_details.has_github_action
+                || krate.vcs_details.has_circle_ci
+                || krate.vcs_details.has_cirrus_ci
+            {
+                return false;
+            }
 
-    if host != "github" {
-        return false;
+            true
+        }
+        Err(err) => {
+            log::error!("Could not parse repository URL {err}");
+            false
+        }
     }
-
-    if krate.vcs_details.has_github_action
-        || krate.vcs_details.has_circle_ci
-        || krate.vcs_details.has_cirrus_ci
-    {
-        return false;
-    }
-
-    true
 }
 
 fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
@@ -1232,20 +1234,22 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
         return false;
     }
 
-    let (host, owner, _) = get_owner_and_repo(&krate.repository);
-    if owner.is_empty() {
-        return false;
-    }
+    match Repository::from_url(&krate.repository) {
+        Ok(repo) => {
+            if repo.host != "gitlab.com" {
+                return false;
+            }
+            if krate.vcs_details.has_gitlab_pipeline {
+                return false;
+            }
 
-    if host != "gitlab" {
-        return false;
+            true
+        }
+        Err(err) => {
+            log::error!("Could not parse repository URL {err}");
+            false
+        }
     }
-
-    if krate.vcs_details.has_gitlab_pipeline {
-        return false;
-    }
-
-    true
 }
 
 fn get_repo_types() -> Vec<Repo> {

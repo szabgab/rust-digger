@@ -10,7 +10,7 @@ use std::process::Command;
 use clap::Parser;
 use toml::Table;
 
-use git_digger::get_owner_and_repo;
+use git_digger::Repository;
 
 use rust_digger::{
     collected_data_root, get_repos_folder, load_vcs_details, read_crates, save_details, Crate,
@@ -80,10 +80,13 @@ fn collect_data_from_vcs(
             continue;
         }
 
-        let (host, owner, repo) = get_owner_and_repo(&krate.repository);
-        if owner.is_empty() {
-            continue;
-        }
+        let repository = match Repository::from_url(&krate.repository) {
+            Ok(repo) => repo,
+            Err(err) => {
+                log::error!("Error: {err} when parsing the repository url");
+                continue;
+            }
+        };
 
         if seen.contains(&krate.repository.to_lowercase()) {
             continue;
@@ -93,7 +96,7 @@ fn collect_data_from_vcs(
 
         let mut details = load_vcs_details(&krate.repository);
 
-        let repo_path = get_repos_folder().join(&host).join(&owner).join(&repo);
+        let repo_path = repository.path(&get_repos_folder());
         if !Path::new(&repo_path).exists() {
             log::warn!("Cloned path does not exist for {}", &krate.repository);
             continue;
@@ -106,7 +109,7 @@ fn collect_data_from_vcs(
 
         collect_data_about_rustfmt(&mut details, &mut rustfmt, krate);
 
-        if !host.is_empty() {
+        if !repository.host.is_empty() {
             details.commit_count = git_get_count();
         }
 
