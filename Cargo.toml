@@ -33,7 +33,7 @@ thousands = "0.2.0"
 toml = "0.8.12"
 walkdir = "2.5"
 markdown = { git = "https://github.com/wooorm/markdown-rs.git" }
-git-digger = "0.1.2"
+git-digger = "0.1.3"
 
 [[bin]]
 name = "html"

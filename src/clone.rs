@@ -5,7 +5,7 @@ use clap::Parser;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
-use git_digger::{update_single_repository, Repository};
+use git_digger::Repository;
 
 use rust_digger::{get_repos_folder, load_vcs_details, read_crates, Crate, ElapsedTimer};
 
@@ -150,15 +150,7 @@ fn update_repositories(
             );
             continue;
         }
-
-        update_single_repository(
-            &get_repos_folder(),
-            &repo.host,
-            &repo.owner,
-            &repo.repo,
-            &repository_url,
-            clone,
-        )?;
+        repo.update_repository(&get_repos_folder(), clone)?;
 
         count += 1;
     }
