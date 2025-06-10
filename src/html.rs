@@ -5,11 +5,11 @@ use std::fs;
 use std::fs::File;
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
 
 use chrono::prelude::{DateTime, Utc};
 use clap::Parser;
 use liquid_filter_commafy::Commafy;
-use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::Serialize;
 use thousands::Separable as _;
@@ -297,7 +297,7 @@ pub fn render_list_page(
         "{}.html",
         get_site_folder().join(filename).display()
     ));
-    log::info!("render_file: {filepath:?}");
+    log::info!("render_file: {:?}", filepath.display());
 
     let partials = load_templates().unwrap();
 
@@ -342,7 +342,7 @@ pub fn render_news_pages() {
 
     let news_path = Path::new("templates/news");
     let Ok(dir_handle) = news_path.read_dir() else {
-        log::error!("Could not read directory {:?}", news_path);
+        log::error!("Could not read directory {:?}", news_path.display());
         return;
     };
 
@@ -350,16 +350,19 @@ pub fn render_news_pages() {
         let partials = load_templates().unwrap();
         let path = entry.path();
         let Some(extension) = path.extension() else {
-            log::warn!("file without extension: {:?}", &path);
+            log::warn!("file without extension: {:?}", &path.display());
             continue;
         };
 
         if extension != std::ffi::OsStr::new("html") {
-            log::warn!("file with invalid extension: {:?} (not html)", &path);
+            log::warn!(
+                "file with invalid extension: {:?} (not html)",
+                &path.display()
+            );
             continue;
         }
 
-        log::info!("news file: {:?}", path);
+        log::info!("news file: {:?}", path.display());
         log::info!("{:?}", path.strip_prefix("templates/"));
         let output_path =
             get_site_folder().join(path.strip_prefix("templates/").unwrap().as_os_str());
@@ -675,7 +678,7 @@ fn create_html_folders() -> Result<(), Box<dyn Error>> {
 }
 
 fn collect_paths(root: &Path) -> Vec<String> {
-    log::info!("collect_paths  from {:?}", root);
+    log::info!("collect_paths  from {:?}", root.display());
 
     let mut paths: Vec<String> = vec![];
     for entry in root.read_dir().expect("failed") {
@@ -1210,7 +1213,7 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
 
     match Repository::from_url(&krate.repository) {
         Ok(repo) => {
-            if repo.host != "github.com" {
+            if !repo.is_github() {
                 return false;
             }
             if krate.vcs_details.has_github_action
@@ -1236,7 +1239,7 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
 
     match Repository::from_url(&krate.repository) {
         Ok(repo) => {
-            if repo.host != "gitlab.com" {
+            if !repo.is_gitlab() {
                 return false;
             }
             if krate.vcs_details.has_gitlab_pipeline {
@@ -1265,7 +1268,7 @@ fn load_collected_rustfmt() -> Vec<(String, String, String)> {
     let filename = collected_data_root().join("rustfmt.txt");
     match std::fs::read_to_string(&filename) {
         Err(err) => {
-            log::error!("Could not read {:?} {err}", filename);
+            log::error!("Could not read {:?} {err}", filename.display());
         }
         Ok(content) => {
             for row in content.split('\n') {
@@ -1407,9 +1410,9 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         *rust_dash_versions.entry(key3).or_insert(0) += 1;
     }
 
-    log::info!("editions {:#?}", editions);
-    log::info!("rust_version {:#?}", rust_versions);
-    log::info!("rust_dash_version {:#?}", rust_dash_versions);
+    log::info!("editions {editions:#?}");
+    log::info!("rust_version {rust_versions:#?}");
+    log::info!("rust_dash_version {rust_dash_versions:#?}");
 
     let editions_vector = vectorize(&editions);
     let rust_versions_vector = vectorize(&rust_versions);
@@ -1527,8 +1530,8 @@ fn generate_rustfmt_pages(
     with_rustfmt: usize,
     crates: &[Crate],
 ) -> Result<(), Box<dyn Error>> {
-    static RE_KEY: Lazy<Regex> = Lazy::new(|| Regex::new("^[a-z_]+$").unwrap());
-    static RE_VALUE: Lazy<Regex> = Lazy::new(|| Regex::new("^[0-9A-Za-z_]+$").unwrap());
+    static RE_KEY: LazyLock<Regex> = LazyLock::new(|| Regex::new("^[a-z_]+$").unwrap());
+    static RE_VALUE: LazyLock<Regex> = LazyLock::new(|| Regex::new("^[0-9A-Za-z_]+$").unwrap());
 
     let rustfmt = load_collected_rustfmt();
     let mut count_by_key: HashMap<String, u32> = HashMap::new();
@@ -1591,7 +1594,7 @@ fn generate_rustfmt_pages(
                     continue;
                 }
             }
-        };
+        }
 
         let crate_names = rustfmt
             .iter()

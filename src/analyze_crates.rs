@@ -2,7 +2,7 @@ use std::error::Error;
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write as _;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use clap::Parser;
 use walkdir::WalkDir;
@@ -53,7 +53,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
     let _a = ElapsedTimer::new("collect_data_from_crates");
 
     if 0 < limit {
-        log::info!("We are going to process only {} crates", limit);
+        log::info!("We are going to process only {limit} crates");
     } else {
         log::info!("We are going to process all the crates we find locally",);
     }
@@ -65,7 +65,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
             break;
         }
         let dir_entry = entry?;
-        log::info!("{:?}", dir_entry);
+        log::info!("{dir_entry:?}");
 
         let filepath = if let Some(crate_dirname) = dir_entry.path().file_name() {
             let filepath = analyzed_crates_root().join(crate_dirname);
@@ -116,8 +116,8 @@ fn disk_size(root: &PathBuf) -> u64 {
     size
 }
 
-fn has_files(path: &PathBuf, details: &mut CrateDetails) -> Result<(), Box<dyn std::error::Error>> {
-    log::info!("has_files for {path:?}");
+fn has_files(path: &Path, details: &mut CrateDetails) -> Result<(), Box<dyn std::error::Error>> {
+    log::info!("has_files for {:?}", path.display());
 
     details.has_build_rs = path.join("build.rs").exists();
     details.has_cargo_toml = path.join("Cargo.toml").exists();
@@ -151,7 +151,7 @@ fn has_files(path: &PathBuf, details: &mut CrateDetails) -> Result<(), Box<dyn s
         })
         .collect::<Vec<String>>();
 
-    log::info!("nonstandard_folders: {:?}", folders);
+    log::info!("nonstandard_folders: {folders:?}");
     details.nonstandard_folders = folders;
 
     Ok(())
@@ -161,7 +161,7 @@ fn save_details(
     details: &CrateDetails,
     filepath: PathBuf,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    log::info!("Saving crate details to {filepath:?}");
+    log::info!("Saving crate details to {:?}", filepath.display());
     let mut file = File::create(filepath)?;
     writeln!(&mut file, "{}", serde_json::to_string(details)?)?;
 

@@ -60,7 +60,7 @@ fn collect_data_from_vcs(
     log::info!("process collect_data_from_vcs start");
     log::info!("Total number of crates: {}", crates.len());
     if 0 < limit {
-        log::info!("We are going to process only {} crates", limit);
+        log::info!("We are going to process only {limit} crates");
     }
 
     let mut rustfmt: Vec<String> = vec![];
@@ -103,15 +103,13 @@ fn collect_data_from_vcs(
         }
         let current_dir = env::current_dir()?;
         env::set_current_dir(&repo_path)?;
-        log::info!("in folder: {:?}", env::current_dir()?);
+        log::info!("in folder: {:?}", env::current_dir()?.display());
 
         collect_data_about_ci(&mut details)?;
 
         collect_data_about_rustfmt(&mut details, &mut rustfmt, krate);
 
-        if !repository.host.is_empty() {
-            details.commit_count = git_get_count();
-        }
+        details.commit_count = git_get_count();
 
         env::set_current_dir(&current_dir)?;
         save_details(&krate.repository, &details)?;
@@ -139,7 +137,7 @@ fn collect_data_about_ci(details: &mut VCSDetails) -> Result<(), Box<dyn Error>>
     let workflows = Path::new(".github/workflows");
     if workflows.exists() {
         for entry in workflows.read_dir()?.flatten() {
-            log::info!("workflows: {:?}", entry.path());
+            log::info!("workflows: {:?}", entry.path().display());
             details.has_github_action = true;
         }
     }

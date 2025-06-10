@@ -95,7 +95,7 @@ fn update_repositories(
     let before: DateTime<Utc> = now
         - Duration::try_days(recent as i64)
             .ok_or_else(|| Box::<dyn Error>::from("Could not convert recent"))?;
-    log::info!("before: {}", before);
+    log::info!("before: {before}");
 
     let mut count: u32 = 0;
     for krate in crates {
@@ -201,12 +201,12 @@ fn crate_too_old(krate: &Crate, before: DateTime<Utc>) -> bool {
 }
 
 fn check_url(url: &str) -> reqwest::StatusCode {
-    log::info!("Checking url {}", url);
+    log::info!("Checking url {url}");
 
     let res = match reqwest::blocking::get(url) {
         Ok(res) => res,
         Err(err) => {
-            log::error!("Could not get '{}': {}", url, err);
+            log::error!("Could not get '{url}': {err}");
             return reqwest::StatusCode::INTERNAL_SERVER_ERROR;
         }
     };

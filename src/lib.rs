@@ -360,22 +360,19 @@ pub fn get_vcs_details_path(url: &str) -> Option<PathBuf> {
     let repository = Repository::from_url(url);
     match repository {
         Ok(repo) => {
-            let details_path = build_path(
-                repo_details_root(),
-                &[&repo.host, &repo.owner, &repo.repo],
-                Some("json"),
-            );
+            let mut details_path = repo.path(repo_details_root().as_path());
+            details_path.set_extension("json");
             Some(details_path)
         }
         Err(err) => {
-            log::error!("Error parsing repository URL: {}", err);
+            log::error!("Error parsing repository URL: {err}");
             None
         }
     }
 }
 
 pub fn load_vcs_details(repository: &str) -> VCSDetails {
-    log::info!("Load details started for {}", repository);
+    log::info!("Load details started for {repository}");
 
     let Some(details_path) = get_vcs_details_path(repository) else {
         return VCSDetails::new();
@@ -425,16 +422,16 @@ pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dy
 
     match Repository::from_url(repository) {
         Ok(repo) => {
-            let _res = fs::create_dir_all(repo_details_root().join(&repo.host).join(&repo.owner));
-            let details_path = build_path(
-                repo_details_root(),
-                &[&repo.host, &repo.owner, &repo.repo],
-                Some("json"),
-            );
+            let _res = fs::create_dir_all(repo.owner_path(repo_details_root().as_path()));
+            let mut details_path = repo.path(repo_details_root().as_path());
+            details_path.set_extension("json");
             // log::info!("details {:#?}", &details);
-            log::info!("Going to save in details_path {:?}", &details_path);
+            log::info!(
+                "Going to save in details_path {:?}",
+                &details_path.display()
+            );
             // if Path::new(&details_path).exists() {
-            //     match File::open(details_path.to_string()) {
+            //     mqatch File::open(details_path.to_string()) {
             // }
 
             let content = serde_json::to_string(&details).unwrap();
@@ -444,7 +441,7 @@ pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dy
             Ok(())
         }
         Err(err) => {
-            log::error!("Error parsing repository URL: {}", err);
+            log::error!("Error parsing repository URL: {err}");
             Ok(()) // this should never happen
         }
     }
@@ -483,17 +480,23 @@ pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
             match load_cargo_toml(&path) {
                 Ok(cargo) => Some(cargo),
                 Err(err) => {
-                    log::error!("Reading {path:?} failed: {err}");
+                    log::error!("Reading {:?} failed: {err}", path.display());
 
                     match load_name_version_toml(&path) {
                         Ok((name, _version)) => {
                             released_cargo_toml_errors.insert(name, format!("{err}"));
-                        },
+                        }
                         Err(err2) => {
-                            released_cargo_toml_errors_nameless.insert(format!("{:?}", &entry.file_name()), format!("{err2}"));
-                            log::error!("Can't load the name and version of the crate {path:?} failed: {err2}");
-                        },
-                    };
+                            released_cargo_toml_errors_nameless.insert(
+                                format!("{:?}", &entry.file_name().display()),
+                                format!("{err2}"),
+                            );
+                            log::error!(
+                                "Can't load the name and version of the crate {:?} failed: {err2}",
+                                path.display()
+                            );
+                        }
+                    }
 
                     None
                 }
@@ -521,7 +524,7 @@ pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
 /// TODO
 pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/versions.csv");
-    log::info!("Start reading {filepath:?}");
+    log::info!("Start reading {:?}", filepath.display());
 
     let mut versions: Vec<CrateVersion> = vec![];
     let file = File::open(&filepath)?;
@@ -531,7 +534,7 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
         versions.push(record);
     }
 
-    log::info!("Finished reading {filepath:?}");
+    log::info!("Finished reading {:?}", filepath.display());
 
     Ok(versions)
 }
@@ -571,7 +574,7 @@ pub fn add_cargo_toml_to_crates(
 /// proper CSV file.
 pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/crates.csv");
-    log::info!("Start reading {filepath:?}");
+    log::info!("Start reading {:?}", filepath.display());
 
     let mut crates: Vec<Crate> = vec![];
     let mut count = 0;
@@ -591,7 +594,7 @@ pub fn read_crates(limit: u32) -> Result<Vec<Crate>, Box<dyn Error>> {
     #[expect(clippy::min_ident_chars)]
     crates.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
 
-    log::info!("Finished reading {filepath:?}");
+    log::info!("Finished reading {:?}", filepath.display());
     Ok(crates)
 }
 
@@ -602,13 +605,13 @@ pub fn build_path(mut path: PathBuf, parts: &[&str], extension: Option<&str>) ->
 
     if let Some(ext) = extension {
         path.set_extension(ext);
-    };
+    }
 
     path
 }
 
 pub fn load_crate_details(filepath: &PathBuf) -> Result<CrateDetails, Box<dyn Error>> {
-    log::info!("load_crate_details {filepath:?}");
+    log::info!("load_crate_details {:?}", filepath.display());
     let content = std::fs::read_to_string(filepath)?;
     Ok(serde_json::from_str::<CrateDetails>(&content)?)
 }

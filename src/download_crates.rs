@@ -73,12 +73,12 @@ fn remove_old_versions_of_the_crates(
         //log::info!("entry: {:?}", entry.file_name());
 
         if !newest_versions.contains(&entry.file_name()) {
-            log::info!("removing old crate: {:?}", entry.path());
+            log::info!("removing old crate: {:?}", entry.path().display());
 
             match std::fs::remove_dir_all(entry.path()) {
-                Ok(()) => log::info!("file {:?} removed", entry.path()),
+                Ok(()) => log::info!("file {:?} removed", entry.path().display()),
                 Err(err) => log::error!("{err}"),
-            };
+            }
         }
     }
 
@@ -109,7 +109,7 @@ fn download_crates(
             None => {
                 latest.insert(version.crate_id.clone(), version.clone());
             }
-        };
+        }
     }
 
     let mut count = 0;
@@ -129,10 +129,10 @@ fn download_crates(
         newest_versions.insert(OsString::from(&krate_name_version));
 
         let folder = crates_root().join(krate_name_version);
-        log::info!("Checking {:?}", folder);
+        log::info!("Checking {:?}", folder.display());
 
         if folder.exists() {
-            log::info!("{:?} already exists. Skipping download", folder);
+            log::info!("{:?} already exists. Skipping download", folder.display());
             continue;
         }
 
@@ -147,14 +147,14 @@ fn download_crates(
         match download_crate(&url) {
             Ok(downloaded_file) => {
                 match extract_file(&downloaded_file) {
-                    Ok(filename) => log::info!("extracted {filename:?}"),
+                    Ok(filename) => log::info!("extracted {:?}", filename.display()),
                     Err(err) => log::error!("{err}"),
-                };
+                }
 
                 match std::fs::remove_file(&downloaded_file) {
-                    Ok(()) => log::info!("file {downloaded_file:?} removed"),
+                    Ok(()) => log::info!("file {:?} removed", downloaded_file.display()),
                     Err(err) => log::error!("{err}"),
-                };
+                }
             }
             Err(err) => log::error!("{err}"),
         }
@@ -201,7 +201,7 @@ fn extract_file(file: &std::path::PathBuf) -> Result<OsString, Box<dyn Error>> {
     let tar_gz = fs::File::open(file)?;
     let tar = GzDecoder::new(tar_gz);
     let tmp_dir = TempDir::new_in(get_temp_folder(), "example")?;
-    log::info!("tempdir: {:?}", tmp_dir);
+    log::info!("tempdir: {tmp_dir:?}");
 
     let mut archive = Archive::new(tar);
     archive.unpack(&tmp_dir)?;
@@ -209,8 +209,8 @@ fn extract_file(file: &std::path::PathBuf) -> Result<OsString, Box<dyn Error>> {
     let extracted_dir = fs::read_dir(std::path::Path::new(tmp_dir.path()))?
         .next()
         .ok_or("Could not extract file")??;
-    log::info!("extract dir: {:?}", extracted_dir);
-    log::info!("extract filename {:?}", extracted_dir.file_name());
+    log::info!("extract dir: {extracted_dir:?}");
+    log::info!("extract filename {:?}", extracted_dir.file_name().display());
 
     fs::rename(
         extracted_dir.path(),

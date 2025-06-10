@@ -31,20 +31,20 @@ fn main() {
 }
 
 fn run_cargo_fmt(limit: u32) {
-    log::info!("start update repositories. limit {}.", limit);
+    log::info!("start update repositories. limit {limit}.");
 
     build_docker_image();
     let mut count: u32 = 0;
     let path = get_repos_folder();
     for host in path.read_dir().expect("read_dir call failed").flatten() {
-        log::info!("host: {:?}", host.path());
+        log::info!("host: {:?}", host.path().display());
         for user in host
             .path()
             .read_dir()
             .expect("read_dir call failed")
             .flatten()
         {
-            log::info!("user: {:?}", user.path());
+            log::info!("user: {:?}", user.path().display());
             for repo in user.path().read_dir().expect("read_dir call failed") {
                 if 0 < limit && limit <= count {
                     return;
@@ -52,7 +52,7 @@ fn run_cargo_fmt(limit: u32) {
 
                 if let Ok(repository) = repo {
                     count += 1;
-                    log::info!("repo {}: {:?}", count, repository.path());
+                    log::info!("repo {}: {:?}", count, repository.path().display());
 
                     let root_dir = env::current_dir().unwrap();
                     env::set_current_dir(repository.path()).unwrap();
@@ -73,7 +73,7 @@ fn run_fmt_on(_repo_path: &str) -> bool {
     if Path::new("Cargo.toml").exists() {
         // TODO measure elapsed time
         let stdout = run_cargo_in_docker();
-        log::info!("stdout: {}", stdout);
+        log::info!("stdout: {stdout}");
         // TODO save to details
         return true;
     }

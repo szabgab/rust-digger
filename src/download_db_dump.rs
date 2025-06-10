@@ -31,7 +31,7 @@ fn download() {
     let mut response = reqwest::blocking::get("https://static.crates.io/db-dump.tar.gz")
         .expect("should fetch new database archive from static.crates.io");
 
-    log::info!("db_archive: {:?}", &db_archive);
+    log::info!("db_archive: {:?}", &db_archive.display());
     let mut file =
         fs::File::create(&db_archive).expect("should create new file to write database archive to");
     let total =
@@ -72,7 +72,11 @@ fn extract() {
 
     let extracted_folder = get_temp_folder().join(extracted_dir);
 
-    log::info!("rename {extracted_folder:?} to {data_dir:?}");
+    log::info!(
+        "rename {:?} to {:?}",
+        extracted_folder.display(),
+        data_dir.display()
+    );
     fs::rename(extracted_folder, data_dir).expect("should rename extracted directory to 'data'");
 
     log::info!(

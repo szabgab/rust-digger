@@ -6,7 +6,7 @@ use rust_digger::{get_db_dump_folder, CrateOwner, CratesByOwner, Owners, Team, U
 
 pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/teams.csv");
-    log::info!("Start reading {filepath:?}");
+    log::info!("Start reading {:?}", filepath.display());
     let mut count = 0;
 
     let file = File::open(&filepath)?;
@@ -31,14 +31,14 @@ pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error
         users.push(user);
     }
 
-    log::info!("Finished reading {filepath:?}");
+    log::info!("Finished reading {:?}", filepath.display());
     Ok(())
 }
 
 pub fn read_users(limit: u32) -> Result<Vec<User>, Box<dyn Error>> {
     let mut users: Vec<User> = vec![];
     let filepath = get_db_dump_folder().join("data/users.csv");
-    log::info!("Start reading {filepath:?}");
+    log::info!("Start reading {:?}", filepath.display());
     let mut count = 0;
 
     let file = File::open(&filepath)?;
@@ -53,7 +53,7 @@ pub fn read_users(limit: u32) -> Result<Vec<User>, Box<dyn Error>> {
         users.push(record);
     }
 
-    log::info!("Finished reading {filepath:?}");
+    log::info!("Finished reading {:?}", filepath.display());
     Ok(users)
 }
 
@@ -62,7 +62,7 @@ pub fn read_crate_owners() -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
     let mut owner_by_crate_id: Owners = HashMap::new();
     let mut crates_by_owner: CratesByOwner = HashMap::new();
     let filepath = get_db_dump_folder().join("data/crate_owners.csv");
-    log::info!("Start reading {filepath:?}");
+    log::info!("Start reading {:?}", filepath.display());
 
     let file = File::open(&filepath)?;
     let mut rdr = csv::Reader::from_reader(file);
@@ -78,7 +78,7 @@ pub fn read_crate_owners() -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
         //dbg!(&crates_by_owner[&record.owner_id]);
     }
 
-    log::info!("Finished reading {filepath:?}");
+    log::info!("Finished reading {:?}", filepath.display());
 
     Ok((owner_by_crate_id, crates_by_owner))
 }
