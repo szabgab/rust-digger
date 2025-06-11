@@ -191,7 +191,7 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
     let mut file = fs::File::create(&download_file).unwrap();
 
     let total = std::io::copy(&mut response, &mut file)
-        .expect("should copy fetched response into created file");
+        .map_err(|err| format!("Failed to copy response into file: {err}"))?;
     log::info!("Total downloaded: {total}");
 
     Ok(download_file)
