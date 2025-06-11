@@ -70,7 +70,7 @@ fn remove_old_versions_of_the_crates(
     log::info!("start remove_old_versions_of_the_crates");
 
     for entry in crates_root().read_dir()?.flatten() {
-        //log::info!("entry: {:?}", entry.file_name());
+        log::info!("entry: {:?}", entry.file_name().display());
 
         if !newest_versions.contains(&entry.file_name()) {
             log::info!("removing old crate: {:?}", entry.path().display());
