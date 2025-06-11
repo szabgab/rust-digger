@@ -9,13 +9,21 @@ use toml::Value;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
+#[serde(untagged)]
+pub enum Readme {
+    Has(bool),
+    Text(String),
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Package {
     pub name: String,
     pub version: String,
     pub edition: Option<String>,
     pub authors: Option<Vec<String>>,
     pub description: Option<String>,
-    pub readme: Option<String>,
+    pub readme: Option<Readme>,
     pub license: Option<String>,
     pub repository: Option<String>,
     pub homepage: Option<String>,
@@ -25,6 +33,7 @@ pub struct Package {
     //pub build: Option<bool>,
     pub resolver: Option<String>,
     pub links: Option<String>,
+    pub workspace: Option<String>,
 
     #[serde(alias = "default-run")]
     pub default_dash_run: Option<String>,
@@ -79,6 +88,7 @@ impl Package {
 
             resolver: None,
             links: None,
+            workspace: None,
 
             default_dash_run: None,
 
