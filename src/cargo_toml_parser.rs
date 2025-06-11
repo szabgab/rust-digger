@@ -46,6 +46,7 @@ pub struct Package {
     #[serde(alias = "forced-target")]
     pub forced_dash_target: Option<String>,
 
+    pub autolib: Option<bool>,
     pub autobins: Option<bool>,
     pub autotests: Option<bool>,
     pub autoexamples: Option<bool>,
@@ -92,6 +93,7 @@ impl Package {
 
             forced_dash_target: None,
 
+            autolib: None,
             autobins: None,
             autotests: None,
             autoexamples: None,
