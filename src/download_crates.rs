@@ -10,6 +10,7 @@ use flate2::read::GzDecoder;
 use reqwest::header::USER_AGENT;
 use tar::Archive;
 use tempdir::TempDir;
+use thousands::Separable as _;
 
 use rust_digger::{
     crates_root, create_data_folders, get_temp_folder, read_crates, read_versions, Crate,
@@ -57,7 +58,8 @@ fn run() -> Result<(), Box<dyn Error>> {
     let crates: Vec<Crate> = read_crates(0)?;
     let versions: Vec<CrateVersion> = read_versions()?;
 
-    let (newest_crates, downloaded_total) = download_crates(&crates, &versions, args.limit)?;
+    let (newest_crates, downloaded_count, downloaded_total) =
+        download_crates(&crates, &versions, args.limit)?;
 
     // If the limit is not 0 we don't have all the crates in the newest_crates HashSet so we should not remove the old versions based on that.
     // TODO: have a set that contains all the newest crates and then remove the old versions based on that.
@@ -65,7 +67,11 @@ fn run() -> Result<(), Box<dyn Error>> {
         remove_old_versions_of_the_crates(&newest_crates)?;
     }
 
-    log::info!("Total downloaded size: {downloaded_total} bytes");
+    log::info!(
+        "Total downloaded size: {} bytes in {} crates",
+        downloaded_total.separate_with_commas(),
+        downloaded_count.separate_with_commas()
+    );
     Ok(())
 }
 
@@ -100,7 +106,7 @@ fn download_crates(
     crates: &[Crate],
     versions: &[CrateVersion],
     limit: u32,
-) -> Result<(HashSet<OsString>, u64), Box<dyn Error>> {
+) -> Result<(HashSet<OsString>, u32, u64), Box<dyn Error>> {
     log::info!("start update repositories");
 
     let mut newest_versions: HashSet<OsString> = HashSet::new();
@@ -127,8 +133,9 @@ fn download_crates(
             break;
         }
 
+        log::info!("----------");
         log::info!(
-            "------ Crate: {} updated_at: {}  id: {}",
+            "Crate: {} updated_at: {}  id: {}",
             krate.name,
             krate.updated_at,
             krate.id
@@ -155,11 +162,16 @@ fn download_crates(
 
         match download_crate(&url) {
             Ok((downloaded_file, size)) => {
+                count += 1;
+                total += size;
+                log::info!(
+                    "Downloaded: {} (so far download {} crates with a total of {} bytes)",
+                    size.separate_with_commas(),
+                    count.separate_with_commas(),
+                    total.separate_with_commas()
+                );
                 match extract_file(&downloaded_file) {
-                    Ok(filename) => {
-                        log::info!("extracted {:?}", filename.display());
-                        total += size;
-                    }
+                    Ok(filename) => log::info!("extracted {:?}", filename.display()),
                     Err(err) => log::error!("{err}"),
                 }
 
@@ -170,11 +182,9 @@ fn download_crates(
             }
             Err(err) => log::error!("{err}"),
         }
-
-        count += 1;
     }
 
-    Ok((newest_versions, total))
+    Ok((newest_versions, count, total))
 }
 
 fn download_crate(url: &str) -> Result<(std::path::PathBuf, u64), Box<dyn Error>> {
@@ -204,7 +214,6 @@ fn download_crate(url: &str) -> Result<(std::path::PathBuf, u64), Box<dyn Error>
 
     let total = std::io::copy(&mut response, &mut file)
         .map_err(|err| format!("Failed to copy response into file: {err}"))?;
-    log::info!("Total downloaded: {total}");
 
     Ok((download_file, total))
 }
