@@ -59,12 +59,19 @@ fn run() -> Result<(), Box<dyn Error>> {
 
     let (newest_crates, downloaded_total) = download_crates(&crates, &versions, args.limit)?;
 
-    remove_old_versions_of_the_crates(&newest_crates)?;
+    // If the limit is not 0 we don't have all the crates in the newest_crates HashSet so we should not remove the old versions based on that.
+    // TODO: have a set that contains all the newest crates and then remove the old versions based on that.
+    if args.limit == 0 {
+        remove_old_versions_of_the_crates(&newest_crates)?;
+    }
 
     log::info!("Total downloaded size: {downloaded_total} bytes");
     Ok(())
 }
 
+/// Go over the downloaded crates on disk.
+/// Check each one of them of it is in the `HashSet` of most recent crates.
+/// Remove the ones that are not there.
 fn remove_old_versions_of_the_crates(
     newest_versions: &HashSet<OsString>,
 ) -> Result<(), Box<dyn Error>> {
@@ -83,12 +90,12 @@ fn remove_old_versions_of_the_crates(
         }
     }
 
-    // check each one of them in the list of most recent crates
-    // remove the ones that are not in the most recent list
     log::info!("end remove_old_versions_of_the_crates");
     Ok(())
 }
 
+/// Download the crates from crates.io and extract them to the `crates_root` folder.
+/// Returns a tuple with the set of newest versions and the total size downloaded in bytes.
 fn download_crates(
     crates: &[Crate],
     versions: &[CrateVersion],
@@ -121,7 +128,7 @@ fn download_crates(
         }
 
         log::info!(
-            "Crate: {} updated_at: {}  id: {}",
+            "------ Crate: {} updated_at: {}  id: {}",
             krate.name,
             krate.updated_at,
             krate.id

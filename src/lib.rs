@@ -338,6 +338,7 @@ pub fn collected_data_root() -> PathBuf {
     get_data_folder().join("collected-data")
 }
 
+/// Creates the data folders we need if they do not exist.
 pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
     if !get_data_folder().exists() {
         fs::create_dir_all(get_data_folder())?;
@@ -522,7 +523,7 @@ pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
 
 /// Reads the `versions.csv` file (the database dump from Crates.io) and returns a vector of `CrateVersion` structs.
 /// # Errors
-/// TODO
+/// If the file desn't exist or is not a proper CSV file.
 pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
     let filepath = get_db_dump_folder().join("data/versions.csv");
     log::info!("Start reading {:?}", filepath.display());
