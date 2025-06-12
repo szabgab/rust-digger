@@ -520,6 +520,7 @@ pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Reads the `versions.csv` file (the database dump from Crates.io) and returns a vector of `CrateVersion` structs.
 /// # Errors
 /// TODO
 pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
@@ -568,6 +569,8 @@ pub fn add_cargo_toml_to_crates(
     ))
 }
 
+/// Reads the `crates.csv` file (the database dump from Crates.io) and returns a vector of `Crate` structs.
+///
 /// # Errors
 ///
 /// Will return `Err` if can't open `crates.csv` or if it is not a

@@ -57,10 +57,11 @@ fn run() -> Result<(), Box<dyn Error>> {
     let crates: Vec<Crate> = read_crates(0)?;
     let versions: Vec<CrateVersion> = read_versions()?;
 
-    let newest_crates = download_crates(&crates, &versions, args.limit)?;
+    let (newest_crates, downloaded_total) = download_crates(&crates, &versions, args.limit)?;
 
     remove_old_versions_of_the_crates(&newest_crates)?;
 
+    log::info!("Total downloaded size: {downloaded_total} bytes");
     Ok(())
 }
 
@@ -92,7 +93,7 @@ fn download_crates(
     crates: &[Crate],
     versions: &[CrateVersion],
     limit: u32,
-) -> Result<HashSet<OsString>, Box<dyn Error>> {
+) -> Result<(HashSet<OsString>, u64), Box<dyn Error>> {
     log::info!("start update repositories");
 
     let mut newest_versions: HashSet<OsString> = HashSet::new();
@@ -113,6 +114,7 @@ fn download_crates(
     }
 
     let mut count = 0;
+    let mut total = 0;
     for krate in crates {
         if 0 < limit && limit <= count {
             break;
@@ -145,9 +147,12 @@ fn download_crates(
         log::info!("downloading url {url}");
 
         match download_crate(&url) {
-            Ok(downloaded_file) => {
+            Ok((downloaded_file, size)) => {
                 match extract_file(&downloaded_file) {
-                    Ok(filename) => log::info!("extracted {:?}", filename.display()),
+                    Ok(filename) => {
+                        log::info!("extracted {:?}", filename.display());
+                        total += size;
+                    }
                     Err(err) => log::error!("{err}"),
                 }
 
@@ -162,10 +167,10 @@ fn download_crates(
         count += 1;
     }
 
-    Ok(newest_versions)
+    Ok((newest_versions, total))
 }
 
-fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
+fn download_crate(url: &str) -> Result<(std::path::PathBuf, u64), Box<dyn Error>> {
     let client = reqwest::blocking::Client::new();
 
     let Ok(mut response) = client
@@ -194,7 +199,7 @@ fn download_crate(url: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
         .map_err(|err| format!("Failed to copy response into file: {err}"))?;
     log::info!("Total downloaded: {total}");
 
-    Ok(download_file)
+    Ok((download_file, total))
 }
 
 fn extract_file(file: &std::path::PathBuf) -> Result<OsString, Box<dyn Error>> {
