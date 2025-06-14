@@ -359,6 +359,10 @@ pub fn percentage(num: usize, total: usize) -> String {
 
 pub fn get_vcs_details_path(url: &str) -> Option<PathBuf> {
     let repository = Repository::from_url(url);
+    if url.is_empty() {
+        log::warn!("Repository URL is empty, not saving details");
+        return None;
+    }
     match repository {
         Ok(repo) => {
             let mut details_path = repo.path(repo_details_root().as_path());
@@ -366,7 +370,7 @@ pub fn get_vcs_details_path(url: &str) -> Option<PathBuf> {
             Some(details_path)
         }
         Err(err) => {
-            log::error!("Error parsing repository URL: {err}");
+            log::error!("Error parsing repository URL in get_vcs_details_path: {err}");
             None
         }
     }
@@ -421,6 +425,11 @@ pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dy
 
     create_repo_details_folders()?;
 
+    if repository.is_empty() {
+        log::warn!("Repository URL is empty, not saving details");
+        return Ok(());
+    }
+
     match Repository::from_url(repository) {
         Ok(repo) => {
             let _res = fs::create_dir_all(repo.owner_path(repo_details_root().as_path()));
@@ -442,7 +451,7 @@ pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dy
             Ok(())
         }
         Err(err) => {
-            log::error!("Error parsing repository URL: {err}");
+            log::error!("Error parsing repository URL in save_details: {err}");
             Ok(()) // this should never happen
         }
     }
