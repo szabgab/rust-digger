@@ -1008,7 +1008,7 @@ pub fn generate_pages(
         path: "all",
         title: "Total",
         count: crates.len(),
-        percentage: String::from("100%"),
+        percentage: String::from("100"),
     });
 
     stats.push(StatEntry {
