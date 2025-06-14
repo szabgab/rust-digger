@@ -28,9 +28,8 @@ fn main() {
     log::info!("Start analyzing crates.");
     let start_time = std::time::Instant::now();
 
-    match run() {
-        Ok(()) => {}
-        Err(err) => log::error!("Error: {err}"),
+    if let Err(err) = run() {
+        log::error!("Error: {err}");
     }
 
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
