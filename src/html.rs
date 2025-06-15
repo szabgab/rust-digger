@@ -78,6 +78,9 @@ struct Cli {
     #[arg(long, default_value_t = false, help = "Generate the stats pages")]
     stats: bool,
 
+    #[arg(long, default_value_t = false, help = "Generate the ci pages")]
+    ci: bool,
+
     #[arg(long, default_value_t = false, help = "Generate the errors pages")]
     errors: bool,
 
@@ -115,6 +118,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 generate_stats_pages(&crates, &released_cargo_toml_errors).unwrap();
             }
         });
+        scope.spawn(|| {
+            if args.all || args.ci {
+                generate_ci_pages(&crates).unwrap();
+            }
+        });
+
         scope.spawn(|| {
             if args.all {
                 generate_interesting_homepages(&crates).unwrap();
@@ -1206,7 +1215,6 @@ pub fn generate_stats_pages(
 
     generate_rustfmt_pages(crates.len(), with_rustfmt, crates)?;
     generate_msrv_pages(crates)?;
-    generate_ci_pages(crates)?;
 
     Ok(())
 }
