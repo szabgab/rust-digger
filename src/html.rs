@@ -111,7 +111,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 generate_errors_page(&released_cargo_toml_errors_nameless).unwrap();
             }
         });
-        scope.spawn(render_news_pages);
+        scope.spawn(|| {
+            if args.all || args.news {
+                render_news_pages();
+            }
+        });
         scope.spawn(|| {
             if args.all {
                 render_static_pages().unwrap();
