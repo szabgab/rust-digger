@@ -56,6 +56,7 @@ mod read;
 use read::{read_crate_owners, read_teams, read_users};
 
 #[derive(Parser, Debug)]
+#[expect(clippy::struct_excessive_bools)]
 #[command(version)]
 struct Cli {
     #[arg(
@@ -73,6 +74,15 @@ struct Cli {
 
     #[arg(long, default_value_t = false, help = "Generate the static pages")]
     fixed: bool,
+
+    #[arg(long, default_value_t = false, help = "Generate the stats pages")]
+    stats: bool,
+
+    #[arg(long, default_value_t = false, help = "Generate the errors pages")]
+    errors: bool,
+
+    #[arg(long, default_value_t = false, help = "Generate the users pages")]
+    users: bool,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -101,8 +111,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     std::thread::scope(|scope| {
         scope.spawn(|| {
-            if args.all {
-                generate_pages(&crates, &released_cargo_toml_errors).unwrap();
+            if args.all || args.stats {
+                generate_stats_pages(&crates, &released_cargo_toml_errors).unwrap();
             }
         });
         scope.spawn(|| {
@@ -111,7 +121,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         });
         scope.spawn(|| {
-            if args.all {
+            if args.all || args.errors {
                 generate_errors_page(&released_cargo_toml_errors_nameless).unwrap();
             }
         });
@@ -131,7 +141,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         });
         scope.spawn(|| {
-            if args.all {
+            if args.all || args.users {
                 generate_user_pages(
                     &crates,
                     users,
@@ -302,7 +312,7 @@ pub fn render_list_page(
     title: &str,
     crates: &[&Crate],
 ) -> Result<(), Box<dyn Error>> {
-    let _a = ElapsedTimer::new("render_list_page");
+    let _a = ElapsedTimer::new(format!("render_list_page {filename}").as_str());
     log::info!("render_list_page: {filename:?}");
 
     let filepath = std::path::PathBuf::from(format!(
@@ -748,6 +758,7 @@ pub fn generate_robots_txt() {
 }
 
 fn collect_repos(crates: &[Crate]) -> Result<usize, Box<dyn Error>> {
+    let _a = ElapsedTimer::new("collect_repos");
     log::info!("collect_repos start");
     let mut repos: Vec<Repo> = get_repo_types();
 
@@ -1003,11 +1014,11 @@ pub fn generate_top_crates_lists(crates: &mut [Crate]) -> Result<(), Box<dyn Err
 /// Filter the crates according to various rules and render them using `render_filtered_crates`.
 /// Then using the numbers returned by that function generate the stats page.
 #[expect(clippy::too_many_lines)]
-pub fn generate_pages(
+pub fn generate_stats_pages(
     crates: &[Crate],
     released_cargo_toml_errors: &CrateErrors,
 ) -> Result<(), Box<dyn Error>> {
-    let _a = ElapsedTimer::new("generate_pages");
+    let _a = ElapsedTimer::new("generate_stats_pages");
 
     fs::copy("digger.js", get_site_folder().join("digger.js"))?;
 
@@ -1206,6 +1217,7 @@ fn render_filtered_crates(
     cond: impl Fn(&&Crate) -> bool,
     crates: &[Crate],
 ) -> Result<usize, Box<dyn Error>> {
+    let _a = ElapsedTimer::new(format!("render_filtered_crates {filename}").as_str());
     log::info!(
         "render_filtered_crates number of crates: {}, {filename}",
         crates.len()
