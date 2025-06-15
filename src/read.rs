@@ -2,9 +2,13 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fs::File;
 
-use rust_digger::{get_db_dump_folder, CrateOwner, CratesByOwner, Owners, Team, User};
+use rust_digger::{
+    get_db_dump_folder, CrateOwner, CratesByOwner, ElapsedTimer, Owners, Team, User,
+};
 
 pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error>> {
+    let _a = ElapsedTimer::new("read_teams");
+
     let filepath = get_db_dump_folder().join("data/teams.csv");
     log::info!("Start reading {:?}", filepath.display());
     let mut count = 0;
@@ -36,6 +40,8 @@ pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error
 }
 
 pub fn read_users(limit: u32) -> Result<Vec<User>, Box<dyn Error>> {
+    let _a = ElapsedTimer::new("read_users");
+
     let mut users: Vec<User> = vec![];
     let filepath = get_db_dump_folder().join("data/users.csv");
     log::info!("Start reading {:?}", filepath.display());
@@ -59,6 +65,8 @@ pub fn read_users(limit: u32) -> Result<Vec<User>, Box<dyn Error>> {
 
 pub fn read_crate_owners() -> Result<(Owners, CratesByOwner), Box<dyn Error>> {
     //crate_id,created_at,created_by,owner_id,owner_kind
+    let _a = ElapsedTimer::new("read_crate_owners");
+
     let mut owner_by_crate_id: Owners = HashMap::new();
     let mut crates_by_owner: CratesByOwner = HashMap::new();
     let filepath = get_db_dump_folder().join("data/crate_owners.csv");

@@ -377,6 +377,7 @@ pub fn get_vcs_details_path(url: &str) -> Option<PathBuf> {
 }
 
 pub fn load_vcs_details(repository: &str) -> VCSDetails {
+    //let _a = ElapsedTimer::new("load_vcs_details");
     log::info!("Load details started for {repository}");
 
     let Some(details_path) = get_vcs_details_path(repository) else {
@@ -553,6 +554,8 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
 pub fn add_cargo_toml_to_crates(
     crates: Vec<Crate>,
 ) -> Result<(Vec<Crate>, CrateErrors, CargoTomlErrors), Box<dyn Error>> {
+    let _a = ElapsedTimer::new("add_cargo_toml_to_crates");
+
     let (released_crates, released_cargo_toml_errors, released_cargo_toml_errors_nameless) =
         load_cargo_toml_released_crates()?;
     let cargo_of_crate: HashMap<String, Cargo> = released_crates

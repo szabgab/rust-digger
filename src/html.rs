@@ -70,6 +70,9 @@ struct Cli {
 
     #[arg(long, default_value_t = false, help = "Generate the news pages")]
     news: bool,
+
+    #[arg(long, default_value_t = false, help = "Generate the static pages")]
+    fixed: bool,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -77,6 +80,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::init_with_level(log::Level::Info)?;
 
     let start_time = std::time::Instant::now();
+    let _a = ElapsedTimer::new("rust_digger_html");
     log::info!("Starting the Rust Digger");
     log::info!("{VERSION}");
     //log::info!("Limit {args.limit}");
@@ -117,7 +121,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         });
         scope.spawn(|| {
-            if args.all {
+            if args.all || args.fixed {
                 render_static_pages().unwrap();
             }
         });
@@ -154,12 +158,15 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn load_vcs_details_for_all_the_crates(crates: &mut [Crate]) {
+    let _a = ElapsedTimer::new("load_vcs_details_for_all_the_crates");
     for krate in crates.iter_mut() {
         krate.vcs_details = load_vcs_details(&krate.repository);
     }
 }
 
 fn load_crate_details_for_all_the_crates(crates: &mut [Crate]) {
+    let _a = ElapsedTimer::new("load_crate_details_for_all_the_crates");
+
     for krate in crates.iter_mut() {
         let filename = format!(
             "{}-{}.json",
@@ -171,6 +178,7 @@ fn load_crate_details_for_all_the_crates(crates: &mut [Crate]) {
 }
 
 fn add_owners_to_crates(crates: &mut [Crate], users: &Vec<User>, owner_by_crate_id: &Owners) {
+    let _a = ElapsedTimer::new("add_owners_to_crates");
     let mut mapping: HashMap<String, &User> = HashMap::new();
     for user in users {
         mapping.insert(user.id.clone(), user);
@@ -673,6 +681,7 @@ fn render_stats_page(stats: &[StatEntry]) {
 }
 
 fn create_html_folders() -> Result<(), Box<dyn Error>> {
+    let _a = ElapsedTimer::new("create_html_folders");
     fs::create_dir_all(get_site_folder())?;
     for folder in ["crates", "users", "news", "vcs", "rustfmt"] {
         fs::create_dir_all(get_site_folder().join(folder))?;
