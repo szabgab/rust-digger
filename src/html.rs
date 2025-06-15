@@ -81,6 +81,9 @@ struct Cli {
     #[arg(long, default_value_t = false, help = "Generate the ci pages")]
     ci: bool,
 
+    #[arg(long, default_value_t = false, help = "Generate the fmt pages")]
+    fmt: bool,
+
     #[arg(long, default_value_t = false, help = "Generate the msrv pages")]
     msrv: bool,
 
@@ -124,6 +127,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         scope.spawn(|| {
             if args.all || args.ci {
                 generate_ci_pages(&crates).unwrap();
+            }
+        });
+        scope.spawn(|| {
+            if args.all || args.fmt {
+                generate_rustfmt_pages(&crates).unwrap();
             }
         });
         scope.spawn(|| {
@@ -1208,8 +1216,6 @@ pub fn generate_stats_pages(
     }
 
     render_stats_page(&stats);
-
-    generate_rustfmt_pages(crates)?;
 
     Ok(())
 }
