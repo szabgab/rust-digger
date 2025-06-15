@@ -8,6 +8,8 @@ use std::fs::File;
 use std::io::Write as _;
 use std::path::PathBuf;
 
+use serde::{Deserialize, Serialize};
+
 use git_digger::Repository;
 
 mod cargo_toml_parser;
@@ -17,7 +19,7 @@ mod timer;
 pub use timer::ElapsedTimer;
 
 #[expect(clippy::struct_excessive_bools)]
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CrateDetails {
     pub has_build_rs: bool,
     pub has_cargo_toml: bool,
@@ -54,7 +56,7 @@ impl Default for CrateDetails {
     }
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum RepoPlatform {
     GitHub,    // https://github.com/
@@ -68,7 +70,7 @@ pub enum RepoPlatform {
 }
 
 const REPO_FOLDERS: [&str; 2] = ["github", "gitlab"];
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[expect(clippy::struct_excessive_bools)]
 pub struct VCSDetails {
     #[serde(default = "default_false")]
@@ -134,7 +136,7 @@ impl Default for VCSDetails {
     }
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Repo {
     pub display: String,
@@ -153,7 +155,7 @@ pub struct Repo {
     pub bold: bool,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CrateVersion {
     pub checksum: String,
     pub crate_id: String,
@@ -170,7 +172,7 @@ pub struct CrateVersion {
     pub yanked: String,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Crate {
     pub created_at: String,
     pub description: String,
@@ -232,7 +234,7 @@ impl Default for Crate {
     }
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct User {
     pub gh_avatar: String,
     pub gh_id: String,
@@ -244,7 +246,7 @@ pub struct User {
     pub count: usize,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Team {
     pub avatar: String,
     pub github_id: String,
@@ -254,7 +256,7 @@ pub struct Team {
     pub org_id: String,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CrateOwner {
     pub crate_id: String,
     pub created_at: String,

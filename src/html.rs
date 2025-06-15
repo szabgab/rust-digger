@@ -970,7 +970,7 @@ fn render_top_crates(
     Ok(())
 }
 
-#[derive(Debug, serde::Serialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 struct Thing<'local> {
     krate: &'local Crate,
     fields: Vec<String>,
