@@ -118,65 +118,42 @@ fn main() -> Result<(), Box<dyn Error>> {
     load_crate_details_for_all_the_crates(&mut crates);
     create_html_folders()?;
 
-    std::thread::scope(|scope| {
-        scope.spawn(|| {
-            if args.all || args.stats {
-                generate_stats_pages(&crates, &released_cargo_toml_errors).unwrap();
-            }
-        });
-        scope.spawn(|| {
-            if args.all || args.ci {
-                generate_ci_pages(&crates).unwrap();
-            }
-        });
-        scope.spawn(|| {
-            if args.all || args.fmt {
-                generate_rustfmt_pages(&crates).unwrap();
-            }
-        });
-        scope.spawn(|| {
-            if args.all || args.msrv {
-                generate_msrv_pages(&crates).unwrap();
-            }
-        });
-
-        scope.spawn(|| {
-            if args.all {
-                generate_interesting_homepages(&crates).unwrap();
-            }
-        });
-        scope.spawn(|| {
-            if args.all || args.errors {
-                generate_errors_page(&released_cargo_toml_errors_nameless).unwrap();
-            }
-        });
-        scope.spawn(|| {
-            if args.all || args.news {
-                render_news_pages();
-            }
-        });
-        scope.spawn(|| {
-            if args.all || args.fixed {
-                render_static_pages().unwrap();
-            }
-        });
-        scope.spawn(|| {
-            if args.all {
-                generate_crate_pages(&crates, &released_cargo_toml_errors).unwrap();
-            }
-        });
-        scope.spawn(|| {
-            if args.all || args.users {
-                generate_user_pages(
-                    &crates,
-                    users,
-                    &crates_by_owner,
-                    &released_cargo_toml_errors,
-                )
-                .unwrap();
-            }
-        });
-    });
+    if args.all || args.stats {
+        generate_stats_pages(&crates, &released_cargo_toml_errors).unwrap();
+    }
+    if args.all || args.ci {
+        generate_ci_pages(&crates).unwrap();
+    }
+    if args.all || args.fmt {
+        generate_rustfmt_pages(&crates).unwrap();
+    }
+    if args.all || args.msrv {
+        generate_msrv_pages(&crates).unwrap();
+    }
+    if args.all {
+        generate_interesting_homepages(&crates).unwrap();
+    }
+    if args.all || args.errors {
+        generate_errors_page(&released_cargo_toml_errors_nameless).unwrap();
+    }
+    if args.all || args.news {
+        render_news_pages();
+    }
+    if args.all || args.fixed {
+        render_static_pages().unwrap();
+    }
+    if args.all {
+        generate_crate_pages(&crates, &released_cargo_toml_errors).unwrap();
+    }
+    if args.all || args.users {
+        generate_user_pages(
+            &crates,
+            users,
+            &crates_by_owner,
+            &released_cargo_toml_errors,
+        )
+        .unwrap();
+    }
 
     if args.all {
         generate_top_crates_lists(&mut crates).unwrap();
