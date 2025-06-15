@@ -1209,19 +1209,7 @@ pub fn generate_stats_pages(
 
     render_stats_page(&stats);
 
-    #[expect(clippy::if_then_some_else_none)]
-    let with_rustfmt = stats
-        .iter()
-        .filter_map(|entry| {
-            if entry.path == "has-dot-rustfmt-toml" || entry.path == "has-rustfmt-toml" {
-                Some(entry.count)
-            } else {
-                None
-            }
-        })
-        .sum();
-
-    generate_rustfmt_pages(with_rustfmt, crates)?;
+    generate_rustfmt_pages(crates)?;
 
     Ok(())
 }
@@ -1565,13 +1553,20 @@ fn list_crates_with_edition(
     Ok(())
 }
 
-fn generate_rustfmt_pages(with_rustfmt: usize, crates: &[Crate]) -> Result<(), Box<dyn Error>> {
+fn generate_rustfmt_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     static RE_KEY: LazyLock<Regex> = LazyLock::new(|| Regex::new("^[a-z_]+$").unwrap());
     static RE_VALUE: LazyLock<Regex> = LazyLock::new(|| Regex::new("^[0-9A-Za-z_]+$").unwrap());
 
     let rustfmt = load_collected_rustfmt();
     let mut count_by_key: HashMap<String, u32> = HashMap::new();
     let mut count_by_pair: HashMap<(String, String), u32> = HashMap::new();
+
+    let with_rustfmt = crates
+        .iter()
+        .filter(|krate| {
+            krate.vcs_details.has_rustfmt_toml || krate.vcs_details.has_dot_rustfmt_toml
+        })
+        .count();
 
     #[expect(clippy::explicit_iter_loop)] // TODO
     #[expect(clippy::pattern_type_mismatch)] // TODO
