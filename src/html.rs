@@ -95,15 +95,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     load_crate_details_for_all_the_crates(&mut crates);
     create_html_folders()?;
 
-    if args.all {
-        generate_top_crates_lists(&mut crates).unwrap();
-    }
-
-    if args.all {
-        generate_sitemap();
-        generate_robots_txt();
-    }
-
     std::thread::scope(|scope| {
         scope.spawn(|| {
             if args.all {
@@ -143,6 +134,15 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         });
     });
+
+    if args.all {
+        generate_top_crates_lists(&mut crates).unwrap();
+    }
+
+    if args.all {
+        generate_sitemap();
+        generate_robots_txt();
+    }
 
     log::info!("Elapsed time: {} sec.", start_time.elapsed().as_secs());
     log::info!("Ending the Rust Digger generating html pages");
