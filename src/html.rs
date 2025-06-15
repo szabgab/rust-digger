@@ -81,6 +81,9 @@ struct Cli {
     #[arg(long, default_value_t = false, help = "Generate the ci pages")]
     ci: bool,
 
+    #[arg(long, default_value_t = false, help = "Generate the msrv pages")]
+    msrv: bool,
+
     #[arg(long, default_value_t = false, help = "Generate the errors pages")]
     errors: bool,
 
@@ -121,6 +124,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         scope.spawn(|| {
             if args.all || args.ci {
                 generate_ci_pages(&crates).unwrap();
+            }
+        });
+        scope.spawn(|| {
+            if args.all || args.msrv {
+                generate_msrv_pages(&crates).unwrap();
             }
         });
 
@@ -1214,7 +1222,6 @@ pub fn generate_stats_pages(
         .sum();
 
     generate_rustfmt_pages(crates.len(), with_rustfmt, crates)?;
-    generate_msrv_pages(crates)?;
 
     Ok(())
 }
