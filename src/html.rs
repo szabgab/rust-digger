@@ -1221,7 +1221,7 @@ pub fn generate_stats_pages(
         })
         .sum();
 
-    generate_rustfmt_pages(crates.len(), with_rustfmt, crates)?;
+    generate_rustfmt_pages(with_rustfmt, crates)?;
 
     Ok(())
 }
@@ -1565,11 +1565,7 @@ fn list_crates_with_edition(
     Ok(())
 }
 
-fn generate_rustfmt_pages(
-    number_of_crates: usize,
-    with_rustfmt: usize,
-    crates: &[Crate],
-) -> Result<(), Box<dyn Error>> {
+fn generate_rustfmt_pages(with_rustfmt: usize, crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     static RE_KEY: LazyLock<Regex> = LazyLock::new(|| Regex::new("^[a-z_]+$").unwrap());
     static RE_VALUE: LazyLock<Regex> = LazyLock::new(|| Regex::new("^[0-9A-Za-z_]+$").unwrap());
 
@@ -1668,7 +1664,7 @@ fn generate_rustfmt_pages(
         "title":   "Rustfmt Stats",
         "count_by_key": count_by_key_vector,
         "count_by_pair": count_by_pair_vector,
-        "number_of_crates": number_of_crates,
+        "number_of_crates": crates.len(),
         "with_rustfmt": with_rustfmt,
     });
     let html = template.render(&globals).unwrap();
