@@ -172,7 +172,7 @@ pub struct CrateVersion {
     pub yanked: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Crate {
     pub created_at: String,
     pub description: String,
