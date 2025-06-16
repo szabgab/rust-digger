@@ -1,12 +1,16 @@
+use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
 
 use clap::Parser;
 
 use rust_digger::{
-    analyzed_crates_root, collect_cargo_toml_released_crates, crates_root, create_data_folders,
-    get_data_folder, CrateDetails, ElapsedTimer,
+    analyzed_crates_root, crates_root, create_data_folders, get_data_folder, CargoTomlErrors,
+    CrateDetails, CrateErrors, ElapsedTimer,
 };
+
+mod cargo_toml_parser;
+use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -91,6 +95,60 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
     std::fs::write(
         get_data_folder().join("crate_details.json"),
         serde_json::to_vec(&crate_details)?,
+    )?;
+
+    Ok(())
+}
+
+pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
+    let _a = ElapsedTimer::new("collect_cargo_toml_released_crates");
+
+    let dir_handle = crates_root().read_dir()?;
+    let mut released_cargo_toml_errors: CrateErrors = HashMap::new();
+    let mut released_cargo_toml_errors_nameless: CargoTomlErrors = HashMap::new();
+
+    let released_crates = dir_handle
+        .flatten()
+        .filter_map(|entry| {
+            let path = entry.path().join("Cargo.toml");
+            match load_cargo_toml(&path) {
+                Ok(cargo) => Some(cargo),
+                Err(err) => {
+                    log::error!("Reading {:?} failed: {err}", path.display());
+
+                    match load_name_version_toml(&path) {
+                        Ok((name, _version)) => {
+                            released_cargo_toml_errors.insert(name, format!("{err}"));
+                        }
+                        Err(err2) => {
+                            released_cargo_toml_errors_nameless.insert(
+                                format!("{:?}", &entry.file_name().display()),
+                                format!("{err2}"),
+                            );
+                            log::error!(
+                                "Can't load the name and version of the crate {:?} failed: {err2}",
+                                path.display()
+                            );
+                        }
+                    }
+
+                    None
+                }
+            }
+        })
+        .collect::<Vec<Cargo>>();
+
+    std::fs::write(
+        get_data_folder().join("released_cargo_toml.json"),
+        serde_json::to_vec(&released_crates)?,
+    )?;
+    std::fs::write(
+        get_data_folder().join("released_cargo_toml_errors.json"),
+        serde_json::to_vec(&released_cargo_toml_errors)?,
+    )?;
+    std::fs::write(
+        get_data_folder().join("released_cargo_toml_errors_nameless.json"),
+        serde_json::to_vec(&released_cargo_toml_errors_nameless)?,
     )?;
 
     Ok(())
