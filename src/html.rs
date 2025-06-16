@@ -1065,9 +1065,29 @@ pub fn generate_stats_pages(
             CrateFilter::new(|krate: &&Crate| on_github_but_no_ci(krate)),
         ),
         (
+            "github-has-github-actions",
+            "On GitHub has CI (GitHub Actions)",
+            CrateFilter::new(|krate: &&Crate| on_github_has_github_action(krate)),
+        ),
+        (
+            "github-has-circle-ci",
+            "On GitHub has CI (CircleCI)",
+            CrateFilter::new(|krate: &&Crate| on_github_has_circle_ci(krate)),
+        ),
+        (
+            "github-has-cirrus-ci",
+            "On GitHub has CI (CirrrusCI)",
+            CrateFilter::new(|krate: &&Crate| on_github_has_cirrus_ci(krate)),
+        ),
+        (
             "gitlab-but-no-ci",
             "On GitLab but has no CI",
             CrateFilter::new(|krate: &&Crate| on_gitlab_but_no_ci(krate)),
+        ),
+        (
+            "gitlab-has-pipelines",
+            "On GitLab has CI (GitLab Pipelines)",
+            CrateFilter::new(|krate: &&Crate| on_gitlab_has_gitlab_pipeline(krate)),
         ),
         (
             "has-cargo-toml-in-root",
@@ -1217,6 +1237,75 @@ fn render_filtered_crates(
     Ok(filtered_crates.len())
 }
 
+fn on_github_has_github_action(krate: &Crate) -> bool {
+    if krate.repository.is_empty() {
+        return false;
+    }
+
+    match Repository::from_url(&krate.repository) {
+        Ok(repo) => {
+            if !repo.is_github() {
+                return false;
+            }
+            if !krate.vcs_details.has_github_action {
+                return false;
+            }
+
+            true
+        }
+        Err(err) => {
+            log::error!("Could not parse repository URL {err}");
+            false
+        }
+    }
+}
+
+fn on_github_has_circle_ci(krate: &Crate) -> bool {
+    if krate.repository.is_empty() {
+        return false;
+    }
+
+    match Repository::from_url(&krate.repository) {
+        Ok(repo) => {
+            if !repo.is_github() {
+                return false;
+            }
+            if !krate.vcs_details.has_circle_ci {
+                return false;
+            }
+
+            true
+        }
+        Err(err) => {
+            log::error!("Could not parse repository URL {err}");
+            false
+        }
+    }
+}
+
+fn on_github_has_cirrus_ci(krate: &Crate) -> bool {
+    if krate.repository.is_empty() {
+        return false;
+    }
+
+    match Repository::from_url(&krate.repository) {
+        Ok(repo) => {
+            if !repo.is_github() {
+                return false;
+            }
+            if !krate.vcs_details.has_cirrus_ci {
+                return false;
+            }
+
+            true
+        }
+        Err(err) => {
+            log::error!("Could not parse repository URL {err}");
+            false
+        }
+    }
+}
+
 fn on_github_but_no_ci(krate: &Crate) -> bool {
     if krate.repository.is_empty() {
         return false;
@@ -1231,6 +1320,29 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
                 || krate.vcs_details.has_circle_ci
                 || krate.vcs_details.has_cirrus_ci
             {
+                return false;
+            }
+
+            true
+        }
+        Err(err) => {
+            log::error!("Could not parse repository URL {err}");
+            false
+        }
+    }
+}
+
+fn on_gitlab_has_gitlab_pipeline(krate: &Crate) -> bool {
+    if krate.repository.is_empty() {
+        return false;
+    }
+
+    match Repository::from_url(&krate.repository) {
+        Ok(repo) => {
+            if !repo.is_gitlab() {
+                return false;
+            }
+            if !krate.vcs_details.has_gitlab_pipeline {
                 return false;
             }
 
