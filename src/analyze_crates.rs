@@ -1,8 +1,7 @@
 use std::error::Error;
-use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write as _;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use clap::Parser;
 use walkdir::WalkDir;
@@ -18,7 +17,7 @@ struct Cli {
     #[arg(
         long,
         default_value_t = 0,
-        help = "Limit the number of repos we process."
+        help = "Limit the number of crates we process."
     )]
     limit: usize,
 }
@@ -85,7 +84,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
 
         // if it fails collect all the data and save to the disk
         let mut details = CrateDetails::new();
-        has_files(&dir_entry.path(), &mut details)?;
+        details.has_files(&dir_entry.path())?;
         log::info!("details: {details:#?}");
 
         details.size = disk_size(&dir_entry.path());
@@ -113,47 +112,6 @@ fn disk_size(root: &PathBuf) -> u64 {
     }
 
     size
-}
-
-fn has_files(path: &Path, details: &mut CrateDetails) -> Result<(), Box<dyn std::error::Error>> {
-    log::info!("has_files for {:?}", path.display());
-
-    details.has_build_rs = path.join("build.rs").exists();
-    details.has_cargo_toml = path.join("Cargo.toml").exists();
-    details.has_cargo_lock = path.join("Cargo.lock").exists();
-    details.has_clippy_toml = path.join("clippy.toml").exists();
-    details.has_dot_clippy_toml = path.join(".clippy.toml").exists();
-    details.has_rustfmt_toml = path.join("rustfmt.toml").exists();
-    details.has_dot_rustfmt_toml = path.join(".rustfmt.toml").exists();
-    details.has_main_rs = path.join("src/main.rs").exists();
-
-    let standard_folders = [
-        OsStr::new("src"),
-        OsStr::new("tests"),
-        OsStr::new("examples"),
-        OsStr::new("benches"),
-    ];
-
-    let folders = path
-        .read_dir()?
-        .flatten()
-        .filter_map(|entry| {
-            if !entry.path().is_dir() || standard_folders.contains(&entry.file_name().as_os_str()) {
-                None
-            } else {
-                #[expect(clippy::option_map_or_none)]
-                entry
-                    .file_name()
-                    .to_str()
-                    .map_or(None, |file_name| Some(file_name.to_owned()))
-            }
-        })
-        .collect::<Vec<String>>();
-
-    log::info!("nonstandard_folders: {folders:?}");
-    details.nonstandard_folders = folders;
-
-    Ok(())
 }
 
 fn save_details(

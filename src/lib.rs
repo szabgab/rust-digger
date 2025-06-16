@@ -2,11 +2,12 @@
 
 use std::collections::HashMap;
 use std::error::Error;
+use std::ffi::OsStr;
 use std::fs;
 use std::fs::read_to_string;
 use std::fs::File;
 use std::io::Write as _;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -47,6 +48,49 @@ impl CrateDetails {
             nonstandard_folders: vec![],
             size: 0,
         }
+    }
+
+    pub fn has_files(&mut self, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+        log::info!("has_files for {:?}", path.display());
+
+        self.has_build_rs = path.join("build.rs").exists();
+        self.has_cargo_toml = path.join("Cargo.toml").exists();
+        self.has_cargo_lock = path.join("Cargo.lock").exists();
+        self.has_clippy_toml = path.join("clippy.toml").exists();
+        self.has_dot_clippy_toml = path.join(".clippy.toml").exists();
+        self.has_rustfmt_toml = path.join("rustfmt.toml").exists();
+        self.has_dot_rustfmt_toml = path.join(".rustfmt.toml").exists();
+        self.has_main_rs = path.join("src/main.rs").exists();
+
+        let standard_folders = [
+            OsStr::new("src"),
+            OsStr::new("tests"),
+            OsStr::new("examples"),
+            OsStr::new("benches"),
+        ];
+
+        let folders = path
+            .read_dir()?
+            .flatten()
+            .filter_map(|entry| {
+                if !entry.path().is_dir()
+                    || standard_folders.contains(&entry.file_name().as_os_str())
+                {
+                    None
+                } else {
+                    #[expect(clippy::option_map_or_none)]
+                    entry
+                        .file_name()
+                        .to_str()
+                        .map_or(None, |file_name| Some(file_name.to_owned()))
+                }
+            })
+            .collect::<Vec<String>>();
+
+        log::info!("nonstandard_folders: {folders:?}");
+        self.nonstandard_folders = folders;
+
+        Ok(())
     }
 }
 
