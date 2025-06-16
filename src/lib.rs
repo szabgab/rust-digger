@@ -105,6 +105,14 @@ impl CrateDetails {
         }
         self.size = size;
     }
+
+    pub fn save(&self, filepath: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+        log::info!("Saving crate details to {:?}", filepath.display());
+        let mut file = File::create(filepath)?;
+        writeln!(&mut file, "{}", serde_json::to_string(self)?)?;
+
+        Ok(())
+    }
 }
 
 impl Default for CrateDetails {

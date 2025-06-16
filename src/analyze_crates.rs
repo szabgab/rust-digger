@@ -1,6 +1,4 @@
 use std::error::Error;
-use std::fs::File;
-use std::io::Write as _;
 use std::path::PathBuf;
 
 use clap::Parser;
@@ -86,8 +84,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         details.has_files(&dir_entry.path())?;
         log::info!("details: {details:#?}");
         details.disk_size(&dir_entry.path());
-
-        save_details(&details, filepath)?;
+        details.save(filepath)?;
         crate_details.push(details);
     }
 
@@ -95,17 +92,6 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         get_data_folder().join("crate_details.json"),
         serde_json::to_vec(&crate_details)?,
     )?;
-
-    Ok(())
-}
-
-fn save_details(
-    details: &CrateDetails,
-    filepath: PathBuf,
-) -> Result<(), Box<dyn std::error::Error>> {
-    log::info!("Saving crate details to {:?}", filepath.display());
-    let mut file = File::create(filepath)?;
-    writeln!(&mut file, "{}", serde_json::to_string(details)?)?;
 
     Ok(())
 }
