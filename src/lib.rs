@@ -10,6 +10,7 @@ use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
+use walkdir::WalkDir;
 
 use git_digger::Repository;
 
@@ -91,6 +92,18 @@ impl CrateDetails {
         self.nonstandard_folders = folders;
 
         Ok(())
+    }
+
+    pub fn disk_size(&mut self, root: &PathBuf) {
+        let mut size = 0;
+        for dir_entry in WalkDir::new(root).into_iter().flatten() {
+            if dir_entry.path().is_file() {
+                if let Ok(meta) = dir_entry.path().metadata() {
+                    size += meta.len();
+                }
+            }
+        }
+        self.size = size;
     }
 }
 

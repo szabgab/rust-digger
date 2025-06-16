@@ -4,7 +4,6 @@ use std::io::Write as _;
 use std::path::PathBuf;
 
 use clap::Parser;
-use walkdir::WalkDir;
 
 use rust_digger::{
     analyzed_crates_root, collect_cargo_toml_released_crates, crates_root, create_data_folders,
@@ -86,8 +85,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         let mut details = CrateDetails::new();
         details.has_files(&dir_entry.path())?;
         log::info!("details: {details:#?}");
-
-        details.size = disk_size(&dir_entry.path());
+        details.disk_size(&dir_entry.path());
 
         save_details(&details, filepath)?;
         crate_details.push(details);
@@ -99,19 +97,6 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
     )?;
 
     Ok(())
-}
-
-fn disk_size(root: &PathBuf) -> u64 {
-    let mut size = 0;
-    for dir_entry in WalkDir::new(root).into_iter().flatten() {
-        if dir_entry.path().is_file() {
-            if let Ok(meta) = dir_entry.path().metadata() {
-                size += meta.len();
-            }
-        }
-    }
-
-    size
 }
 
 fn save_details(
