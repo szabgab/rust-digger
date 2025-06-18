@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
+use std::{collections::HashMap, vec};
 
 use clap::Parser;
 
@@ -59,6 +59,8 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
     let mut crate_details = vec![];
     let mut released_cargo_toml_errors: CrateErrors = HashMap::new();
     let mut released_cargo_toml_errors_nameless: CargoTomlErrors = HashMap::new();
+    let mut released_cargo_toml_in_lower_case: Vec<String> = vec![];
+    let mut released_cargo_toml_missing: Vec<String> = vec![];
     let mut released_crates: Vec<Cargo> = vec![];
 
     for (count, entry) in crates_root().read_dir()?.enumerate() {
@@ -95,31 +97,51 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         log::info!("details: {details:#?}");
         details.disk_size(&dir_entry.path());
         details.save(filepath)?;
-        crate_details.push(details);
 
-        let path = dir_entry.path().join("Cargo.toml");
-        match load_cargo_toml(&path) {
-            Ok(cargo) => released_crates.push(cargo.clone()),
-            Err(err) => {
-                log::error!("Reading {:?} failed: {err}", path.display());
+        let path_or_none = if details.has_cargo_toml {
+            Some(dir_entry.path().join("Cargo.toml"))
+        } else if details.has_cargo_toml_in_lower_case {
+            //released_cargo_toml_in_lower_case.push(dir_entry.file_name().display().to_string());
+            Some(dir_entry.path().join("cargo.toml"))
+        } else {
+            None
+        };
 
-                match load_name_version_toml(&path) {
-                    Ok((name, _version)) => {
-                        released_cargo_toml_errors.insert(name, format!("{err}"));
+        match path_or_none {
+            None => {
+                log::warn!("No Cargo.toml found in {:?}", dir_entry.path().display());
+                released_cargo_toml_missing.push(dir_entry.file_name().display().to_string());
+            }
+            Some(path) => match load_cargo_toml(&path) {
+                Ok(cargo) => {
+                    if details.has_cargo_toml_in_lower_case {
+                        released_cargo_toml_in_lower_case.push(cargo.package.name.clone());
                     }
-                    Err(err2) => {
-                        released_cargo_toml_errors_nameless.insert(
-                            format!("{:?}", &dir_entry.file_name().display()),
-                            format!("{err2}"),
-                        );
-                        log::error!(
-                            "Can't load the name and version of the crate {:?} failed: {err2}",
-                            path.display()
-                        );
+                    released_crates.push(cargo.clone());
+                }
+                Err(err) => {
+                    log::error!("Reading {:?} failed: {err}", path.display());
+
+                    match load_name_version_toml(&path) {
+                        Ok((name, _version)) => {
+                            released_cargo_toml_errors.insert(name, format!("{err}"));
+                        }
+                        Err(err2) => {
+                            released_cargo_toml_errors_nameless.insert(
+                                format!("{:?}", &dir_entry.file_name().display()),
+                                format!("{err2}"),
+                            );
+                            log::error!(
+                                "Can't load the name and version of the crate {:?} failed: {err2}",
+                                path.display()
+                            );
+                        }
                     }
                 }
-            }
+            },
         }
+
+        crate_details.push(details);
     }
 
     std::fs::write(
@@ -137,6 +159,16 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
     std::fs::write(
         get_data_folder().join("released_cargo_toml_errors_nameless.json"),
         serde_json::to_vec(&released_cargo_toml_errors_nameless)?,
+    )?;
+
+    std::fs::write(
+        get_data_folder().join("released_cargo_toml_missing.json"),
+        serde_json::to_vec(&released_cargo_toml_missing)?,
+    )?;
+
+    std::fs::write(
+        get_data_folder().join("released_cargo_toml_in_lower_case.json"),
+        serde_json::to_vec(&released_cargo_toml_in_lower_case)?,
     )?;
 
     Ok(())

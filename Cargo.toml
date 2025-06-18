@@ -87,8 +87,8 @@ float_arithmetic = "allow"        # In this application it is fine to have float
 cast_precision_loss = "allow"     # Not an issue for this application
 allow_attributes_without_reason = "allow" # No need to entrer empty reason field
 arbitrary_source_item_ordering = "allow" # For now I don't want to sort the functions just to make clippy happy
-
-
+std_instead_of_alloc = "allow"       # No need for no_std
+ 
 arithmetic_side_effects = "allow"
 as_conversions = "allow"
 exhaustive_structs = "allow"

@@ -25,6 +25,7 @@ pub use timer::ElapsedTimer;
 pub struct CrateDetails {
     pub has_build_rs: bool,
     pub has_cargo_toml: bool,
+    pub has_cargo_toml_in_lower_case: bool,
     pub has_cargo_lock: bool,
     pub has_clippy_toml: bool,
     pub has_dot_clippy_toml: bool,
@@ -40,6 +41,7 @@ impl CrateDetails {
         Self {
             has_build_rs: false,
             has_cargo_toml: false,
+            has_cargo_toml_in_lower_case: false,
             has_cargo_lock: false,
             has_clippy_toml: false,
             has_dot_clippy_toml: false,
@@ -56,6 +58,7 @@ impl CrateDetails {
 
         self.has_build_rs = path.join("build.rs").exists();
         self.has_cargo_toml = path.join("Cargo.toml").exists();
+        self.has_cargo_toml_in_lower_case = path.join("cargo.toml").exists();
         self.has_cargo_lock = path.join("Cargo.lock").exists();
         self.has_clippy_toml = path.join("clippy.toml").exists();
         self.has_dot_clippy_toml = path.join(".clippy.toml").exists();
