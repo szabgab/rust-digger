@@ -43,7 +43,6 @@ fn run() -> Result<(), Box<dyn Error>> {
     log::info!("Limit: {}", args.limit);
 
     collect_data_from_crates(args.limit)?;
-    collect_cargo_toml_released_crates()?;
 
     Ok(())
 }
@@ -58,6 +57,9 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
     }
     create_data_folders()?;
     let mut crate_details = vec![];
+    let mut released_cargo_toml_errors: CrateErrors = HashMap::new();
+    let mut released_cargo_toml_errors_nameless: CargoTomlErrors = HashMap::new();
+    let mut released_crates: Vec<Cargo> = vec![];
 
     for (count, entry) in crates_root().read_dir()?.enumerate() {
         if limit > 0 && count >= limit {
@@ -75,13 +77,17 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
             continue;
         };
 
+        // For now we disable this optimization. The total procsessing time is not that long (400 sec)
+        // and as it is now, the skipping here also skips the loading of the Cargo.toml file
+        // which is needed for the analysis.
+
         // try to read the already collected data, if it succeeds go to the next crate
-        if let Ok(content) = std::fs::read_to_string(&filepath) {
-            if let Ok(_details) = serde_json::from_str::<CrateDetails>(&content) {
-                log::info!("Details found");
-                continue;
-            }
-        }
+        // if let Ok(content) = std::fs::read_to_string(&filepath) {
+        //     if let Ok(_details) = serde_json::from_str::<CrateDetails>(&content) {
+        //         log::info!("Details found");
+        //         continue;
+        //     }
+        // }
 
         // if it fails collect all the data and save to the disk
         let mut details = CrateDetails::new();
@@ -90,54 +96,36 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
         details.disk_size(&dir_entry.path());
         details.save(filepath)?;
         crate_details.push(details);
+
+        let path = dir_entry.path().join("Cargo.toml");
+        match load_cargo_toml(&path) {
+            Ok(cargo) => released_crates.push(cargo.clone()),
+            Err(err) => {
+                log::error!("Reading {:?} failed: {err}", path.display());
+
+                match load_name_version_toml(&path) {
+                    Ok((name, _version)) => {
+                        released_cargo_toml_errors.insert(name, format!("{err}"));
+                    }
+                    Err(err2) => {
+                        released_cargo_toml_errors_nameless.insert(
+                            format!("{:?}", &dir_entry.file_name().display()),
+                            format!("{err2}"),
+                        );
+                        log::error!(
+                            "Can't load the name and version of the crate {:?} failed: {err2}",
+                            path.display()
+                        );
+                    }
+                }
+            }
+        }
     }
 
     std::fs::write(
         get_data_folder().join("crate_details.json"),
         serde_json::to_vec(&crate_details)?,
     )?;
-
-    Ok(())
-}
-
-pub fn collect_cargo_toml_released_crates() -> Result<(), Box<dyn Error>> {
-    let _a = ElapsedTimer::new("collect_cargo_toml_released_crates");
-
-    let dir_handle = crates_root().read_dir()?;
-    let mut released_cargo_toml_errors: CrateErrors = HashMap::new();
-    let mut released_cargo_toml_errors_nameless: CargoTomlErrors = HashMap::new();
-
-    let released_crates = dir_handle
-        .flatten()
-        .filter_map(|entry| {
-            let path = entry.path().join("Cargo.toml");
-            match load_cargo_toml(&path) {
-                Ok(cargo) => Some(cargo),
-                Err(err) => {
-                    log::error!("Reading {:?} failed: {err}", path.display());
-
-                    match load_name_version_toml(&path) {
-                        Ok((name, _version)) => {
-                            released_cargo_toml_errors.insert(name, format!("{err}"));
-                        }
-                        Err(err2) => {
-                            released_cargo_toml_errors_nameless.insert(
-                                format!("{:?}", &entry.file_name().display()),
-                                format!("{err2}"),
-                            );
-                            log::error!(
-                                "Can't load the name and version of the crate {:?} failed: {err2}",
-                                path.display()
-                            );
-                        }
-                    }
-
-                    None
-                }
-            }
-        })
-        .collect::<Vec<Cargo>>();
-
     std::fs::write(
         get_data_folder().join("released_cargo_toml.json"),
         serde_json::to_vec(&released_crates)?,
