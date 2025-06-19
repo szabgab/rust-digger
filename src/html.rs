@@ -18,8 +18,8 @@ use git_digger::Repository;
 
 use rust_digger::{
     add_cargo_toml_to_crates, analyzed_crates_root, build_path, collected_data_root,
-    load_crate_details, load_vcs_details, percentage, read_crates, CargoTomlErrors, Crate,
-    CrateErrors, CratesByOwner, ElapsedTimer, Owners, Repo, User,
+    load_crate_details, load_release_errors, load_vcs_details, percentage, read_crates,
+    CargoTomlErrors, Crate, CrateErrors, CratesByOwner, ElapsedTimer, Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -108,8 +108,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (owner_by_crate_id, crates_by_owner): (Owners, CratesByOwner) = read_crate_owners()?;
     let mut users = read_users(args.limit)?;
     read_teams(&mut users, args.limit)?;
-    let (mut crates, released_cargo_toml_errors, released_cargo_toml_errors_nameless) =
-        add_cargo_toml_to_crates(read_crates(args.limit)?)?;
+    let mut crates = add_cargo_toml_to_crates(read_crates(args.limit)?)?;
+    let (
+        released_cargo_toml_errors,
+        released_cargo_toml_errors_nameless,
+        released_cargo_toml_in_lower_case,
+        _released_cargo_toml_missing,
+    ) = load_release_errors()?;
 
     //dbg!(&crates_by_owner);
 
@@ -119,7 +124,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     create_html_folders()?;
 
     if args.all || args.stats {
-        generate_stats_pages(&crates, &released_cargo_toml_errors).unwrap();
+        generate_stats_pages(
+            &crates,
+            &released_cargo_toml_errors,
+            &released_cargo_toml_in_lower_case,
+        )
+        .unwrap();
     }
     if args.all || args.ci {
         generate_ci_pages(&crates).unwrap();
@@ -1019,6 +1029,7 @@ pub fn generate_top_crates_lists(crates: &mut [Crate]) -> Result<(), Box<dyn Err
 pub fn generate_stats_pages(
     crates: &[Crate],
     released_cargo_toml_errors: &CrateErrors,
+    released_cargo_toml_in_lower_case: &[String],
 ) -> Result<(), Box<dyn Error>> {
     let _a = ElapsedTimer::new("generate_stats_pages");
 
@@ -1056,6 +1067,20 @@ pub fn generate_stats_pages(
         title: "Has errors in the released Cargo.toml file",
         count: has_cargo_toml_errors,
         percentage: percentage(has_cargo_toml_errors, crates.len()),
+    });
+
+    render_filtered_crates(
+        "lower-case-cargo-toml",
+        "Has cargo.toml in lower case.",
+        |krate| released_cargo_toml_in_lower_case.contains(&krate.name),
+        crates,
+    )?;
+
+    stats.push(StatEntry {
+        path: "lower-case-cargo-toml",
+        title: "Has cargo.toml file in lower case",
+        count: released_cargo_toml_in_lower_case.len(),
+        percentage: percentage(released_cargo_toml_in_lower_case.len(), crates.len()),
     });
 
     let cases = vec![

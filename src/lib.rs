@@ -528,22 +528,35 @@ pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dy
     }
 }
 
-pub fn load_cargo_toml_released_crates(
-) -> Result<(Vec<Cargo>, CrateErrors, CargoTomlErrors), Box<dyn Error>> {
+pub fn load_cargo_toml_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
     let released_crates = serde_json::from_str(&read_to_string(
         get_data_folder().join("released_cargo_toml.json"),
     )?)?;
+
+    Ok(released_crates)
+}
+
+#[expect(clippy::type_complexity)]
+pub fn load_release_errors(
+) -> Result<(CrateErrors, CargoTomlErrors, Vec<String>, Vec<String>), Box<dyn Error>> {
     let released_cargo_toml_errors = serde_json::from_str(&read_to_string(
         get_data_folder().join("released_cargo_toml_errors.json"),
     )?)?;
     let released_cargo_toml_errors_nameless = serde_json::from_str(&read_to_string(
         get_data_folder().join("released_cargo_toml_errors_nameless.json"),
     )?)?;
+    let released_cargo_toml_in_lower_case = serde_json::from_str(&read_to_string(
+        get_data_folder().join("released_cargo_toml_in_lower_case.json"),
+    )?)?;
+    let released_cargo_toml_missing = serde_json::from_str(&read_to_string(
+        get_data_folder().join("released_cargo_toml_missing.json"),
+    )?)?;
 
     Ok((
-        released_crates,
         released_cargo_toml_errors,
         released_cargo_toml_errors_nameless,
+        released_cargo_toml_in_lower_case,
+        released_cargo_toml_missing,
     ))
 }
 
@@ -567,13 +580,10 @@ pub fn read_versions() -> Result<Vec<CrateVersion>, Box<dyn Error>> {
     Ok(versions)
 }
 
-pub fn add_cargo_toml_to_crates(
-    crates: Vec<Crate>,
-) -> Result<(Vec<Crate>, CrateErrors, CargoTomlErrors), Box<dyn Error>> {
+pub fn add_cargo_toml_to_crates(crates: Vec<Crate>) -> Result<Vec<Crate>, Box<dyn Error>> {
     let _a = ElapsedTimer::new("add_cargo_toml_to_crates");
 
-    let (released_crates, released_cargo_toml_errors, released_cargo_toml_errors_nameless) =
-        load_cargo_toml_released_crates()?;
+    let released_crates = load_cargo_toml_released_crates()?;
     let cargo_of_crate: HashMap<String, Cargo> = released_crates
         .iter()
         .map(|krate| (krate.package.name.clone(), krate.clone()))
@@ -591,11 +601,7 @@ pub fn add_cargo_toml_to_crates(
         })
         .collect::<Vec<Crate>>();
 
-    Ok((
-        updated_crates,
-        released_cargo_toml_errors,
-        released_cargo_toml_errors_nameless,
-    ))
+    Ok(updated_crates)
 }
 
 /// Reads the `crates.csv` file (the database dump from Crates.io) and returns a vector of `Crate` structs.
