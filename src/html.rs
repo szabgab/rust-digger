@@ -92,6 +92,9 @@ struct Cli {
 
     #[arg(long, default_value_t = false, help = "Generate the users pages")]
     users: bool,
+
+    #[arg(long, default_value_t = false, help = "Generate the top pages")]
+    top: bool,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -165,7 +168,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap();
     }
 
-    if args.all {
+    if args.all || args.top {
         generate_top_crates_lists(&mut crates).unwrap();
     }
 
