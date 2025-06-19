@@ -57,6 +57,11 @@ fn run() -> Result<(), Box<dyn Error>> {
 
     let crates: Vec<Crate> = read_crates(0)?;
     let versions: Vec<CrateVersion> = read_versions()?;
+    log::info!(
+        "Found {} crates and {} versions",
+        crates.len().separate_with_commas(),
+        versions.len().separate_with_commas()
+    );
 
     let (newest_crates, downloaded_count, downloaded_total) =
         download_crates(&crates, &versions, args.limit)?;
@@ -66,6 +71,14 @@ fn run() -> Result<(), Box<dyn Error>> {
     if args.limit == 0 {
         remove_old_versions_of_the_crates(&newest_crates)?;
     }
+
+    let crate_folders = crates_root().read_dir()?.flatten().count();
+
+    log::info!(
+        "Total number of downloaded crates: {}  Total crates: {}",
+        crate_folders.separate_with_commas(),
+        crates.len().separate_with_commas()
+    );
 
     log::info!(
         "Total downloaded size: {} bytes in {} crates",
