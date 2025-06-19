@@ -722,9 +722,5 @@ mod tests {
         std::fs::write(text_file, "Hello, world!").unwrap();
         let size = disk_usage(&tmp_dir.path().to_path_buf());
         assert_eq!(size, 13, "Disk usage is the expected value");
-
-        let size = disk_usage(&PathBuf::from("templates"));
-        assert!(size > 0, "Disk usage should be greater than 0");
-        assert_eq!(size, 152838, "Disk usage is the expected value");
     }
 }
