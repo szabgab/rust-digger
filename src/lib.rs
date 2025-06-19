@@ -714,7 +714,7 @@ mod tests {
     #[test]
     fn check_disk_usage() {
         use tempdir::TempDir;
-        let tmp_dir = TempDir::new_in(get_temp_folder(), "demo").unwrap();
+        let tmp_dir = TempDir::new("demo").unwrap();
         let size = disk_usage(&tmp_dir.path().to_path_buf());
         assert_eq!(size, 0, "Empty directory should have size 0");
 
