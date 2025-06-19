@@ -677,7 +677,7 @@ fn generate_people_search_page() {
     log::info!("generate_people_search_page end");
 }
 
-fn render_stats_page(stats: &[StatEntry]) {
+fn render_stats_page(stats: &HashMap<String, Vec<StatEntry>>) {
     log::info!("render_stats_page");
     let partials = load_templates().unwrap();
 
@@ -1039,16 +1039,19 @@ pub fn generate_stats_pages(
 
     let _all = render_filtered_crates("all", "Rust Digger", |_krate| true, crates)?;
 
-    let mut stats = vec![];
+    let mut stats = HashMap::new();
+    stats.insert(String::from("crates"), vec![]);
+    stats.insert(String::from("repos"), vec![]);
+    let crates_stats = stats.get_mut("crates").unwrap();
 
-    stats.push(StatEntry {
+    crates_stats.push(StatEntry {
         path: "all",
         title: "Total",
         count: crates.len(),
         percentage: String::from("100"),
     });
 
-    stats.push(StatEntry {
+    crates_stats.push(StatEntry {
         path: "vcs/no-repo",
         title: "No repository",
         count: no_repo,
@@ -1062,7 +1065,7 @@ pub fn generate_stats_pages(
         crates,
     )?;
 
-    stats.push(StatEntry {
+    crates_stats.push(StatEntry {
         path: "has-cargo-toml-errors",
         title: "Has errors in the released Cargo.toml file",
         count: has_cargo_toml_errors,
@@ -1076,76 +1079,19 @@ pub fn generate_stats_pages(
         crates,
     )?;
 
-    stats.push(StatEntry {
+    crates_stats.push(StatEntry {
         path: "lower-case-cargo-toml",
         title: "Has cargo.toml file in lower case",
         count: released_cargo_toml_in_lower_case.len(),
         percentage: percentage(released_cargo_toml_in_lower_case.len(), crates.len()),
     });
 
-    let cases = vec![
-        (
-            "github-but-no-ci",
-            "On GitHub but has no CI",
-            CrateFilter::new(|krate: &&Crate| on_github_but_no_ci(krate)),
-        ),
-        (
-            "github-has-github-actions",
-            "On GitHub has CI (GitHub Actions)",
-            CrateFilter::new(|krate: &&Crate| on_github_has_github_action(krate)),
-        ),
-        (
-            "github-has-circle-ci",
-            "On GitHub has CI (CircleCI)",
-            CrateFilter::new(|krate: &&Crate| on_github_has_circle_ci(krate)),
-        ),
-        (
-            "github-has-cirrus-ci",
-            "On GitHub has CI (CirrrusCI)",
-            CrateFilter::new(|krate: &&Crate| on_github_has_cirrus_ci(krate)),
-        ),
-        (
-            "gitlab-but-no-ci",
-            "On GitLab but has no CI",
-            CrateFilter::new(|krate: &&Crate| on_gitlab_but_no_ci(krate)),
-        ),
-        (
-            "gitlab-has-pipelines",
-            "On GitLab has CI (GitLab Pipelines)",
-            CrateFilter::new(|krate: &&Crate| on_gitlab_has_gitlab_pipeline(krate)),
-        ),
-        (
-            "has-cargo-toml-in-root",
-            "Has Cargo.toml file in the root of the repository",
-            CrateFilter::new(|krate: &&Crate| krate.vcs_details.cargo_toml_in_root),
-        ),
-        (
-            "has-no-cargo-toml-in-root",
-            "Has no Cargo.toml file in the root of the repository",
-            CrateFilter::new(|krate: &&Crate| !krate.vcs_details.cargo_toml_in_root),
-        ),
+    let crates_cases = vec![
         (
             "has-homepage-but-no-repo",
             "Has homepage, but no repository",
             CrateFilter::new(|krate: &&Crate| {
                 !krate.homepage.is_empty() && krate.repository.is_empty()
-            }),
-        ),
-        (
-            "has-rustfmt-toml",
-            "Has rustfmt.toml file",
-            CrateFilter::new(|krate: &&Crate| krate.vcs_details.has_rustfmt_toml),
-        ),
-        (
-            "has-dot-rustfmt-toml",
-            "Has .rustfmt.toml file",
-            CrateFilter::new(|krate: &&Crate| krate.vcs_details.has_dot_rustfmt_toml),
-        ),
-        (
-            "has-both-rustfmt-toml",
-            "Has both rustfmt.toml and .rustfmt.toml file in the root of the repository",
-            CrateFilter::new(|krate: &&Crate| {
-                krate.vcs_details.has_rustfmt_toml && krate.vcs_details.has_dot_rustfmt_toml
             }),
         ),
         (
@@ -1227,18 +1173,89 @@ pub fn generate_stats_pages(
             }),
         ),
     ];
+    process_cases(crates, crates_stats, crates_cases)?;
+
+    let repos_cases = vec![
+        (
+            "github-but-no-ci",
+            "On GitHub but has no CI",
+            CrateFilter::new(|krate: &&Crate| on_github_but_no_ci(krate)),
+        ),
+        (
+            "github-has-github-actions",
+            "On GitHub has CI (GitHub Actions)",
+            CrateFilter::new(|krate: &&Crate| on_github_has_github_action(krate)),
+        ),
+        (
+            "github-has-circle-ci",
+            "On GitHub has CI (CircleCI)",
+            CrateFilter::new(|krate: &&Crate| on_github_has_circle_ci(krate)),
+        ),
+        (
+            "github-has-cirrus-ci",
+            "On GitHub has CI (CirrrusCI)",
+            CrateFilter::new(|krate: &&Crate| on_github_has_cirrus_ci(krate)),
+        ),
+        (
+            "gitlab-but-no-ci",
+            "On GitLab but has no CI",
+            CrateFilter::new(|krate: &&Crate| on_gitlab_but_no_ci(krate)),
+        ),
+        (
+            "gitlab-has-pipelines",
+            "On GitLab has CI (GitLab Pipelines)",
+            CrateFilter::new(|krate: &&Crate| on_gitlab_has_gitlab_pipeline(krate)),
+        ),
+        (
+            "has-cargo-toml-in-root",
+            "Has Cargo.toml file in the root of the repository",
+            CrateFilter::new(|krate: &&Crate| krate.vcs_details.cargo_toml_in_root),
+        ),
+        (
+            "has-no-cargo-toml-in-root",
+            "Has no Cargo.toml file in the root of the repository",
+            CrateFilter::new(|krate: &&Crate| !krate.vcs_details.cargo_toml_in_root),
+        ),
+        (
+            "has-rustfmt-toml",
+            "Has rustfmt.toml file",
+            CrateFilter::new(|krate: &&Crate| krate.vcs_details.has_rustfmt_toml),
+        ),
+        (
+            "has-dot-rustfmt-toml",
+            "Has .rustfmt.toml file",
+            CrateFilter::new(|krate: &&Crate| krate.vcs_details.has_dot_rustfmt_toml),
+        ),
+        (
+            "has-both-rustfmt-toml",
+            "Has both rustfmt.toml and .rustfmt.toml file in the root of the repository",
+            CrateFilter::new(|krate: &&Crate| {
+                krate.vcs_details.has_rustfmt_toml && krate.vcs_details.has_dot_rustfmt_toml
+            }),
+        ),
+    ];
+    let repos_stats = stats.get_mut("repos").unwrap();
+    process_cases(crates, repos_stats, repos_cases)?;
+
+    render_stats_page(&stats);
+
+    Ok(())
+}
+
+fn process_cases(
+    crates: &[Crate],
+    crates_stats: &mut Vec<StatEntry<'_>>,
+    cases: Vec<(&'static str, &'static str, CrateFilter)>,
+) -> Result<(), Box<dyn Error + 'static>> {
     for case in cases {
         let count = render_filtered_crates(case.0, case.1, case.2.func, crates)?;
-        stats.push(StatEntry {
+        crates_stats.push(StatEntry {
             path: case.0,
             title: case.1,
             count,
             percentage: percentage(count, crates.len()),
         });
     }
-
-    render_stats_page(&stats);
-
     Ok(())
 }
 

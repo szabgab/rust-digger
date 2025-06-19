@@ -4,6 +4,7 @@
   <div class="container">
     <h1 class="title">Rust Digger Stats</h1>
 
+    <h2 class="title">Stats for Crates</h2>
     <table class="table">
       <thead>
       <tr>
@@ -14,7 +15,32 @@
       </thead>
     <tbody>
 
-      {% for stat in stats %}
+      {% for stat in stats["crates"] %}
+      <tr>
+        <td><a href="/{{stat.path}}">{{stat.title}}</a></td>
+        <td>{{stat.count | commafy}}</td>
+        <td>{{stat.percentage}}%</td>
+      </tr>
+      {% endfor %}
+
+
+    </tbody>
+    </table>
+
+<hr>
+
+    <h2 class="title">Stats for Repositories</h2>
+    <table class="table">
+      <thead>
+      <tr>
+       <th>name</th>
+       <th>value</th>
+       <th>percentage</th>
+      </tr>
+      </thead>
+    <tbody>
+
+      {% for stat in stats["repos"] %}
       <tr>
         <td><a href="/{{stat.path}}">{{stat.title}}</a></td>
         <td>{{stat.count | commafy}}</td>
