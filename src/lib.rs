@@ -98,15 +98,7 @@ impl CrateDetails {
     }
 
     pub fn disk_size(&mut self, root: &PathBuf) {
-        let mut size = 0;
-        for dir_entry in WalkDir::new(root).into_iter().flatten() {
-            if dir_entry.path().is_file() {
-                if let Ok(meta) = dir_entry.path().metadata() {
-                    size += meta.len();
-                }
-            }
-        }
-        self.size = size;
+        self.size = disk_usage(root);
     }
 
     pub fn save(&self, filepath: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
@@ -122,6 +114,18 @@ impl Default for CrateDetails {
     fn default() -> Self {
         Self::new()
     }
+}
+
+fn disk_usage(root: &PathBuf) -> u64 {
+    let mut size = 0;
+    for dir_entry in WalkDir::new(root).into_iter().flatten() {
+        if dir_entry.path().is_file() {
+            if let Ok(meta) = dir_entry.path().metadata() {
+                size += meta.len();
+            }
+        }
+    }
+    size
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -705,5 +709,22 @@ mod tests {
         let path = build_path(PathBuf::from("root"), &["one", "two"], Some("html"));
         expected.set_extension("html");
         assert_eq!(path, expected);
+    }
+
+    #[test]
+    fn check_disk_usage() {
+        use tempdir::TempDir;
+        let tmp_dir = TempDir::new_in(get_temp_folder(), "demo").unwrap();
+        let size = disk_usage(&tmp_dir.path().to_path_buf());
+        assert_eq!(size, 0, "Empty directory should have size 0");
+
+        let text_file = tmp_dir.path().join("test.txt");
+        std::fs::write(text_file, "Hello, world!").unwrap();
+        let size = disk_usage(&tmp_dir.path().to_path_buf());
+        assert_eq!(size, 13, "Disk usage is the expected value");
+
+        let size = disk_usage(&PathBuf::from("templates"));
+        assert!(size > 0, "Disk usage should be greater than 0");
+        assert_eq!(size, 152838, "Disk usage is the expected value");
     }
 }
