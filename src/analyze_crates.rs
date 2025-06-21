@@ -120,7 +120,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
                     released_crates.push(cargo.clone());
                 }
                 Err(err) => {
-                    log::error!("Reading {:?} failed: {err}", path.display());
+                    log::warn!("Reading Cargo.toml {:?} failed: {err}", path.display());
 
                     match load_name_version_toml(&path) {
                         Ok((name, _version)) => {
