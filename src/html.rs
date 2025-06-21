@@ -1298,10 +1298,7 @@ fn on_github_has_github_action(krate: &Crate) -> bool {
 
             true
         }
-        Err(err) => {
-            log::error!("Could not parse repository URL {err}");
-            false
-        }
+        Err(_err) => false,
     }
 }
 
@@ -1321,10 +1318,7 @@ fn on_github_has_circle_ci(krate: &Crate) -> bool {
 
             true
         }
-        Err(err) => {
-            log::error!("Could not parse repository URL {err}");
-            false
-        }
+        Err(_err) => false,
     }
 }
 
@@ -1344,10 +1338,7 @@ fn on_github_has_cirrus_ci(krate: &Crate) -> bool {
 
             true
         }
-        Err(err) => {
-            log::error!("Could not parse repository URL {err}");
-            false
-        }
+        Err(_err) => false,
     }
 }
 
@@ -1370,10 +1361,7 @@ fn on_github_but_no_ci(krate: &Crate) -> bool {
 
             true
         }
-        Err(err) => {
-            log::error!("Could not parse repository URL {err}");
-            false
-        }
+        Err(_err) => false,
     }
 }
 
@@ -1393,10 +1381,7 @@ fn on_gitlab_has_gitlab_pipeline(krate: &Crate) -> bool {
 
             true
         }
-        Err(err) => {
-            log::error!("Could not parse repository URL {err}");
-            false
-        }
+        Err(_err) => false,
     }
 }
 
@@ -1416,10 +1401,7 @@ fn on_gitlab_but_no_ci(krate: &Crate) -> bool {
 
             true
         }
-        Err(err) => {
-            log::error!("Could not parse repository URL {err}");
-            false
-        }
+        Err(_err) => false,
     }
 }
 
