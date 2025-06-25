@@ -10,7 +10,7 @@ use rust_digger::{
 };
 
 mod cargo_toml_parser;
-use cargo_toml_parser::{load_cargo_toml, load_name_version_toml, Cargo};
+use cargo_toml_parser::{load_cargo_toml, load_cargo_toml_simplified, Cargo};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -122,7 +122,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
                 Err(err) => {
                     log::warn!("Reading Cargo.toml {:?} failed: {err}", path.display());
 
-                    match load_name_version_toml(&path) {
+                    match load_cargo_toml_simplified(&path) {
                         Ok((name, _version)) => {
                             released_cargo_toml_errors.insert(name, format!("{err}"));
                         }
