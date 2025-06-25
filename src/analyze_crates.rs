@@ -107,12 +107,8 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
             None
         };
 
-        match path_or_none {
-            None => {
-                log::warn!("No Cargo.toml found in {:?}", dir_entry.path().display());
-                released_cargo_toml_missing.push(dir_entry.file_name().display().to_string());
-            }
-            Some(path) => match load_cargo_toml(&path) {
+        if let Some(path) = path_or_none {
+            match load_cargo_toml(&path) {
                 Ok(cargo) => {
                     if details.has_cargo_toml_in_lower_case {
                         released_cargo_toml_in_lower_case.push(cargo.package.name.clone());
@@ -138,7 +134,10 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
                         }
                     }
                 }
-            },
+            }
+        } else {
+            log::warn!("No Cargo.toml found in {:?}", dir_entry.path().display());
+            released_cargo_toml_missing.push(dir_entry.file_name().display().to_string());
         }
 
         crate_details.push(details);
