@@ -185,7 +185,7 @@ fn download_crates(
                 );
                 match extract_file(&downloaded_file) {
                     Ok(filename) => log::info!("extracted {:?}", filename.display()),
-                    Err(err) => log::error!("{err}"),
+                    Err(err) => log::error!("{err} {url}"),
                 }
 
                 match std::fs::remove_file(&downloaded_file) {
