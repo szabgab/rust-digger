@@ -9,3 +9,7 @@
 /*.log
 /*.out
 /*.err
+
+rust-digger-html/
+rust-digger.gz
+
