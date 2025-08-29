@@ -10,7 +10,7 @@
         <tr><td>lib.rs</td><td><a href="https://lib.rs/crates/{{crate.name}}">{{ crate.name }}</a></td></tr>
         {% if crate.cargo %}
             <tr><td>version</td><td>{{ crate.cargo.package.version }}</td></tr>
-            <tr><td>source</td><td><a href="/src/{{ crate.cargo.package.name }}-{{ crate.cargo.package.version }}/">src</a></td></tr>
+            <!-- <tr><td>source</td><td><a href="/src/{{ crate.cargo.package.name }}-{{ crate.cargo.package.version }}/">src</a></td></tr> -->
         {% endif %}
         <tr><td>created_at</td><td>{{ crate.created_at }}</td></tr>
         <tr><td>updated_at</td><td>{{ crate.updated_at }}</td></tr>
