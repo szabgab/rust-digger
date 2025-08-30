@@ -414,14 +414,21 @@ pub fn collected_data_root() -> PathBuf {
 
 /// Creates the data folders we need if they do not exist.
 pub fn create_data_folders() -> Result<(), Box<dyn Error>> {
-    if !get_data_folder().exists() {
-        fs::create_dir_all(get_data_folder())?;
+    for folder in [
+        get_data_folder(),
+        get_repos_folder(),
+        get_db_dump_folder(),
+        get_temp_folder(),
+        crates_root(),
+        analyzed_crates_root(),
+        // repo_details_root(),
+        // collected_data_root(),
+    ] {
+        if !folder.exists() {
+            log::info!("Create folder {:?}", folder.display());
+            fs::create_dir_all(&folder)?;
+        }
     }
-    fs::create_dir_all(get_repos_folder())?;
-    fs::create_dir_all(get_db_dump_folder())?;
-    fs::create_dir_all(get_temp_folder())?;
-    fs::create_dir_all(crates_root()).unwrap();
-    fs::create_dir_all(analyzed_crates_root()).unwrap();
 
     Ok(())
 }
