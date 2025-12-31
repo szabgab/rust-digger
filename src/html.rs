@@ -131,32 +131,31 @@ fn main() -> Result<(), Box<dyn Error>> {
             &crates,
             &released_cargo_toml_errors,
             &released_cargo_toml_in_lower_case,
-        )
-        .unwrap();
+        )?;
     }
     if args.all || args.ci {
-        generate_ci_pages(&crates).unwrap();
+        generate_ci_pages(&crates)?;
     }
     if args.all || args.fmt {
-        generate_rustfmt_pages(&crates).unwrap();
+        generate_rustfmt_pages(&crates)?;
     }
     if args.all || args.msrv {
-        generate_msrv_pages(&crates).unwrap();
+        generate_msrv_pages(&crates)?;
     }
     if args.all {
-        generate_interesting_homepages(&crates).unwrap();
+        generate_interesting_homepages(&crates)?;
     }
     if args.all || args.errors {
-        generate_errors_page(&released_cargo_toml_errors_nameless).unwrap();
+        generate_errors_page(&released_cargo_toml_errors_nameless)?;
     }
     if args.all || args.news {
         render_news_pages();
     }
     if args.all || args.fixed {
-        render_static_pages().unwrap();
+        render_static_pages()?;
     }
     if args.all {
-        generate_crate_pages(&crates, &released_cargo_toml_errors).unwrap();
+        generate_crate_pages(&crates, &released_cargo_toml_errors)?;
     }
     if args.all || args.users {
         generate_user_pages(
@@ -164,12 +163,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             users,
             &crates_by_owner,
             &released_cargo_toml_errors,
-        )
-        .unwrap();
+        )?;
     }
 
     if args.all || args.top {
-        generate_top_crates_lists(&mut crates).unwrap();
+        generate_top_crates_lists(&mut crates)?;
     }
 
     if args.all {
@@ -273,7 +271,7 @@ pub fn load_templates() -> Result<Partials, Box<dyn Error>> {
         "templates/incl/list_crates.html",
         "templates/incl/list_crate_errors.html",
     ] {
-        partials.add(filename, fs::read_to_string(filename).unwrap());
+        partials.add(filename, fs::read_to_string(filename)?);
     }
 
     Ok(partials)
@@ -297,7 +295,7 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
     ];
 
     for page in pages {
-        let partials = load_templates().unwrap();
+        let partials = load_templates()?;
 
         let utc: DateTime<Utc> = Utc::now();
         let globals = liquid::object!({
@@ -309,15 +307,12 @@ pub fn render_static_pages() -> Result<(), Box<dyn Error>> {
         let template = liquid::ParserBuilder::with_stdlib()
             .filter(Commafy)
             .partials(partials)
-            .build()
-            .unwrap()
-            .parse_file(format!("templates/{}.html", page.0))
-            .unwrap();
-        let html = template.render(&globals).unwrap();
+            .build()?
+            .parse_file(format!("templates/{}.html", page.0))?;
+        let html = template.render(&globals)?;
 
-        let mut file =
-            File::create(build_path(get_site_folder(), &[page.0], Some("html"))).unwrap();
-        writeln!(&mut file, "{html}").unwrap();
+        let mut file = File::create(build_path(get_site_folder(), &[page.0], Some("html")))?;
+        writeln!(&mut file, "{html}")?;
     }
     Ok(())
 }
@@ -336,7 +331,7 @@ pub fn render_list_page(
     ));
     log::info!("render_file: {:?}", filepath.display());
 
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let page_size = if crates.len() > PAGE_SIZE {
         PAGE_SIZE
@@ -357,14 +352,12 @@ pub fn render_list_page(
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/crate_list_page.html")
-        .unwrap();
-    let html = template.render(&globals).unwrap();
+        .build()?
+        .parse_file("templates/crate_list_page.html")?;
+    let html = template.render(&globals)?;
 
-    let mut file = File::create(filepath).unwrap();
-    writeln!(&mut file, "{html}").unwrap();
+    let mut file = File::create(filepath)?;
+    writeln!(&mut file, "{html}")?;
     //match res {
     //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
     //    Err(error) => log:error!("{}", error)
@@ -429,15 +422,13 @@ pub fn generate_crate_pages(
     let _a = ElapsedTimer::new("generate_crate_pages");
 
     log::info!("generate_crate_pages start");
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/crate.html")
-        .unwrap();
+        .build()?
+        .parse_file("templates/crate.html")?;
 
     for krate in crates {
         let filename = build_path(get_site_folder(), &["crates", &krate.name], Some("html"));
@@ -456,9 +447,9 @@ pub fn generate_crate_pages(
             "readme":  markdown2html(&krate.readme),
             "cargo_toml_error": cargo_toml_error,
         });
-        let html = template.render(&globals).unwrap();
-        let mut file = File::create(filename).unwrap();
-        writeln!(&mut file, "{html}").unwrap();
+        let html = template.render(&globals)?;
+        let mut file = File::create(filename)?;
+        writeln!(&mut file, "{html}")?;
     }
     log::info!("generate_crate_pages end");
     Ok(())
@@ -487,15 +478,13 @@ pub fn generate_user_pages(
 ) -> Result<(), Box<dyn Error>> {
     let _a = ElapsedTimer::new("generate_user_pages");
 
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/user.html")
-        .unwrap();
+        .build()?
+        .parse_file("templates/user.html")?;
 
     let mut crate_by_id: HashMap<&str, &Crate> = HashMap::new();
     for krate in crates {
@@ -848,15 +837,13 @@ pub fn generate_errors_page(
     released_cargo_toml_errors_nameless: &CargoTomlErrors,
 ) -> Result<(), Box<dyn Error>> {
     let _a = ElapsedTimer::new("generate_errors_pages");
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/errors.html")
-        .unwrap();
+        .build()?
+        .parse_file("templates/errors.html")?;
 
     let filename = get_site_folder().join("errors.html");
     let utc: DateTime<Utc> = Utc::now();
@@ -866,9 +853,9 @@ pub fn generate_errors_page(
         "title":   "Errors",
         "released_cargo_toml_errors_nameless": released_cargo_toml_errors_nameless,
     });
-    let html = template.render(&globals).unwrap();
-    let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{html}").unwrap();
+    let html = template.render(&globals)?;
+    let mut file = File::create(filename)?;
+    writeln!(&mut file, "{html}")?;
 
     Ok(())
 }
@@ -921,15 +908,13 @@ pub fn generate_interesting_homepages(crates: &[Crate]) -> Result<(), Box<dyn Er
         unique_homepages
     );
 
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/homepages.html")
-        .unwrap();
+        .build()?
+        .parse_file("templates/homepages.html")?;
 
     let filename = get_site_folder().join("homepages.html");
     let utc: DateTime<Utc> = Utc::now();
@@ -939,9 +924,9 @@ pub fn generate_interesting_homepages(crates: &[Crate]) -> Result<(), Box<dyn Er
         "title":   "homepages",
         "homepages": unique_homepages,
     });
-    let html = template.render(&globals).unwrap();
-    let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{html}").unwrap();
+    let html = template.render(&globals)?;
+    let mut file = File::create(filename)?;
+    writeln!(&mut file, "{html}")?;
 
     Ok(())
 }
@@ -960,7 +945,7 @@ fn render_top_crates(
         krates.len()
     };
 
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let utc: DateTime<Utc> = Utc::now();
     let globals = liquid::object!({
@@ -976,19 +961,17 @@ fn render_top_crates(
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/list_top_crates.html")
-        .unwrap();
-    let html = template.render(&globals).unwrap();
+        .build()?
+        .parse_file("templates/list_top_crates.html")?;
+    let html = template.render(&globals)?;
 
     let filepath = std::path::PathBuf::from(format!(
         "{}.html",
         get_site_folder().join(filename).display()
     ));
 
-    let mut file = File::create(filepath).unwrap();
-    writeln!(&mut file, "{html}").unwrap();
+    let mut file = File::create(filepath)?;
+    writeln!(&mut file, "{html}")?;
     //match res {
     //    Ok(html) => writeln!(&mut file, "{}", html).unwrap(),
     //    Err(error) => log:error!("{}", error)
@@ -1478,15 +1461,13 @@ fn generate_ci_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         )?,
     );
 
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/ci.html")
-        .unwrap();
+        .build()?
+        .parse_file("templates/ci.html")?;
 
     let filename = get_site_folder().join("ci.html");
     let utc: DateTime<Utc> = Utc::now();
@@ -1496,9 +1477,9 @@ fn generate_ci_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         "title":   "CI systems",
         "count": count,
     });
-    let html = template.render(&globals).unwrap();
-    let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{html}").unwrap();
+    let html = template.render(&globals)?;
+    let mut file = File::create(filename)?;
+    writeln!(&mut file, "{html}")?;
 
     log::info!("generate_ci_pages end");
     Ok(())
@@ -1568,15 +1549,13 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     let rust_versions_vector = vectorize(&rust_versions);
     let rust_dash_versions_vector = vectorize(&rust_dash_versions);
 
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/msrv.html")
-        .unwrap();
+        .build()?
+        .parse_file("templates/msrv.html")?;
 
     let filename = get_site_folder().join("msrv.html");
     let utc: DateTime<Utc> = Utc::now();
@@ -1589,9 +1568,9 @@ fn generate_msrv_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         "rust_versions": rust_versions_vector,
         "rust_dash_versions": rust_dash_versions_vector,
     });
-    let html = template.render(&globals).unwrap();
-    let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{html}").unwrap();
+    let html = template.render(&globals)?;
+    let mut file = File::create(filename)?;
+    writeln!(&mut file, "{html}")?;
 
     list_crates_with_edition(editions_vector, crates)?;
     list_crates_with_rust_version(rust_versions_vector, crates)?;
@@ -1763,15 +1742,13 @@ fn generate_rustfmt_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         )?;
     }
 
-    let partials = load_templates().unwrap();
+    let partials = load_templates()?;
 
     let template = liquid::ParserBuilder::with_stdlib()
         .filter(Commafy)
         .partials(partials)
-        .build()
-        .unwrap()
-        .parse_file("templates/rustfmt.html")
-        .unwrap();
+        .build()?
+        .parse_file("templates/rustfmt.html")?;
 
     let filename = get_site_folder().join("rustfmt/index.html");
     let utc: DateTime<Utc> = Utc::now();
@@ -1784,9 +1761,9 @@ fn generate_rustfmt_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
         "number_of_crates": crates.len(),
         "with_rustfmt": with_rustfmt,
     });
-    let html = template.render(&globals).unwrap();
-    let mut file = File::create(filename).unwrap();
-    writeln!(&mut file, "{html}").unwrap();
+    let html = template.render(&globals)?;
+    let mut file = File::create(filename)?;
+    writeln!(&mut file, "{html}")?;
 
     Ok(())
 }

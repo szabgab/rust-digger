@@ -526,9 +526,9 @@ pub fn save_details(repository: &str, details: &VCSDetails) -> Result<(), Box<dy
             //     mqatch File::open(details_path.to_string()) {
             // }
 
-            let content = serde_json::to_string(&details).unwrap();
-            let mut file = File::create(details_path).unwrap();
-            writeln!(&mut file, "{content}").unwrap();
+            let content = serde_json::to_string(&details)?;
+            let mut file = File::create(details_path)?;
+            writeln!(&mut file, "{content}")?;
 
             Ok(())
         }

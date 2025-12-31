@@ -223,7 +223,7 @@ fn download_crate(url: &str) -> Result<(std::path::PathBuf, u64), Box<dyn Error>
     }
 
     let download_file = get_temp_folder().join("download.tar.gz");
-    let mut file = fs::File::create(&download_file).unwrap();
+    let mut file = fs::File::create(&download_file)?;
 
     let total = std::io::copy(&mut response, &mut file)
         .map_err(|err| format!("Failed to copy response into file: {err}"))?;
