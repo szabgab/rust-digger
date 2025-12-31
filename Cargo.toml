@@ -15,7 +15,7 @@ homepage = "https://rust-digger.code-maven.com/"
 [dependencies]
 chrono = "0.4.26"
 clap = { version = "4.3", features = ["derive"] }
-csv = "1.2.2"
+csv = "1.4.0"
 flate2 = "1.0.28"
 liquid = "0.26.4"
 liquid-filter-commafy = "0.1.1"
