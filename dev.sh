@@ -1,7 +1,6 @@
 set -e -u
 #-o pipefail
-cd /home/gabor/work/rust-digger
-/home/gabor/.cargo/bin/cargo build --release
+cargo build --release
 
 cargo run --bin download-db-dump  > download-db-dump.log 2> download-db-dump.err
 cargo run --bin download-crates   > download-crates.log  2> download-crates.err
