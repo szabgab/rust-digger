@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
-use git_digger::{Repository, RepoPlatform};
+use git_digger::{RepoPlatform, Repository};
 
 mod cargo_toml_parser;
 pub use cargo_toml_parser::Cargo;
