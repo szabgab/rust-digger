@@ -150,7 +150,7 @@ fn update_repositories(
             );
             continue;
         }
-        repo.update_repository(&get_repos_folder(), clone)?;
+        repo.update_repository(&get_repos_folder(), clone, None)?;
 
         count += 1;
     }

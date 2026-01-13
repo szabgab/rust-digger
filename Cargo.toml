@@ -33,7 +33,7 @@ thousands = "0.2.0"
 toml = "0.9.10"
 walkdir = "2.5"
 markdown = "1.0.0"
-git-digger = "0.1.12"
+git-digger = "0.2.2"
 
 [[bin]]
 name = "html"

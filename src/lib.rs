@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
-use git_digger::Repository;
+use git_digger::{Repository, RepoPlatform};
 
 mod cargo_toml_parser;
 pub use cargo_toml_parser::Cargo;
@@ -126,19 +126,6 @@ fn disk_usage(root: &PathBuf) -> u64 {
         }
     }
     size
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[non_exhaustive]
-pub enum RepoPlatform {
-    GitHub,    // https://github.com/
-    GitLab,    // https://gitlab.com/
-    Gitea,     // https://about.gitea.com/
-    Cgit,      // https://git.zx2c4.com/cgit/about/
-    Forgejo,   // https://forgejo.org/
-    Fossil,    // https://fossil-scm.org/
-    Mercurial, // https://www.mercurial-scm.org/
-    Gogs,      // https://gogs.io/
 }
 
 const REPO_FOLDERS: [&str; 2] = ["github", "gitlab"];
