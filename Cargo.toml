@@ -64,6 +64,10 @@ path = "src/download_crates.rs"
 name = "analyze-crates"
 path = "src/analyze_crates.rs"
 
+[[bin]]
+name = "feed"
+path = "src/feed.rs"
+
 
 [lints.clippy]
 cargo        = { priority = -1, level = "deny" }
