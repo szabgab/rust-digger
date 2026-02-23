@@ -1,6 +1,7 @@
 use std::error::Error;
 
 use clap::Parser;
+use reqwest::blocking::get;
 
 use rust_digger::ElapsedTimer;
 
@@ -37,4 +38,10 @@ fn run() -> Result<(), Box<dyn Error>> {
     );
 
     Ok(())
+}
+
+pub fn get_rss() -> Result<String, Box<dyn std::error::Error>> {
+    let url = "https://pypi.org/rss/updates.xml";
+    let response = get(url)?.text()?;
+    Ok(response)
 }
