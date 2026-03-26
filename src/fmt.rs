@@ -17,12 +17,12 @@ struct Cli {
     limit: u32,
 }
 
-/// For each repo run cargo fmt
+/// For each repo run cargo fmt.
 ///
 /// For each repo load the details (if they already exist)
 ///    If we have not ran fmt on the given repo then
 ///          run fmt
-///          save the results back to the details
+///          save the results back to the details.
 fn main() {
     let args = Cli::parse();
     simple_logger::init_with_level(log::Level::Info).unwrap();
@@ -97,7 +97,7 @@ fn build_docker_image() {
     }
 }
 
-/// docker run --rm --workdir /opt -v$(pwd):/opt -it --user tester rust-test cargo fmt --check -- --color=never
+/// docker run --rm --workdir /opt -v$(pwd):/opt -it --user tester rust-test cargo fmt --check -- --color=never.
 fn run_cargo_in_docker() -> String {
     log::info!("run_cargo_in_docker");
     let cwd = env::current_dir().unwrap();

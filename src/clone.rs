@@ -39,7 +39,7 @@ struct Cli {
 
 /// for each crate
 ///     get the url and type of the VCS
-///     load the details of vcs
+///     load the details of vcs.
 ///
 ///     if there is no clone yet:
 ///         if we have evidence that the cloning has already failed then got to next
