@@ -3,7 +3,7 @@ use std::error::Error;
 use std::fs::File;
 
 use rust_digger::{
-    get_db_dump_folder, CrateOwner, CratesByOwner, ElapsedTimer, Owners, Team, User,
+    CrateOwner, CratesByOwner, ElapsedTimer, Owners, Team, User, get_db_dump_folder,
 };
 
 pub fn read_teams(users: &mut Vec<User>, limit: u32) -> Result<(), Box<dyn Error>> {

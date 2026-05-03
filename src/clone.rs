@@ -7,7 +7,7 @@ use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 
 use git_digger::Repository;
 
-use rust_digger::{get_repos_folder, load_vcs_details, read_crates, Crate, ElapsedTimer};
+use rust_digger::{Crate, ElapsedTimer, get_repos_folder, load_vcs_details, read_crates};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -88,7 +88,12 @@ fn update_repositories(
 ) -> Result<(), Box<dyn Error>> {
     log::info!("start update repositories");
 
-    std::env::set_var("GIT_TERMINAL_PROMPT", "0");
+    // SAFETY: This binary sets the process environment before starting any work
+    // that could spawn or touch other threads, which satisfies `set_var`'s
+    // process-global safety requirement on edition 2024.
+    unsafe {
+        std::env::set_var("GIT_TERMINAL_PROMPT", "0");
+    };
 
     let mut repo_reuse: HashMap<String, i32> = HashMap::new(); // number of times each repository is used for crates (monorepo)
     let now: DateTime<Utc> = Utc::now();

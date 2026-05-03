@@ -5,12 +5,12 @@ use std::{collections::HashMap, vec};
 use clap::Parser;
 
 use rust_digger::{
-    analyzed_crates_root, crates_root, create_data_folders, get_data_folder, CargoTomlErrors,
-    CrateDetails, CrateErrors, ElapsedTimer,
+    CargoTomlErrors, CrateDetails, CrateErrors, ElapsedTimer, analyzed_crates_root, crates_root,
+    create_data_folders, get_data_folder,
 };
 
 mod cargo_toml_parser;
-use cargo_toml_parser::{load_cargo_toml, load_cargo_toml_simplified, Cargo};
+use cargo_toml_parser::{Cargo, load_cargo_toml, load_cargo_toml_simplified};
 
 #[derive(Parser, Debug)]
 #[command(version)]

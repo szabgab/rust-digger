@@ -4,8 +4,8 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::ffi::OsStr;
 use std::fs;
-use std::fs::read_to_string;
 use std::fs::File;
+use std::fs::read_to_string;
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
@@ -119,10 +119,10 @@ impl Default for CrateDetails {
 fn disk_usage(root: &PathBuf) -> u64 {
     let mut size = 0;
     for dir_entry in WalkDir::new(root).into_iter().flatten() {
-        if dir_entry.path().is_file() {
-            if let Ok(meta) = dir_entry.path().metadata() {
-                size += meta.len();
-            }
+        if dir_entry.path().is_file()
+            && let Ok(meta) = dir_entry.path().metadata()
+        {
+            size += meta.len();
         }
     }
     size
@@ -535,8 +535,8 @@ pub fn load_cargo_toml_released_crates() -> Result<Vec<Cargo>, Box<dyn Error>> {
 }
 
 #[expect(clippy::type_complexity)]
-pub fn load_release_errors(
-) -> Result<(CrateErrors, CargoTomlErrors, Vec<String>, Vec<String>), Box<dyn Error>> {
+pub fn load_release_errors()
+-> Result<(CrateErrors, CargoTomlErrors, Vec<String>, Vec<String>), Box<dyn Error>> {
     let released_cargo_toml_errors = serde_json::from_str(&read_to_string(
         get_data_folder().join("released_cargo_toml_errors.json"),
     )?)?;
@@ -658,7 +658,7 @@ mod tests {
     //use crate::repo_details_root;
 
     #[test]
-    fn test_percentage() {
+    fn percentage_works() {
         assert_eq!(percentage(20, 100), "20");
         assert_eq!(percentage(5, 20), "25");
         assert_eq!(percentage(1234, 10000), "12.34");
@@ -666,7 +666,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_details_path() {
+    fn get_details_path() {
         let expected = repo_details_root()
             .join("github.com")
             .join("foo")
@@ -690,31 +690,31 @@ mod tests {
     #[test]
     fn check_build_path() {
         // empty
-        let path = build_path(PathBuf::from("root"), &[], None);
-        assert_eq!(path, PathBuf::from("root"));
+        let root_path = build_path(PathBuf::from("root"), &[], None);
+        assert_eq!(root_path, PathBuf::from("root"));
 
-        let path = build_path(PathBuf::from("root"), &[], Some("rs"));
-        assert_eq!(path, PathBuf::from("root.rs"));
+        let root_with_extension = build_path(PathBuf::from("root"), &[], Some("rs"));
+        assert_eq!(root_with_extension, PathBuf::from("root.rs"));
 
-        let path = build_path(PathBuf::from("root"), &["one", "two"], None);
+        let nested_path = build_path(PathBuf::from("root"), &["one", "two"], None);
         let mut expected = PathBuf::from("root").join("one").join("two");
-        assert_eq!(path, expected);
+        assert_eq!(nested_path, expected);
 
-        let path = build_path(PathBuf::from("root"), &["one", "two"], Some("html"));
+        let nested_html_path = build_path(PathBuf::from("root"), &["one", "two"], Some("html"));
         expected.set_extension("html");
-        assert_eq!(path, expected);
+        assert_eq!(nested_html_path, expected);
     }
 
     #[test]
     fn check_disk_usage() {
         use tempdir::TempDir;
         let tmp_dir = TempDir::new("demo").unwrap();
-        let size = disk_usage(&tmp_dir.path().to_path_buf());
-        assert_eq!(size, 0, "Empty directory should have size 0");
+        let empty_size = disk_usage(&tmp_dir.path().to_path_buf());
+        assert_eq!(empty_size, 0, "Empty directory should have size 0");
 
         let text_file = tmp_dir.path().join("test.txt");
         std::fs::write(text_file, "Hello, world!").unwrap();
-        let size = disk_usage(&tmp_dir.path().to_path_buf());
-        assert_eq!(size, 13, "Disk usage is the expected value");
+        let populated_size = disk_usage(&tmp_dir.path().to_path_buf());
+        assert_eq!(populated_size, 13, "Disk usage is the expected value");
     }
 }

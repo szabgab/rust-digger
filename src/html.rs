@@ -17,9 +17,9 @@ use thousands::Separable as _;
 use git_digger::Repository;
 
 use rust_digger::{
+    CargoTomlErrors, Crate, CrateErrors, CratesByOwner, ElapsedTimer, Owners, Repo, User,
     add_cargo_toml_to_crates, analyzed_crates_root, build_path, collected_data_root,
     load_crate_details, load_release_errors, load_vcs_details, percentage, read_crates,
-    CargoTomlErrors, Crate, CrateErrors, CratesByOwner, ElapsedTimer, Owners, Repo, User,
 };
 
 const URL: &str = "https://rust-digger.code-maven.com";
@@ -1687,7 +1687,7 @@ fn generate_rustfmt_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
 
     let mut count_by_pair_vector = count_by_pair
         .iter()
-        .map(|pair| (&pair.0 .0, &pair.0 .1, pair.1))
+        .map(|pair| (&pair.0.0, &pair.0.1, pair.1))
         .collect::<Vec<(&String, &String, &u32)>>();
     #[expect(clippy::min_ident_chars)]
     count_by_pair_vector.sort_by(|a, b| a.0.partial_cmp(b.0).unwrap());
@@ -1768,12 +1768,17 @@ fn generate_rustfmt_pages(crates: &[Crate]) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-#[test]
-fn check_load_templates() {
-    let _partials = load_templates();
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn test_get_repo_types() {
-    let _repos = get_repo_types();
+    #[test]
+    fn check_load_templates() {
+        let _partials = load_templates();
+    }
+
+    #[test]
+    fn get_repo_types_works() {
+        let _repos = get_repo_types();
+    }
 }

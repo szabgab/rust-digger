@@ -13,8 +13,8 @@ use tempdir::TempDir;
 use thousands::Separable as _;
 
 use rust_digger::{
-    crates_root, create_data_folders, get_temp_folder, read_crates, read_versions, Crate,
-    CrateVersion,
+    Crate, CrateVersion, crates_root, create_data_folders, get_temp_folder, read_crates,
+    read_versions,
 };
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");

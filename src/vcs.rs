@@ -13,8 +13,8 @@ use toml::Table;
 use git_digger::Repository;
 
 use rust_digger::{
-    collected_data_root, get_repos_folder, load_vcs_details, read_crates, save_details, Crate,
-    ElapsedTimer, VCSDetails,
+    Crate, ElapsedTimer, VCSDetails, collected_data_root, get_repos_folder, load_vcs_details,
+    read_crates, save_details,
 };
 
 #[derive(Parser, Debug)]
