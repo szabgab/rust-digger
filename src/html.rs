@@ -937,7 +937,7 @@ fn render_top_crates(
     fields: &[&str],
     krates: &[Thing],
 ) -> Result<(), Box<dyn Error>> {
-    log::info!("render_top_crates: {filename}",);
+    log::info!("render_top_crates: {filename}");
 
     let page_size = if krates.len() > PAGE_SIZE {
         PAGE_SIZE

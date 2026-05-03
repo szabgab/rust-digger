@@ -53,7 +53,7 @@ fn collect_data_from_crates(limit: usize) -> Result<(), Box<dyn std::error::Erro
     if 0 < limit {
         log::info!("We are going to process only {limit} crates");
     } else {
-        log::info!("We are going to process all the crates we find locally",);
+        log::info!("We are going to process all the crates we find locally");
     }
     create_data_folders()?;
     let mut crate_details = vec![];
